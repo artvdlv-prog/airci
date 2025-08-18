@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
             switchLanguage(lang);
         });
     });
-    // Navigation smooth scrolling
+    // Navigation scrolling
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
@@ -69,7 +69,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetSection = document.querySelector(targetId);
             if (targetSection) {
                 targetSection.scrollIntoView({
-                    behavior: 'smooth',
                     block: 'start'
                 });
             }
@@ -87,108 +86,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // AI Assistant Modal functionality
-    const aiModalTriggers = document.querySelectorAll('.cta-secondary, .cta-ai, #ai-assistant-btn');
-    const aiModal = document.getElementById('ai-modal');
-    const aiClose = document.querySelector('.ai-close');
-    const aiInput = document.querySelector('.ai-input input');
-    const aiSendBtn = document.querySelector('.ai-input button');
-    const aiChat = document.querySelector('.ai-chat');
-
-    // Open AI modal
-    aiModalTriggers.forEach(trigger => {
-        trigger.addEventListener('click', function(e) {
-            e.preventDefault();
-            openAIModal();
-        });
-    });
-
-    // Close AI modal
-    if (aiClose) {
-        aiClose.addEventListener('click', closeAIModal);
-    }
-
-    // Close modal when clicking outside
-    if (aiModal) {
-        aiModal.addEventListener('click', function(e) {
-            if (e.target === aiModal) {
-                closeAIModal();
-            }
-        });
-    }
-
-    // Send message functionality
-    if (aiSendBtn && aiInput) {
-        aiSendBtn.addEventListener('click', sendAIMessage);
-        aiInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendAIMessage();
-            }
-        });
-    }
-
-    function openAIModal() {
-        if (aiModal) {
-            aiModal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-            // Focus on input after a short delay
-            setTimeout(() => {
-                if (aiInput) aiInput.focus();
-            }, 100);
-        }
-    }
-
-    function closeAIModal() {
-        if (aiModal) {
-            aiModal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-    }
-
-    function sendAIMessage() {
-        const message = aiInput.value.trim();
-        if (!message) return;
-
-        // Add user message to chat
-        addMessageToChat(message, 'user');
-        
-        // Clear input
-        aiInput.value = '';
-
-        // Simulate AI response after a delay
-        setTimeout(() => {
-            const responses = {
-                en: [
-                    "I can help you learn more about our AI modules. Which specific module interests you?",
-                    "AirControl helps with project monitoring and risk forecasting. Would you like to know more?",
-                    "Our platform integrates all construction workflows. What's your biggest challenge?",
-                    "AirLegal can review contracts automatically. Are you dealing with complex legal documents?",
-                    "Let me connect you with a demo specialist to show you the platform in action!"
-                ],
-                ru: [
-                    "Я могу помочь вам узнать больше о наших ИИ-модулях. Какой модуль вас интересует?",
-                    "AirControl помогает с мониторингом проектов и прогнозированием рисков. Хотите узнать больше?",
-                    "Наша платформа интегрирует все строительные процессы. Какой у вас главный вызов?",
-                    "AirLegal может автоматически проверять контракты. Работаете со сложными юридическими документами?",
-                    "Давайте свяжем вас со специалистом по демо, чтобы показать платформу в действии!"
-                ]
-            };
-            const currentResponses = responses[currentLanguage] || responses.en;
-            const randomResponse = currentResponses[Math.floor(Math.random() * currentResponses.length)];
-            addMessageToChat(randomResponse, 'ai');
-        }, 1000);
-    }
-
-    function addMessageToChat(message, sender) {
-        const messageElement = document.createElement('div');
-        messageElement.className = sender === 'user' ? 'user-message' : 'ai-message';
-        messageElement.innerHTML = `<p>${message}</p>`;
-        
-        if (aiChat) {
-            aiChat.appendChild(messageElement);
-            aiChat.scrollTop = aiChat.scrollHeight;
-        }
-    }
 
     // Module card interactions
     const moduleCards = document.querySelectorAll('.module-card');
@@ -217,8 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
             border-radius: 12px;
             box-shadow: 0 8px 30px rgba(255, 106, 0, 0.4);
             z-index: 1500;
-            transform: translateX(400px);
-            transition: transform 0.3s ease;
+            transform: translateX(0px);
             max-width: 300px;
             font-size: 14px;
             font-weight: 500;
@@ -227,19 +123,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         document.body.appendChild(notification);
         
-        // Animate in
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
+        // Show notification
+        notification.style.transform = 'translateX(0)';
         
         // Remove after 4 seconds
         setTimeout(() => {
-            notification.style.transform = 'translateX(400px)';
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
         }, 4000);
     }
 
@@ -247,10 +138,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const demoBtns = document.querySelectorAll('.demo-btn, .cta-primary');
     demoBtns.forEach(btn => {
         btn.addEventListener('click', function(e) {
-            if (!this.classList.contains('cta-secondary') && !this.classList.contains('cta-ai')) {
-                e.preventDefault();
-                showDemoForm();
-            }
+            e.preventDefault();
+            showDemoForm();
         });
     });
 
@@ -262,75 +151,9 @@ document.addEventListener('DOMContentLoaded', function() {
         showNotification(messages[currentLanguage] || messages.en);
     }
 
-    // Scroll animations
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
 
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, observerOptions);
 
-    // Observe elements for animation
-    const animatedElements = document.querySelectorAll('.concept-card, .module-card, .goal-item');
-    animatedElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(el);
-    });
 
-    // Navbar scroll effect
-    let lastScrollTop = 0;
-    const navbar = document.querySelector('.navbar');
-    
-    window.addEventListener('scroll', function() {
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
-        if (scrollTop > lastScrollTop && scrollTop > 100) {
-            // Scrolling down
-            navbar.style.transform = 'translateY(-100%)';
-        } else {
-            // Scrolling up
-            navbar.style.transform = 'translateY(0)';
-        }
-        
-        lastScrollTop = scrollTop;
-        
-        // Add shadow when scrolled
-        if (scrollTop > 50) {
-            navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
-        } else {
-            navbar.style.boxShadow = 'none';
-        }
-    });
-
-    // Parallax effect for floating cards
-    const floatingCards = document.querySelectorAll('.card-preview');
-    
-    window.addEventListener('scroll', function() {
-        const scrolled = window.pageYOffset;
-        const parallax = scrolled * 0.3;
-        
-        floatingCards.forEach((card, index) => {
-            const direction = index % 2 === 0 ? 1 : -1;
-            card.style.transform = `translateY(${parallax * direction}px)`;
-        });
-    });
-
-    // Add loading animation
-    document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.5s ease';
-    
-    window.addEventListener('load', function() {
-        document.body.style.opacity = '1';
-    });
 });
 
 // CSS for mobile navigation
@@ -349,7 +172,6 @@ style.textContent = `
             justify-content: flex-start;
             align-items: center;
             padding-top: 50px;
-            transition: left 0.3s ease;
         }
         
         .nav-menu.active {
@@ -369,22 +191,5 @@ style.textContent = `
         }
     }
     
-    .user-message {
-        background-color: var(--primary-orange);
-        color: white;
-        padding: 12px 16px;
-        border-radius: 12px;
-        margin-bottom: 12px;
-        margin-left: 20%;
-        text-align: right;
-    }
-    
-    .ai-message {
-        background-color: var(--light-grey);
-        padding: 12px 16px;
-        border-radius: 12px;
-        margin-bottom: 12px;
-        margin-right: 20%;
-    }
 `;
 document.head.appendChild(style);
