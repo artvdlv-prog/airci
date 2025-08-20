@@ -9,8 +9,8 @@ const translations = {
             demo: "Request Demo"
         },
         intro: {
-            tagline: "AI platform for automation, optimization, and compliance in construction.",
-            description: "Revolutionizing the construction industry through unified AI-powered digital transformation. Streamline operations, ensure compliance, and optimize every aspect of your construction projects using AI agents as your digital assistants.",
+            tagline: "Platform for automation, optimization, and compliance in construction.",
+            description: "Revolutionizing the construction industry through unified digital transformation. Streamline operations, ensure compliance, and optimize every aspect of your construction projects using intelligent agents as your digital assistants.",
             demo: "Request Demo",
             ai: "Talk to AI Assistant"
         },
@@ -86,7 +86,7 @@ const translations = {
                 legal: "Legal Support"
             },
             ci: {
-                desc: "Central AI orchestrator powered by advanced Natural Language Processing that seamlessly integrates all platform modules through conversational interfaces. Acts as your intelligent project companion, understanding natural language queries, coordinating cross-module workflows, and providing unified insights across all construction operations through a single, intuitive user experience.",
+                desc: "Multifunctional assistant that combines all platform modules into one intelligent helper. AirChi can manage projects, analyze contracts, search tenders, control quality, train employees, and solve legal issues — all through simple natural language communication. Your universal digital assistant for any construction tasks, capable of switching between different functions seamlessly and providing comprehensive support across all project phases.",
                 nlp: "NLP Assistant",
                 ux: "Unified UX",
                 integration: "Module Integration"
@@ -103,6 +103,14 @@ const translations = {
             greeting: "Hello! I'm AirChi, your AI construction assistant. How can I help you today?",
             placeholder: "Ask me about Airchitect modules...",
             send: "Send"
+        },
+        chat: {
+            assistant: "AI Assistant",
+            status: "Online • Ready to help",
+            placeholder: "Type your message..."
+        },
+        module: {
+            back: "← Back to Modules"
         }
     },
     ru: {
@@ -114,8 +122,8 @@ const translations = {
             demo: "Запросить демо"
         },
         intro: {
-            tagline: "ИИ-платформа для автоматизации, оптимизации и соблюдения требований в строительстве.",
-            description: "Революционизируем строительную индустрию через единую цифровую трансформацию на базе ИИ. Оптимизируем операции, обеспечиваем соответствие требованиям и улучшаем все аспекты ваших строительных проектов, используя ИИ-агентов в качестве ваших цифровых помощников.",
+            tagline: "Платформа для автоматизации, оптимизации и соблюдения требований в строительстве.",
+            description: "Революционизируем строительную индустрию через единую цифровую трансформацию. Оптимизируем операции, обеспечиваем соответствие требованиям и улучшаем все аспекты ваших строительных проектов, используя интеллектуальных агентов в качестве ваших цифровых помощников.",
             demo: "Запросить демо",
             ai: "Поговорить с ИИ-ассистентом"
         },
@@ -191,7 +199,7 @@ const translations = {
                 legal: "Правовая поддержка"
             },
             ci: {
-                desc: "Центральный ИИ-оркестратор на основе продвинутой обработки естественного языка, который бесшовно интегрирует все модули платформы через разговорные интерфейсы. Действует как ваш интеллектуальный проектный компаньон, понимающий запросы на естественном языке, координирующий межмодульные рабочие потоки и предоставляющий единую аналитику по всем строительным операциям через простой, интуитивный пользовательский интерфейс.",
+                desc: "Многофункциональный ассистент, объединяющий возможности всех модулей платформы в одном интеллектуальном помощнике. AirChi умеет управлять проектами, анализировать контракты, искать тендеры, контролировать качество, обучать сотрудников и решать правовые вопросы — всё через простое общение на естественном языке. Ваш универсальный цифровой помощник для любых строительных задач.",
                 nlp: "NLP ассистент",
                 ux: "Единый UX",
                 integration: "Интеграция модулей"
@@ -208,6 +216,14 @@ const translations = {
             greeting: "Привет! Я AirChi, ваш ИИ-ассистент по строительству. Чем могу помочь?",
             placeholder: "Спросите меня о модулях Airchitect...",
             send: "Отправить"
+        },
+        chat: {
+            assistant: "ИИ-ассистент",
+            status: "Онлайн • Готов помочь",
+            placeholder: "Введите ваше сообщение..."
+        },
+        module: {
+            back: "← Назад к модулям"
         }
     }
 };

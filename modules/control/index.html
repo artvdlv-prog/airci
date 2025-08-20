@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirControl — Comprehensive Project Oversight | Airchitect</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../module-styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1><a href="../../index.html">Airchitect</a></h1>
+            </div>
+            <div class="nav-menu">
+                <a href="../../index.html#intro" class="nav-link" data-translate="nav.home">Home</a>
+                <a href="../../index.html#concept" class="nav-link" data-translate="nav.concept">Concept</a>
+                <a href="../../index.html#goals" class="nav-link" data-translate="nav.goals">Goals</a>
+                <a href="../../index.html#modules" class="nav-link" data-translate="nav.modules">Modules</a>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="ru">RU</button>
+                </div>
+                <button class="demo-btn" data-translate="nav.demo">Request Demo</button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="module-main">
+        <!-- Module Header -->
+        <section class="module-header">
+            <div class="container">
+                <div class="module-hero">
+                    <div class="module-title-section">
+                        <h1 class="module-title">AirControl</h1>
+                    </div>
+                    <div class="module-description-section">
+                        <p class="module-tagline" data-translate="modules.control.tagline">Comprehensive project oversight through AI-powered monitoring and control systems</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Chat Interface -->
+        <section class="ai-chat-section">
+            <div class="container">
+                <div class="chat-container">
+                    <div class="chat-title-section">
+                        <h2>AirControl Assistant</h2>
+                        <p class="chat-subtitle">Ваш персональный помощник по контролю проектов</p>
+                    </div>
+                    <div class="chat-interface">
+                        <div class="chat-header">
+                            <div class="chat-avatar">
+                                <div class="avatar-icon">🤖</div>
+                            </div>
+                            <div class="chat-info">
+                                <h3>AirControl</h3>
+                                <p data-translate="chat.status">Online • Ready to help</p>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message assistant-message">
+                                <div class="message-avatar">🤖</div>
+                                <div class="message-content">
+                                    <p data-translate="modules.control.welcome">Welcome to AirControl! I'm your AI assistant ready to help you with project oversight, monitoring, and control systems. How can I assist you today?</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <input type="text" class="chat-input" data-translate-placeholder="chat.placeholder" placeholder="Type your message..." id="chatInput">
+                            <button class="chat-send" id="chatSend">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module Subsections -->
+        <section class="module-subsections">
+            <div class="container">
+                <div class="subsection-tabs">
+                    <button class="tab-button active" data-translate="modules.control.tabs.audit">Project Audit</button>
+                    <button class="tab-button" data-translate="modules.control.tabs.iot">IoT Monitoring</button>
+                    <button class="tab-button" data-translate="modules.control.tabs.drone">Drone Surveillance</button>
+                    <button class="tab-button" data-translate="modules.control.tabs.risk">Risk Analysis</button>
+                    <button class="tab-button" data-translate="modules.control.tabs.reporting">Reporting</button>
+                </div>
+                
+                <div class="subsection-content">
+                    <!-- Project Audit Tab -->
+                    <div class="subsection-panel active">
+                        <h2 data-translate="modules.control.audit.title">AI-Powered Project Auditing</h2>
+                        <p data-translate="modules.control.audit.description">Представляем революционную систему аудита проектов на базе искусственного интеллекта. AirControl автоматически анализирует каждый аспект вашего строительного проекта, выявляя потенциальные проблемы до их возникновения и обеспечивая полное соответствие стандартам качества. Система работает 24/7, предоставляя непрерывный мониторинг прогресса и мгновенные уведомления о любых отклонениях от плана.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.audit.compliance.title">Compliance Monitoring</h3>
+                                <p data-translate="modules.control.audit.compliance.desc">Automatic verification of regulatory compliance and building codes adherence throughout construction phases.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.audit.compliance.tag1">Real-time checks</span>
+                                    <span class="benefit-tag" data-translate="modules.control.audit.compliance.tag2">Automated alerts</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.audit.progress.title">Progress Tracking</h3>
+                                <p data-translate="modules.control.audit.progress.desc">AI-powered analysis of construction progress against planned timelines with predictive insights.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.audit.progress.tag1">Timeline analysis</span>
+                                    <span class="benefit-tag" data-translate="modules.control.audit.progress.tag2">Milestone tracking</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.audit.quality.title">Quality Assurance</h3>
+                                <p data-translate="modules.control.audit.quality.desc">Automated quality control checks using computer vision and sensor data to ensure construction standards.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.audit.quality.tag1">Vision analysis</span>
+                                    <span class="benefit-tag" data-translate="modules.control.audit.quality.tag2">Standard compliance</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- IoT Monitoring Tab -->
+                    <div class="subsection-panel">
+                        <h2 data-translate="modules.control.iot.title">Smart IoT Integration</h2>
+                        <p data-translate="modules.control.iot.description">Откройте новую эру интеллектуального строительства с нашими передовыми IoT-сенсорами. AirControl превращает вашу строительную площадку в умную экосистему, где каждый элемент оборудования, каждый параметр окружающей среды находится под постоянным мониторингом. Получайте предиктивные уведомления о необходимости обслуживания оборудования, отслеживайте погодные условия в режиме реального времени и обеспечивайте безопасность персонала через автоматические системы оповещения.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.iot.environmental.title">Environmental Monitoring</h3>
+                                <p data-translate="modules.control.iot.environmental.desc">Real-time tracking of temperature, humidity, air quality, and weather conditions affecting construction.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.iot.environmental.tag1">Weather tracking</span>
+                                    <span class="benefit-tag" data-translate="modules.control.iot.environmental.tag2">Air quality</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.iot.equipment.title">Equipment Status</h3>
+                                <p data-translate="modules.control.iot.equipment.desc">Continuous monitoring of construction equipment health, usage patterns, and maintenance needs.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.iot.equipment.tag1">Health monitoring</span>
+                                    <span class="benefit-tag" data-translate="modules.control.iot.equipment.tag2">Predictive maintenance</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.iot.safety.title">Safety Systems</h3>
+                                <p data-translate="modules.control.iot.safety.desc">Integrated safety monitoring with automatic alerts for hazardous conditions and emergency protocols.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.iot.safety.tag1">Hazard detection</span>
+                                    <span class="benefit-tag" data-translate="modules.control.iot.safety.tag2">Emergency alerts</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Drone Surveillance Tab -->
+                    <div class="subsection-panel">
+                        <h2 data-translate="modules.control.drone.title">Autonomous Drone Surveillance</h2>
+                        <p data-translate="modules.control.drone.description">Advanced aerial monitoring system using AI-powered drones for comprehensive site surveillance and progress documentation.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.drone.aerial.title">Aerial Progress Mapping</h3>
+                                <p data-translate="modules.control.drone.aerial.desc">Automated drone flights capturing high-resolution imagery for 3D progress mapping and comparison analysis.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.drone.aerial.tag1">3D mapping</span>
+                                    <span class="benefit-tag" data-translate="modules.control.drone.aerial.tag2">Progress comparison</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.drone.security.title">Site Security</h3>
+                                <p data-translate="modules.control.drone.security.desc">24/7 autonomous security patrols with AI-powered threat detection and unauthorized access monitoring.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.drone.security.tag1">24/7 monitoring</span>
+                                    <span class="benefit-tag" data-translate="modules.control.drone.security.tag2">Threat detection</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.drone.inspection.title">Remote Inspection</h3>
+                                <p data-translate="modules.control.drone.inspection.desc">Detailed inspection of hard-to-reach areas using specialized sensors and high-resolution cameras.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.drone.inspection.tag1">Remote access</span>
+                                    <span class="benefit-tag" data-translate="modules.control.drone.inspection.tag2">Detail analysis</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Risk Analysis Tab -->
+                    <div class="subsection-panel">
+                        <h2 data-translate="modules.control.risk.title">Predictive Risk Analysis</h2>
+                        <p data-translate="modules.control.risk.description">Advanced AI algorithms analyze multiple data sources to predict and prevent potential risks before they impact your project.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.risk.predictive.title">Predictive Analytics</h3>
+                                <p data-translate="modules.control.risk.predictive.desc">Machine learning models analyze historical and real-time data to predict potential project risks and delays.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.risk.predictive.tag1">ML algorithms</span>
+                                    <span class="benefit-tag" data-translate="modules.control.risk.predictive.tag2">Early warnings</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.risk.financial.title">Financial Risk Assessment</h3>
+                                <p data-translate="modules.control.risk.financial.desc">Comprehensive analysis of budget overruns, cost escalations, and financial exposure risks.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.risk.financial.tag1">Budget tracking</span>
+                                    <span class="benefit-tag" data-translate="modules.control.risk.financial.tag2">Cost analysis</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.risk.mitigation.title">Risk Mitigation</h3>
+                                <p data-translate="modules.control.risk.mitigation.desc">Automated recommendation system for risk mitigation strategies based on best practices and historical data.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.risk.mitigation.tag1">Auto recommendations</span>
+                                    <span class="benefit-tag" data-translate="modules.control.risk.mitigation.tag2">Best practices</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reporting Tab -->
+                    <div class="subsection-panel">
+                        <h2 data-translate="modules.control.reporting.title">Intelligent Reporting System</h2>
+                        <p data-translate="modules.control.reporting.description">Automated generation of comprehensive reports with real-time insights and stakeholder-specific dashboards.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.reporting.dashboard.title">Real-time Dashboards</h3>
+                                <p data-translate="modules.control.reporting.dashboard.desc">Interactive dashboards providing real-time visibility into all project aspects with customizable views for different stakeholders.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.reporting.dashboard.tag1">Real-time data</span>
+                                    <span class="benefit-tag" data-translate="modules.control.reporting.dashboard.tag2">Custom views</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.reporting.automated.title">Automated Reports</h3>
+                                <p data-translate="modules.control.reporting.automated.desc">Scheduled generation of progress reports, compliance summaries, and performance analytics with automatic distribution.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.reporting.automated.tag1">Scheduled delivery</span>
+                                    <span class="benefit-tag" data-translate="modules.control.reporting.automated.tag2">Auto distribution</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.control.reporting.analytics.title">Advanced Analytics</h3>
+                                <p data-translate="modules.control.reporting.analytics.desc">Deep analytical insights with trend analysis, performance benchmarking, and predictive forecasting.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.control.reporting.analytics.tag1">Trend analysis</span>
+                                    <span class="benefit-tag" data-translate="modules.control.reporting.analytics.tag2">Benchmarking</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Back to modules link -->
+    <footer class="module-footer">
+        <div class="container">
+            <a href="../../index.html#modules" class="back-link" data-translate="module.back">← Back to Modules</a>
+        </div>
+    </footer>
+
+    <script src="../../translations.js"></script>
+    <script src="module-translations.js"></script>
+    <script src="../../script.js"></script>
+    <script src="../module-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirChi — Central AI Orchestrator | Airchitect</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../module-styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1><a href="../../index.html">Airchitect</a></h1>
+            </div>
+            <div class="nav-menu">
+                <a href="../../index.html#intro" class="nav-link" data-translate="nav.home">Home</a>
+                <a href="../../index.html#concept" class="nav-link" data-translate="nav.concept">Concept</a>
+                <a href="../../index.html#goals" class="nav-link" data-translate="nav.goals">Goals</a>
+                <a href="../../index.html#modules" class="nav-link" data-translate="nav.modules">Modules</a>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="ru">RU</button>
+                </div>
+                <button class="demo-btn" data-translate="nav.demo">Request Demo</button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="module-main">
+        <!-- Module Header -->
+        <section class="module-header">
+            <div class="container">
+                <div class="module-hero">
+                    <div class="module-title-section">
+                        <h1 class="module-title">AirChi</h1>
+                    </div>
+                    <div class="module-description-section">
+                        <p class="module-tagline" data-translate="modules.chi.tagline">Central AI orchestrator that unifies all platform modules through intelligent conversation</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Chat Interface -->
+        <section class="ai-chat-section">
+            <div class="container">
+                <div class="chat-container">
+                    <div class="chat-title-section">
+                        <h2>AirChi Assistant</h2>
+                        <p class="chat-subtitle">Центральный ИИ-оркестратор платформы</p>
+                    </div>
+                    <div class="chat-interface">
+                        <div class="chat-header">
+                            <div class="chat-avatar">
+                                <div class="avatar-icon">🤖</div>
+                            </div>
+                            <div class="chat-info">
+                                <h3>AirChi</h3>
+                                <p data-translate="chat.status">Online • Ready to help</p>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message assistant-message">
+                                <div class="message-avatar">🤖</div>
+                                <div class="message-content">
+                                    <p data-translate="modules.chi.welcome">Welcome to AirChi! I'm your central AI orchestrator, connecting all Airchitect modules to provide unified construction project management. How can I assist you today?</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <input type="text" class="chat-input" data-translate-placeholder="chat.placeholder" placeholder="Type your message..." id="chatInput">
+                            <button class="chat-send" id="chatSend">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module Subsections -->
+        <section class="module-subsections">
+            <div class="container">
+                <div class="subsection-tabs">
+                    <button class="tab-button active" data-translate="modules.chi.tabs.nlp">NLP Interface</button>
+                    <button class="tab-button" data-translate="modules.chi.tabs.integration">Module Integration</button>
+                    <button class="tab-button" data-translate="modules.chi.tabs.workflow">Workflow Automation</button>
+                    <button class="tab-button" data-translate="modules.chi.tabs.analytics">Unified Analytics</button>
+                    <button class="tab-button" data-translate="modules.chi.tabs.personalization">Personalization</button>
+                </div>
+                
+                <div class="subsection-content">
+                    <!-- NLP Interface Tab -->
+                    <div class="subsection-panel active">
+                        <h2 data-translate="modules.chi.nlp.title">Natural Language Processing</h2>
+                        <p data-translate="modules.chi.nlp.description">Познакомьтесь с AirChi - вашим персональным ИИ-оркестратором, который революционизирует управление строительными проектами. Забудьте о сложных интерфейсах и запутанных меню - просто говорите с AirChi на естественном языке, и он мгновенно поймет ваши потребности. Система обладает глубоким пониманием строительной терминологии, норм и процессов, обеспечивая интуитивное взаимодействие со всеми модулями платформы Airchitect.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.nlp.understanding.title">Context Understanding</h3>
+                                <p data-translate="modules.chi.nlp.understanding.desc">Deep contextual understanding of construction projects, terminology, and processes for more accurate responses.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.nlp.understanding.tag1">Construction context</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.nlp.understanding.tag2">Technical terminology</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.nlp.multilingual.title">Multilingual Support</h3>
+                                <p data-translate="modules.chi.nlp.multilingual.desc">Seamless communication in multiple languages with real-time translation and localized construction knowledge.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.nlp.multilingual.tag1">Real-time translation</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.nlp.multilingual.tag2">Localized knowledge</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.nlp.voice.title">Voice Interface</h3>
+                                <p data-translate="modules.chi.nlp.voice.desc">Hands-free interaction through advanced speech recognition and synthesis for on-site convenience.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.nlp.voice.tag1">Speech recognition</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.nlp.voice.tag2">Hands-free operation</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Module Integration Tab -->
+                    <div class="subsection-panel">
+                        <h2 data-translate="modules.chi.integration.title">Seamless Module Integration</h2>
+                        <p data-translate="modules.chi.integration.description">Intelligent orchestration of all Airchitect modules, creating unified workflows and cross-module data sharing for comprehensive project management.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.integration.unified.title">Unified Interface</h3>
+                                <p data-translate="modules.chi.integration.unified.desc">Single point of access to all platform capabilities with consistent user experience across modules.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.integration.unified.tag1">Single interface</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.integration.unified.tag2">Consistent UX</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.integration.crossmodule.title">Cross-Module Communication</h3>
+                                <p data-translate="modules.chi.integration.crossmodule.desc">Intelligent data sharing and communication between modules for enhanced decision-making and automation.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.integration.crossmodule.tag1">Data sharing</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.integration.crossmodule.tag2">Smart automation</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.integration.orchestration.title">Workflow Orchestration</h3>
+                                <p data-translate="modules.chi.integration.orchestration.desc">Intelligent coordination of multi-module processes for complex construction workflows and project management.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.integration.orchestration.tag1">Process coordination</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.integration.orchestration.tag2">Complex workflows</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Workflow Automation Tab -->
+                    <div class="subsection-panel">
+                        <h2 data-translate="modules.chi.workflow.title">Intelligent Workflow Automation</h2>
+                        <p data-translate="modules.chi.workflow.description">Advanced automation engine that learns from user patterns and project requirements to create efficient, personalized workflows.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.workflow.learning.title">Adaptive Learning</h3>
+                                <p data-translate="modules.chi.workflow.learning.desc">Machine learning algorithms that adapt to your working patterns and preferences to optimize workflow efficiency.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.workflow.learning.tag1">Pattern recognition</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.workflow.learning.tag2">Adaptive optimization</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.workflow.automation.title">Process Automation</h3>
+                                <p data-translate="modules.chi.workflow.automation.desc">Automated execution of routine tasks and complex multi-step processes across all platform modules.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.workflow.automation.tag1">Task automation</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.workflow.automation.tag2">Multi-step processes</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.workflow.triggers.title">Smart Triggers</h3>
+                                <p data-translate="modules.chi.workflow.triggers.desc">Context-aware triggers that initiate appropriate actions based on project milestones, deadlines, and external events.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.workflow.triggers.tag1">Context awareness</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.workflow.triggers.tag2">Event-based actions</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Unified Analytics Tab -->
+                    <div class="subsection-panel">
+                        <h2 data-translate="modules.chi.analytics.title">Comprehensive Analytics Dashboard</h2>
+                        <p data-translate="modules.chi.analytics.description">Unified analytics platform that aggregates data from all modules to provide comprehensive project insights and predictive intelligence.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.analytics.aggregation.title">Data Aggregation</h3>
+                                <p data-translate="modules.chi.analytics.aggregation.desc">Intelligent aggregation of data from all platform modules into unified dashboards and reports.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.analytics.aggregation.tag1">Unified dashboards</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.analytics.aggregation.tag2">Cross-module insights</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.analytics.predictive.title">Predictive Intelligence</h3>
+                                <p data-translate="modules.chi.analytics.predictive.desc">Advanced predictive analytics that forecast project outcomes, risks, and optimization opportunities.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.analytics.predictive.tag1">Outcome forecasting</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.analytics.predictive.tag2">Risk prediction</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.analytics.realtime.title">Real-time Monitoring</h3>
+                                <p data-translate="modules.chi.analytics.realtime.desc">Live monitoring of all project aspects with instant alerts and actionable recommendations.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.analytics.realtime.tag1">Live monitoring</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.analytics.realtime.tag2">Instant alerts</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Personalization Tab -->
+                    <div class="subsection-panel">
+                        <h2 data-translate="modules.chi.personalization.title">Intelligent Personalization</h2>
+                        <p data-translate="modules.chi.personalization.description">AI-driven personalization that adapts the platform experience to individual users, roles, and project requirements for maximum efficiency.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.personalization.profiles.title">User Profiles</h3>
+                                <p data-translate="modules.chi.personalization.profiles.desc">Dynamic user profiles that learn from behavior patterns to provide personalized experiences and recommendations.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.personalization.profiles.tag1">Behavior learning</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.personalization.profiles.tag2">Personal recommendations</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.personalization.rolebase.title">Role-Based Customization</h3>
+                                <p data-translate="modules.chi.personalization.rolebase.desc">Customized interfaces and workflows based on user roles, responsibilities, and project involvement.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.personalization.rolebase.tag1">Role-based UI</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.personalization.rolebase.tag2">Tailored workflows</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.chi.personalization.adaptive.title">Adaptive Interface</h3>
+                                <p data-translate="modules.chi.personalization.adaptive.desc">Self-adapting interface that evolves based on usage patterns and project phases for optimal user experience.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.chi.personalization.adaptive.tag1">Self-adapting UI</span>
+                                    <span class="benefit-tag" data-translate="modules.chi.personalization.adaptive.tag2">Usage optimization</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Back to modules link -->
+    <footer class="module-footer">
+        <div class="container">
+            <a href="../../index.html#modules" class="back-link" data-translate="module.back">← Back to Modules</a>
+        </div>
+    </footer>
+
+    <script src="../../translations.js"></script>
+    <script src="module-translations.js"></script>
+    <script src="../../script.js"></script>
+    <script src="../module-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirMarket — Intelligent Marketplace Integration | Airchitect</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../module-styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1><a href="../../index.html">Airchitect</a></h1>
+            </div>
+            <div class="nav-menu">
+                <a href="../../index.html#intro" class="nav-link" data-translate="nav.home">Home</a>
+                <a href="../../index.html#concept" class="nav-link" data-translate="nav.concept">Concept</a>
+                <a href="../../index.html#goals" class="nav-link" data-translate="nav.goals">Goals</a>
+                <a href="../../index.html#modules" class="nav-link" data-translate="nav.modules">Modules</a>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="ru">RU</button>
+                </div>
+                <button class="demo-btn" data-translate="nav.demo">Request Demo</button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="module-main">
+        <!-- Module Header -->
+        <section class="module-header">
+            <div class="container">
+                <div class="module-hero">
+                    <div class="module-title-section">
+                        <h1 class="module-title">AirMarket</h1>
+                    </div>
+                    <div class="module-description-section">
+                        <p class="module-tagline" data-translate="modules.market.tagline">Intelligent marketplace integration for automated procurement and vendor management</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Chat Interface -->
+        <section class="ai-chat-section">
+            <div class="container">
+                <div class="chat-container">
+                    <div class="chat-title-section">
+                        <h2>AirMarket Assistant</h2>
+                        <p class="chat-subtitle">Ваш персональный помощник по закупкам и тендерам</p>
+                    </div>
+                    <div class="chat-interface">
+                        <div class="chat-header">
+                            <div class="chat-avatar">
+                                <div class="avatar-icon">🤖</div>
+                            </div>
+                            <div class="chat-info">
+                                <h3>AirMarket</h3>
+                                <p data-translate="chat.status">Online • Ready to help</p>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message assistant-message">
+                                <div class="message-avatar">🤖</div>
+                                <div class="message-content">
+                                    <p data-translate="modules.market.welcome">Welcome to AirMarket! I'm your AI assistant ready to help you with procurement, tender management, and vendor optimization. How can I assist you today?</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <input type="text" class="chat-input" data-translate-placeholder="chat.placeholder" placeholder="Type your message..." id="chatInput">
+                            <button class="chat-send" id="chatSend">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module Subsections -->
+        <section class="module-subsections">
+            <div class="container">
+                <div class="subsection-tabs">
+                    <button class="tab-button active" data-translate="modules.market.tabs.tender">Tender Search</button>
+                    <button class="tab-button" data-translate="modules.market.tabs.equipment">Equipment Matching</button>
+                    <button class="tab-button" data-translate="modules.market.tabs.vendor">Vendor Management</button>
+                    <button class="tab-button" data-translate="modules.market.tabs.application">Auto Applications</button>
+                    <button class="tab-button" data-translate="modules.market.tabs.procurement">Procurement</button>
+                </div>
+                
+                <div class="subsection-content">
+                    <!-- Tender Search Tab -->
+                    <div class="subsection-panel active">
+                        <h2 data-translate="modules.market.tender.title">Intelligent Tender Discovery</h2>
+                        <p data-translate="modules.market.tender.description">Никогда больше не упускайте выгодные тендеры! AirMarket революционизирует процесс поиска и участия в государственных и частных тендерах. Наша система искусственного интеллекта сканирует сотни тендерных площадок круглосуточно, мгновенно выявляя возможности, которые идеально подходят под профиль и возможности вашей компании. Получайте персонализированные уведомления о самых перспективных тендерах с расчетом вероятности победы.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.tender.automated.title">Automated Scanning</h3>
+                                <p data-translate="modules.market.tender.automated.desc">Continuous monitoring of government and private tender platforms with intelligent filtering based on your criteria.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.tender.automated.tag1">24/7 monitoring</span>
+                                    <span class="benefit-tag" data-translate="modules.market.tender.automated.tag2">Smart filtering</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.tender.matching.title">Opportunity Matching</h3>
+                                <p data-translate="modules.market.tender.matching.desc">AI algorithms analyze tender requirements against your company profile to identify optimal opportunities.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.tender.matching.tag1">Profile matching</span>
+                                    <span class="benefit-tag" data-translate="modules.market.tender.matching.tag2">Success scoring</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.tender.alerts.title">Smart Alerts</h3>
+                                <p data-translate="modules.market.tender.alerts.desc">Instant notifications for high-priority tenders with deadline tracking and submission reminders.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.tender.alerts.tag1">Priority alerts</span>
+                                    <span class="benefit-tag" data-translate="modules.market.tender.alerts.tag2">Deadline tracking</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Equipment Matching Tab -->
+                    <div class="subsection-panel">
+                        <h2 data-translate="modules.market.equipment.title">Smart Equipment Sourcing</h2>
+                        <p data-translate="modules.market.equipment.description">Advanced equipment matching system that finds optimal machinery, tools, and materials for your specific project requirements.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.equipment.catalog.title">Comprehensive Catalog</h3>
+                                <p data-translate="modules.market.equipment.catalog.desc">Access to extensive equipment databases with detailed specifications, availability, and pricing information.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.equipment.catalog.tag1">Detailed specs</span>
+                                    <span class="benefit-tag" data-translate="modules.market.equipment.catalog.tag2">Real-time pricing</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.equipment.optimization.title">Cost Optimization</h3>
+                                <p data-translate="modules.market.equipment.optimization.desc">AI-driven analysis to find the most cost-effective equipment solutions without compromising quality or timeline.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.equipment.optimization.tag1">Cost analysis</span>
+                                    <span class="benefit-tag" data-translate="modules.market.equipment.optimization.tag2">Quality balance</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.equipment.logistics.title">Logistics Planning</h3>
+                                <p data-translate="modules.market.equipment.logistics.desc">Integrated logistics planning including delivery scheduling, site preparation, and equipment coordination.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.equipment.logistics.tag1">Delivery scheduling</span>
+                                    <span class="benefit-tag" data-translate="modules.market.equipment.logistics.tag2">Site coordination</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Vendor Management Tab -->
+                    <div class="subsection-panel">
+                        <h2 data-translate="modules.market.vendor.title">Intelligent Vendor Management</h2>
+                        <p data-translate="modules.market.vendor.description">Comprehensive vendor relationship management with performance tracking, risk assessment, and automated communications.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.vendor.database.title">Vendor Database</h3>
+                                <p data-translate="modules.market.vendor.database.desc">Centralized database of vetted vendors with performance history, capabilities, and reliability ratings.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.vendor.database.tag1">Performance history</span>
+                                    <span class="benefit-tag" data-translate="modules.market.vendor.database.tag2">Reliability ratings</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.vendor.evaluation.title">Performance Evaluation</h3>
+                                <p data-translate="modules.market.vendor.evaluation.desc">Continuous assessment of vendor performance with automated scoring and feedback collection.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.vendor.evaluation.tag1">Auto scoring</span>
+                                    <span class="benefit-tag" data-translate="modules.market.vendor.evaluation.tag2">Feedback system</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.vendor.communication.title">Communication Hub</h3>
+                                <p data-translate="modules.market.vendor.communication.desc">Centralized communication platform with automated follow-ups, document sharing, and negotiation tracking.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.vendor.communication.tag1">Auto follow-ups</span>
+                                    <span class="benefit-tag" data-translate="modules.market.vendor.communication.tag2">Document sharing</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Auto Applications Tab -->
+                    <div class="subsection-panel">
+                        <h2 data-translate="modules.market.application.title">Automated Application Generation</h2>
+                        <p data-translate="modules.market.application.description">AI-powered system that generates professional tender applications and proposals with customized content and optimal formatting.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.application.generation.title">Smart Generation</h3>
+                                <p data-translate="modules.market.application.generation.desc">Automated creation of tender responses using AI to analyze requirements and generate tailored proposals.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.application.generation.tag1">AI writing</span>
+                                    <span class="benefit-tag" data-translate="modules.market.application.generation.tag2">Tailored content</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.application.compliance.title">Compliance Check</h3>
+                                <p data-translate="modules.market.application.compliance.desc">Automatic verification of application completeness and compliance with tender requirements and regulations.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.application.compliance.tag1">Completeness check</span>
+                                    <span class="benefit-tag" data-translate="modules.market.application.compliance.tag2">Regulation compliance</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.application.optimization.title">Success Optimization</h3>
+                                <p data-translate="modules.market.application.optimization.desc">Analysis of successful bids to optimize application structure, pricing, and positioning for maximum win probability.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.application.optimization.tag1">Win analysis</span>
+                                    <span class="benefit-tag" data-translate="modules.market.application.optimization.tag2">Optimal positioning</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Procurement Tab -->
+                    <div class="subsection-panel">
+                        <h2 data-translate="modules.market.procurement.title">Strategic Procurement Management</h2>
+                        <p data-translate="modules.market.procurement.description">End-to-end procurement automation with contract management, order tracking, and supplier relationship optimization.</p>
+                        
+                        <div class="feature-grid">
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.procurement.automation.title">Process Automation</h3>
+                                <p data-translate="modules.market.procurement.automation.desc">Streamlined procurement workflows with automated approvals, purchase orders, and contract management.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.procurement.automation.tag1">Workflow automation</span>
+                                    <span class="benefit-tag" data-translate="modules.market.procurement.automation.tag2">Auto approvals</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.procurement.tracking.title">Order Tracking</h3>
+                                <p data-translate="modules.market.procurement.tracking.desc">Real-time tracking of orders, deliveries, and inventory levels with predictive restocking alerts.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.procurement.tracking.tag1">Real-time tracking</span>
+                                    <span class="benefit-tag" data-translate="modules.market.procurement.tracking.tag2">Predictive alerts</span>
+                                </div>
+                            </div>
+                            
+                            <div class="feature-card">
+                                <h3 data-translate="modules.market.procurement.analytics.title">Procurement Analytics</h3>
+                                <p data-translate="modules.market.procurement.analytics.desc">Comprehensive analytics on spending patterns, supplier performance, and cost optimization opportunities.</p>
+                                <div class="feature-benefits">
+                                    <span class="benefit-tag" data-translate="modules.market.procurement.analytics.tag1">Spending analysis</span>
+                                    <span class="benefit-tag" data-translate="modules.market.procurement.analytics.tag2">Cost optimization</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Back to modules link -->
+    <footer class="module-footer">
+        <div class="container">
+            <a href="../../index.html#modules" class="back-link" data-translate="module.back">← Back to Modules</a>
+        </div>
+    </footer>
+
+    <script src="../../translations.js"></script>
+    <script src="module-translations.js"></script>
+    <script src="../../script.js"></script>
+    <script src="../module-script.js"></script>
+</body>
+</html>

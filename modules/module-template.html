@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{MODULE_TITLE}} — Airchitect</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="module-styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1><a href="../index.html">Airchitect</a></h1>
+            </div>
+            <div class="nav-menu">
+                <a href="../index.html#intro" class="nav-link" data-translate="nav.home">Home</a>
+                <a href="../index.html#concept" class="nav-link" data-translate="nav.concept">Concept</a>
+                <a href="../index.html#goals" class="nav-link" data-translate="nav.goals">Goals</a>
+                <a href="../index.html#modules" class="nav-link" data-translate="nav.modules">Modules</a>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="ru">RU</button>
+                </div>
+                <button class="demo-btn" data-translate="nav.demo">Request Demo</button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="module-main">
+        <!-- Module Header -->
+        <section class="module-header">
+            <div class="container">
+                <div class="module-hero">
+                    <div class="module-icon">{{MODULE_ICON}}</div>
+                    <h1 class="module-title">{{MODULE_NAME}}</h1>
+                    <p class="module-tagline" data-translate="modules.{{MODULE_KEY}}.tagline">{{MODULE_TAGLINE}}</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Chat Interface -->
+        <section class="ai-chat-section">
+            <div class="container">
+                <div class="chat-interface">
+                    <div class="chat-header">
+                        <div class="chat-avatar">
+                            <div class="avatar-icon">🤖</div>
+                        </div>
+                        <div class="chat-info">
+                            <h3 data-translate="chat.assistant">AI Assistant</h3>
+                            <p data-translate="chat.status">Online • Ready to help</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message assistant-message">
+                            <div class="message-avatar">🤖</div>
+                            <div class="message-content">
+                                <p data-translate="modules.{{MODULE_KEY}}.welcome">Welcome to {{MODULE_NAME}}! I'm your AI assistant ready to help you with {{MODULE_FOCUS}}. How can I assist you today?</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-container">
+                        <input type="text" class="chat-input" data-translate-placeholder="chat.placeholder" placeholder="Type your message..." id="chatInput">
+                        <button class="chat-send" id="chatSend">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module Subsections -->
+        <section class="module-subsections">
+            <div class="container">
+                <div class="subsection-tabs">
+                    {{SUBSECTION_TABS}}
+                </div>
+                
+                <div class="subsection-content">
+                    {{SUBSECTION_CONTENT}}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Back to modules link -->
+    <footer class="module-footer">
+        <div class="container">
+            <a href="../index.html#modules" class="back-link" data-translate="module.back">← Back to Modules</a>
+        </div>
+    </footer>
+
+    <script src="../translations.js"></script>
+    <script src="module-translations.js"></script>
+    <script src="../script.js"></script>
+    <script src="module-script.js"></script>
+</body>
+</html>

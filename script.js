@@ -91,9 +91,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const moduleCards = document.querySelectorAll('.module-card');
     moduleCards.forEach(card => {
         card.addEventListener('click', function() {
+            const moduleData = this.dataset.module;
             const moduleName = this.querySelector('.module-title').textContent;
-            highlightModule(moduleName);
+            
+            // Navigate to module page
+            if (moduleData) {
+                window.location.href = `modules/${moduleData}/index.html`;
+            } else {
+                highlightModule(moduleName);
+            }
         });
+        
+        // Add cursor pointer style
+        card.style.cursor = 'pointer';
     });
 
     function highlightModule(moduleName) {

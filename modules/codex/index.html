@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirCodex — Intelligent Knowledge Base | Airchitect</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../module-styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1><a href="../../index.html">Airchitect</a></h1>
+            </div>
+            <div class="nav-menu">
+                <a href="../../index.html#intro" class="nav-link" data-translate="nav.home">Home</a>
+                <a href="../../index.html#concept" class="nav-link" data-translate="nav.concept">Concept</a>
+                <a href="../../index.html#goals" class="nav-link" data-translate="nav.goals">Goals</a>
+                <a href="../../index.html#modules" class="nav-link" data-translate="nav.modules">Modules</a>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">EN</button>
+                    <button class="lang-btn" data-lang="ru">RU</button>
+                </div>
+                <button class="demo-btn" data-translate="nav.demo">Request Demo</button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="module-main">
+        <section class="module-header">
+            <div class="container">
+                <div class="module-hero">
+                    <div class="module-title-section">
+                        <h1 class="module-title">AirCodex</h1>
+                    </div>
+                    <div class="module-description-section">
+                        <p class="module-tagline">Intelligent knowledge base with advanced search across construction codes and standards</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="ai-chat-section">
+            <div class="container">
+                <div class="chat-container">
+                    <div class="chat-title-section">
+                        <h2>AirCodex Assistant</h2>
+                        <p class="chat-subtitle">База знаний строительных кодексов</p>
+                    </div>
+                    <div class="chat-interface">
+                        <div class="chat-header">
+                            <div class="chat-avatar">
+                                <div class="avatar-icon">🤖</div>
+                            </div>
+                            <div class="chat-info">
+                                <h3>AirCodex</h3>
+                                <p data-translate="chat.status">Online • Ready to help</p>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message assistant-message">
+                                <div class="message-avatar">🤖</div>
+                                <div class="message-content">
+                                    <p>Welcome to AirCodex! I'm your AI assistant for construction codes, standards, and regulations. How can I help you find the information you need?</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input-container">
+                            <input type="text" class="chat-input" data-translate-placeholder="chat.placeholder" placeholder="Type your message..." id="chatInput">
+                            <button class="chat-send" id="chatSend">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="module-subsections">
+            <div class="container">
+                <div class="subsection-tabs">
+                    <button class="tab-button active">Code Search</button>
+                    <button class="tab-button">SNiP Integration</button>
+                    <button class="tab-button">GOST Compliance</button>
+                    <button class="tab-button">International Standards</button>
+                </div>
+                
+                <div class="subsection-content">
+                    <div class="subsection-panel active">
+                        <h2>Advanced Code Search</h2>
+                        <p>Intelligent search across construction codes, building standards, and regulatory requirements.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="module-footer">
+        <div class="container">
+            <a href="../../index.html#modules" class="back-link" data-translate="module.back">← Back to Modules</a>
+        </div>
+    </footer>
+
+    <script src="../../translations.js"></script>
+    <script src="module-translations.js"></script>
+    <script src="../../script.js"></script>
+    <script src="../module-script.js"></script>
+</body>
+</html>
