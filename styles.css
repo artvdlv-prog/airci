@@ -1003,6 +1003,152 @@ body {
 }
 
 
+/* Enhanced Mobile Optimization */
+@media (max-width: 768px) {
+    /* Hero section mobile optimization */
+    .intro-section {
+        padding: 80px 0 60px;
+    }
+
+    .intro-title {
+        font-size: clamp(32px, 8vw, 48px);
+        line-height: 1.1;
+        margin-bottom: 16px;
+    }
+
+    .intro-subtitle {
+        font-size: 18px;
+        line-height: 1.4;
+        margin-bottom: 32px;
+    }
+
+    /* Module icons grid mobile */
+    .intro-modules {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+        margin-top: 40px;
+    }
+
+    .module-icon-hero {
+        width: 48px;
+        height: 48px;
+    }
+
+    /* Features section mobile */
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .feature-card {
+        padding: 24px;
+        text-align: center;
+    }
+
+    /* Navigation dropdown mobile */
+    .nav-dropdown .dropdown-menu {
+        position: static;
+        display: none;
+        width: 100%;
+        background: transparent;
+        box-shadow: none;
+        border-radius: 0;
+        margin-top: 12px;
+    }
+
+    .nav-dropdown:hover .dropdown-menu,
+    .nav-dropdown .dropdown-menu.show {
+        display: block;
+    }
+
+    .dropdown-item {
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* CTA section mobile */
+    .cta-actions {
+        flex-direction: column;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .demo-btn,
+    .cta-secondary {
+        width: 100%;
+        max-width: 280px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra small screens */
+    .intro-modules {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .module-icon-hero {
+        width: 60px;
+        height: 60px;
+    }
+
+    .container {
+        padding: 0 16px;
+    }
+
+    /* Typography adjustments */
+    .intro-title {
+        font-size: clamp(28px, 7vw, 40px);
+    }
+
+    .intro-subtitle {
+        font-size: 16px;
+    }
+
+    .section-title {
+        font-size: clamp(24px, 6vw, 32px);
+    }
+
+    /* Navigation mobile menu improvements */
+    .nav-menu {
+        padding-top: 40px;
+    }
+
+    .nav-link {
+        font-size: 18px;
+        padding: 16px 0;
+    }
+
+    .language-switcher {
+        margin: 24px 0;
+    }
+
+    .demo-btn {
+        margin-top: 20px;
+        width: 200px;
+    }
+}
+
+/* Touch optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .module-icon-hero,
+    .feature-card,
+    .demo-btn {
+        transform: none !important;
+    }
+
+    .module-icon-hero:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+    }
+
+    .demo-btn:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+}
+
 /* Focus states for accessibility */
 .cta-primary:focus,
 .cta-secondary:focus,
