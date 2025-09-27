@@ -10,13 +10,25 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
-                <h1>Airchitect</h1>
+                <img src="Logo Airchitect.jpg" alt="Airchitect" class="nav-logo">
             </div>
             <div class="nav-menu">
                 <a href="#intro" class="nav-link" data-translate="nav.home">Home</a>
-                <a href="#concept" class="nav-link" data-translate="nav.concept">Concept</a>
-                <a href="#goals" class="nav-link" data-translate="nav.goals">Goals</a>
-                <a href="#modules" class="nav-link" data-translate="nav.modules">Modules</a>
+                <a href="projekty.html" class="nav-link" data-translate="nav.projects">Проекты</a>
+                <a href="tseli.html" class="nav-link" data-translate="nav.goals">Цели</a>
+                <div class="nav-dropdown">
+                    <a href="#modules" class="nav-link dropdown-toggle" data-translate="nav.modules">Modules</a>
+                    <div class="dropdown-menu">
+                        <a href="aircontrol.html" class="dropdown-item">AirControl</a>
+                        <a href="airmarket.html" class="dropdown-item">AirMarket</a>
+                        <a href="airlegal.html" class="dropdown-item">AirLegal</a>
+                        <a href="airflow.html" class="dropdown-item">AirFlow</a>
+                        <a href="aircodex.html" class="dropdown-item">AirCodex</a>
+                        <a href="airacademy.html" class="dropdown-item">AirAcademy</a>
+                        <a href="airsupport.html" class="dropdown-item">AirSupport</a>
+                        <a href="airchi.html" class="dropdown-item">AirChi</a>
+                    </div>
+                </div>
                 <div class="language-switcher">
                     <button class="lang-btn active" data-lang="en">EN</button>
                     <button class="lang-btn" data-lang="ru">RU</button>
@@ -32,179 +44,257 @@
     </nav>
 
     <main>
-        <!-- Intro/Landing Section -->
-        <section id="intro" class="intro-section">
-            <div class="container">
-                <div class="intro-content">
-                    <h1 class="intro-title">Airchitect</h1>
-                    <p class="intro-tagline" data-translate="intro.tagline">AI platform for automation, optimization, and compliance in construction.</p>
-                    <p class="intro-description" data-translate="intro.description">
-                        Revolutionizing the construction industry through unified AI-powered digital transformation. 
-                        Streamline operations, ensure compliance, and optimize every aspect of your construction projects 
-                        using AI agents as your digital assistants.
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Concept Section -->
-        <section id="concept" class="concept-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title" data-translate="concept.title">Ecosystem for Digital Construction</h2>
-                    <p class="section-subtitle" data-translate="concept.subtitle">
-                        A comprehensive platform that digitizes construction management and control, 
-                        connecting all stakeholders in one unified ecosystem.
-                    </p>
-                </div>
-                <div class="concept-grid">
-                    <div class="concept-card">
-                        <div class="concept-icon">🏛️</div>
-                        <h3 data-translate="concept.government.title">Government Contractors</h3>
-                        <p data-translate="concept.government.desc">Streamline public project compliance and documentation</p>
-                    </div>
-                    <div class="concept-card">
-                        <div class="concept-icon">🏗️</div>
-                        <h3 data-translate="concept.construction.title">Construction Companies</h3>
-                        <p data-translate="concept.construction.desc">Optimize operations for developers and contractors</p>
-                    </div>
-                    <div class="concept-card">
-                        <div class="concept-icon">⚖️</div>
-                        <h3 data-translate="concept.legal.title">Legal & HR Departments</h3>
-                        <p data-translate="concept.legal.desc">Automated compliance and human resource optimization</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Goals Section -->
-        <section id="goals" class="goals-section">
-            <div class="container">
-                <div class="goals-content">
-                    <h2 class="section-title" data-translate="goals.title">Our Mission</h2>
-                    <p class="goals-description" data-translate="goals.description">
-                        Create a unified platform that integrates AI tools for construction automation and compliance, 
-                        transforming how the industry operates through intelligent technology solutions. Our AI agents work as 
-                        digital assistants, providing construction companies with high-quality services and comprehensive support 
-                        across all project phases - from planning and procurement to execution and compliance monitoring. 
-                        These intelligent agents streamline workflows, reduce errors, ensure regulatory compliance, and deliver 
-                        actionable insights that help construction professionals make informed decisions faster.
-                    </p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Modules Section -->
-        <section id="modules" class="modules-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title" data-translate="modules.title">AI-Powered Modules</h2>
-                    <p class="section-subtitle" data-translate="modules.subtitle">Seven intelligent modules working together to transform your construction operations</p>
-                </div>
-                <div class="modules-grid">
-                    <div class="module-card" data-module="control">
-                        <div class="module-header">
-                            <div class="module-icon">🎮</div>
-                            <h3 class="module-title">AirControl</h3>
+        <!-- Main Content Wrapper -->
+        <div class="main-wrapper">
+            <!-- Hero Section -->
+            <section id="intro" class="hero-section">
+                <div class="container">
+                    <div class="hero-wrapper">
+                        <div class="hero-content">
+                            <h1 class="hero-title">Стройте быстрее.</h1>
+                            <p class="hero-subtitle">Airchitect - лучший способ управления строительством инфраструктуры, от закупок до управления проектами.</p>
                         </div>
-                        <p class="module-description" data-translate="modules.control.desc">Comprehensive project oversight through AI-powered auditing, real-time IoT sensor integration, drone surveillance, and predictive risk analysis. Monitor construction progress, identify potential issues before they become critical, and maintain complete visibility across all project phases with automated reporting and alerts.</p>
-                        <div class="module-features">
-                            <span class="feature-tag" data-translate="modules.control.audit">Project Audit</span>
-                            <span class="feature-tag" data-translate="modules.control.iot">IoT Monitoring</span>
-                            <span class="feature-tag" data-translate="modules.control.risk">Risk Analysis</span>
-                        </div>
-                    </div>
-
-                    <div class="module-card" data-module="market">
-                        <div class="module-header">
-                            <div class="module-icon">🎯</div>
-                            <h3 class="module-title">AirMarket</h3>
-                        </div>
-                        <p class="module-description" data-translate="modules.market.desc">Intelligent marketplace integration that automatically searches for relevant tenders, matches optimal equipment and suppliers based on project requirements, and generates professional applications with AI assistance. Streamlines procurement processes and ensures competitive bidding with automated proposal creation and vendor evaluation.</p>
-                        <div class="module-features">
-                            <span class="feature-tag" data-translate="modules.market.tender">Tender Search</span>
-                            <span class="feature-tag" data-translate="modules.market.equipment">Equipment Match</span>
-                            <span class="feature-tag" data-translate="modules.market.auto">Auto Applications</span>
-                        </div>
-                    </div>
-
-                    <div class="module-card" data-module="legal">
-                        <div class="module-header">
-                            <div class="module-icon">⚖️</div>
-                            <h3 class="module-title">AirLegal</h3>
-                        </div>
-                        <p class="module-description" data-translate="modules.legal.desc">Advanced legal AI assistant that reviews contracts for risks and compliance issues, automatically generates claims and legal documents, monitors regulatory changes, and ensures all project activities meet legal requirements. Reduces legal costs and minimizes compliance risks through proactive monitoring and automated documentation.</p>
-                        <div class="module-features">
-                            <span class="feature-tag" data-translate="modules.legal.contract">Contract Review</span>
-                            <span class="feature-tag" data-translate="modules.legal.claims">Claims Generation</span>
-                            <span class="feature-tag" data-translate="modules.legal.monitor">Legal Monitor</span>
-                        </div>
-                    </div>
-
-                    <div class="module-card" data-module="flow">
-                        <div class="module-header">
-                            <div class="module-icon">📊</div>
-                            <h3 class="module-title">AirFlow</h3>
-                        </div>
-                        <p class="module-description" data-translate="modules.flow.desc">Workforce optimization through intelligent HR management, automated RACI matrix generation, and real-time process bottleneck identification. Optimizes team allocation, identifies workflow inefficiencies, and provides actionable insights for improving project delivery timelines and resource utilization.</p>
-                        <div class="module-features">
-                            <span class="feature-tag" data-translate="modules.flow.hr">HR Optimization</span>
-                            <span class="feature-tag" data-translate="modules.flow.raci">RACI Matrices</span>
-                            <span class="feature-tag" data-translate="modules.flow.bottleneck">Bottleneck Detection</span>
-                        </div>
-                    </div>
-
-                    <div class="module-card" data-module="codex">
-                        <div class="module-header">
-                            <div class="module-icon">📚</div>
-                            <h3 class="module-title">AirCodex</h3>
-                        </div>
-                        <p class="module-description" data-translate="modules.codex.desc">Intelligent knowledge base with advanced search capabilities across all construction codes, standards, and regulations including SNiP, GOST, and international building codes. Provides instant access to relevant regulations, compliance requirements, and technical specifications with contextual recommendations for your specific projects.</p>
-                        <div class="module-features">
-                            <span class="feature-tag" data-translate="modules.codex.search">Code Search</span>
-                            <span class="feature-tag" data-translate="modules.codex.snip">SNiP Integration</span>
-                            <span class="feature-tag" data-translate="modules.codex.gost">GOST Compliance</span>
-                        </div>
-                    </div>
-
-                    <div class="module-card" data-module="academy">
-                        <div class="module-header">
-                            <div class="module-icon">🎓</div>
-                            <h3 class="module-title">AirAcademy</h3>
-                        </div>
-                        <p class="module-description" data-translate="modules.academy.desc">Immersive learning platform combining VR training experiences with comprehensive online education covering BIM technologies, legal compliance, safety protocols, and technical skills. Provides personalized learning paths, certification tracking, and hands-on simulation training for construction professionals at all levels.</p>
-                        <div class="module-features">
-                            <span class="feature-tag" data-translate="modules.academy.vr">VR Training</span>
-                            <span class="feature-tag" data-translate="modules.academy.bim">BIM Education</span>
-                            <span class="feature-tag" data-translate="modules.academy.legal">Legal Support</span>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- AirChi Section -->
-        <section class="cta-section">
-            <div class="container">
-                <div class="cta-content">
-                    <div class="airchi-module">
-                        <div class="module-header">
-                            <div class="module-icon">🤖</div>
-                            <h2 class="cta-title">AirChi</h2>
-                        </div>
-                        <p class="cta-description" data-translate="modules.ci.desc">
-                            Central AI orchestrator powered by advanced Natural Language Processing that seamlessly integrates all platform modules through conversational interfaces. Acts as your intelligent project companion, understanding natural language queries, coordinating cross-module workflows, and providing unified insights across all construction operations through a single, intuitive user experience.
-                        </p>
-                        <div class="module-features">
-                            <span class="feature-tag" data-translate="modules.ci.nlp">NLP Assistant</span>
-                            <span class="feature-tag" data-translate="modules.ci.ux">Unified UX</span>
-                            <span class="feature-tag" data-translate="modules.ci.integration">Module Integration</span>
+                        <div class="hero-modules">
+                            <div class="modules-grid-hero">
+                                <a href="aircontrol.html" class="module-icon-hero" data-module="control" title="AirControl">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <rect x="3" y="4" width="18" height="12" rx="2"/>
+                                        <circle cx="8" cy="10" r="2"/>
+                                        <path d="M14 8h4"/>
+                                        <path d="M14 10h4"/>
+                                        <path d="M14 12h4"/>
+                                        <path d="M12 18l2 2"/>
+                                        <path d="M12 18l-2 2"/>
+                                        <path d="M12 16v2"/>
+                                        <circle cx="8" cy="10" r="1"/>
+                                    </svg>
+                                </a>
+                                <a href="airmarket.html" class="module-icon-hero" data-module="market" title="AirMarket">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                                        <line x1="3" y1="6" x2="21" y2="6"/>
+                                        <circle cx="9" cy="12" r="1"/>
+                                        <circle cx="15" cy="12" r="1"/>
+                                        <path d="M8 16h8"/>
+                                        <path d="M9 16v2"/>
+                                        <path d="M15 16v2"/>
+                                    </svg>
+                                </a>
+                                <a href="airlegal.html" class="module-icon-hero" data-module="legal" title="AirLegal">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                                        <path d="M9 12l2 2 4-4"/>
+                                    </svg>
+                                </a>
+                                <a href="airflow.html" class="module-icon-hero" data-module="flow" title="AirFlow">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <circle cx="6" cy="6" r="3"/>
+                                        <circle cx="18" cy="6" r="3"/>
+                                        <circle cx="6" cy="18" r="3"/>
+                                        <circle cx="18" cy="18" r="3"/>
+                                        <path d="M9 6h6"/>
+                                        <path d="M6 9v6"/>
+                                        <path d="M18 9v6"/>
+                                        <path d="M9 18h6"/>
+                                    </svg>
+                                </a>
+                                <a href="aircodex.html" class="module-icon-hero" data-module="codex" title="AirCodex">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+                                        <path d="M9 9h5"/>
+                                        <path d="M9 13h5"/>
+                                        <path d="M9 17h3"/>
+                                        <circle cx="11" cy="6" r="1"/>
+                                    </svg>
+                                </a>
+                                <a href="airacademy.html" class="module-icon-hero" data-module="academy" title="AirAcademy">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M12 3L2 8l10 5 10-5-10-5z"/>
+                                        <path d="M6 13v5c3 3 9 3 12 0v-5"/>
+                                        <circle cx="8" cy="16" r="1"/>
+                                        <circle cx="16" cy="16" r="1"/>
+                                        <path d="M12 13v3"/>
+                                    </svg>
+                                </a>
+                                <a href="airsupport.html" class="module-icon-hero" data-module="support" title="AirSupport">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                                        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                                        <circle cx="12" cy="17" r="1"/>
+                                    </svg>
+                                </a>
+                                <a href="airchi.html" class="module-icon-hero" data-module="chi" title="AirChi">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <circle cx="12" cy="12" r="4"/>
+                                        <circle cx="12" cy="2" r="1"/>
+                                        <circle cx="12" cy="22" r="1"/>
+                                        <circle cx="22" cy="12" r="1"/>
+                                        <circle cx="2" cy="12" r="1"/>
+                                        <path d="M12 8v8"/>
+                                        <path d="M8 12h8"/>
+                                        <path d="M15 9l-6 6"/>
+                                        <path d="M9 9l6 6"/>
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+
+            <!-- Sequential Features Section -->
+            <section class="features-section">
+                <div class="container">
+                    <div class="sequential-features">
+                        <!-- AirControl -->
+                        <div class="feature-item">
+                            <div class="feature-icon-container">
+                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <rect x="3" y="4" width="18" height="12" rx="2"/>
+                                    <circle cx="8" cy="10" r="2"/>
+                                    <path d="M14 8h4"/>
+                                    <path d="M14 10h4"/>
+                                    <path d="M14 12h4"/>
+                                    <path d="M12 18l2 2"/>
+                                    <path d="M12 18l-2 2"/>
+                                    <path d="M12 16v2"/>
+                                    <circle cx="8" cy="10" r="1"/>
+                                </svg>
+                            </div>
+                            <div class="feature-content">
+                                <h3 class="feature-title">AirControl</h3>
+                                <p class="feature-description" data-translate="modules.control.desc">Comprehensive project oversight through AI-powered auditing, real-time IoT sensor integration, drone surveillance, and predictive risk analysis. Monitor construction progress, identify potential issues before they become critical, and maintain complete visibility across all project phases with automated reporting and alerts.</p>
+                            </div>
+                        </div>
+
+                        <!-- AirMarket -->
+                        <div class="feature-item">
+                            <div class="feature-icon-container">
+                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                                    <line x1="3" y1="6" x2="21" y2="6"/>
+                                    <circle cx="9" cy="12" r="1"/>
+                                    <circle cx="15" cy="12" r="1"/>
+                                    <path d="M8 16h8"/>
+                                    <path d="M9 16v2"/>
+                                    <path d="M15 16v2"/>
+                                </svg>
+                            </div>
+                            <div class="feature-content">
+                                <h3 class="feature-title">AirMarket</h3>
+                                <p class="feature-description" data-translate="modules.market.desc">Intelligent marketplace integration that automatically searches for relevant tenders, matches optimal equipment and suppliers based on project requirements, and generates professional applications with AI assistance. Streamlines procurement processes and ensures competitive bidding with automated proposal creation and vendor evaluation.</p>
+                            </div>
+                        </div>
+
+                        <!-- AirLegal -->
+                        <div class="feature-item">
+                            <div class="feature-icon-container">
+                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                                    <path d="M9 12l2 2 4-4"/>
+                                </svg>
+                            </div>
+                            <div class="feature-content">
+                                <h3 class="feature-title">AirLegal</h3>
+                                <p class="feature-description" data-translate="modules.legal.desc">Advanced legal AI assistant that reviews contracts for risks and compliance issues, automatically generates claims and legal documents, monitors regulatory changes, and ensures all project activities meet legal requirements. Reduces legal costs and minimizes compliance risks through proactive monitoring and automated documentation.</p>
+                            </div>
+                        </div>
+
+                        <!-- AirFlow -->
+                        <div class="feature-item">
+                            <div class="feature-icon-container">
+                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <circle cx="6" cy="6" r="3"/>
+                                    <circle cx="18" cy="6" r="3"/>
+                                    <circle cx="6" cy="18" r="3"/>
+                                    <circle cx="18" cy="18" r="3"/>
+                                    <path d="M9 6h6"/>
+                                    <path d="M6 9v6"/>
+                                    <path d="M18 9v6"/>
+                                    <path d="M9 18h6"/>
+                                </svg>
+                            </div>
+                            <div class="feature-content">
+                                <h3 class="feature-title">AirFlow</h3>
+                                <p class="feature-description" data-translate="modules.flow.desc">Workforce optimization through intelligent HR management, automated RACI matrix generation, and real-time process bottleneck identification. Optimizes team allocation, identifies workflow inefficiencies, and provides actionable insights for improving project delivery timelines and resource utilization.</p>
+                            </div>
+                        </div>
+
+                        <!-- AirCodex -->
+                        <div class="feature-item">
+                            <div class="feature-icon-container">
+                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+                                    <path d="M9 9h5"/>
+                                    <path d="M9 13h5"/>
+                                    <path d="M9 17h3"/>
+                                    <circle cx="11" cy="6" r="1"/>
+                                </svg>
+                            </div>
+                            <div class="feature-content">
+                                <h3 class="feature-title">AirCodex</h3>
+                                <p class="feature-description" data-translate="modules.codex.desc">Intelligent knowledge base with advanced search capabilities across all construction codes, standards, and regulations including SNiP, GOST, and international building codes. Provides instant access to relevant regulations, compliance requirements, and technical specifications with contextual recommendations for your specific projects.</p>
+                            </div>
+                        </div>
+
+                        <!-- AirAcademy -->
+                        <div class="feature-item">
+                            <div class="feature-icon-container">
+                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <path d="M12 3L2 8l10 5 10-5-10-5z"/>
+                                    <path d="M6 13v5c3 3 9 3 12 0v-5"/>
+                                    <circle cx="8" cy="16" r="1"/>
+                                    <circle cx="16" cy="16" r="1"/>
+                                    <path d="M12 13v3"/>
+                                </svg>
+                            </div>
+                            <div class="feature-content">
+                                <h3 class="feature-title">AirAcademy</h3>
+                                <p class="feature-description" data-translate="modules.academy.desc">Immersive learning platform combining VR training experiences with comprehensive online education covering BIM technologies, legal compliance, safety protocols, and technical skills. Provides personalized learning paths, certification tracking, and hands-on simulation training for construction professionals at all levels.</p>
+                            </div>
+                        </div>
+
+                        <!-- AirSupport -->
+                        <div class="feature-item">
+                            <div class="feature-icon-container">
+                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                                    <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                                    <circle cx="12" cy="17" r="1"/>
+                                </svg>
+                            </div>
+                            <div class="feature-content">
+                                <h3 class="feature-title">AirSupport</h3>
+                                <p class="feature-description">24/7 technical support and consultation services with expert construction professionals. Provides immediate assistance for project challenges, technical questions, and platform optimization through dedicated support channels and real-time collaboration tools.</p>
+                            </div>
+                        </div>
+
+                        <!-- AirChi -->
+                        <div class="feature-item">
+                            <div class="feature-icon-container">
+                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <circle cx="12" cy="12" r="4"/>
+                                    <circle cx="12" cy="2" r="1"/>
+                                    <circle cx="12" cy="22" r="1"/>
+                                    <circle cx="22" cy="12" r="1"/>
+                                    <circle cx="2" cy="12" r="1"/>
+                                    <path d="M12 8v8"/>
+                                    <path d="M8 12h8"/>
+                                    <path d="M15 9l-6 6"/>
+                                    <path d="M9 9l6 6"/>
+                                </svg>
+                            </div>
+                            <div class="feature-content">
+                                <h3 class="feature-title">AirChi</h3>
+                                <p class="feature-description" data-translate="modules.ci.desc">Central AI orchestrator powered by advanced Natural Language Processing that seamlessly integrates all platform modules through conversational interfaces. Acts as your intelligent project companion, understanding natural language queries, coordinating cross-module workflows, and providing unified insights across all construction operations through a single, intuitive user experience.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
 
 

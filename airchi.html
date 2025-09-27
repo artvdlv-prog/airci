@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirChi — Центральный ИИ-оркестратор | Airchitect</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="Logo Airchitect.jpg" alt="Airchitect" class="nav-logo">
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Главная</a>
+                <a href="projekty.html" class="nav-link">Проекты</a>
+                <a href="tseli.html" class="nav-link">Цели</a>
+                <div class="nav-dropdown">
+                    <a href="index.html#modules" class="nav-link dropdown-toggle">Модули</a>
+                    <div class="dropdown-menu">
+                        <a href="aircontrol.html" class="dropdown-item">AirControl</a>
+                        <a href="airmarket.html" class="dropdown-item">AirMarket</a>
+                        <a href="airlegal.html" class="dropdown-item">AirLegal</a>
+                        <a href="airflow.html" class="dropdown-item">AirFlow</a>
+                        <a href="aircodex.html" class="dropdown-item">AirCodex</a>
+                        <a href="airacademy.html" class="dropdown-item">AirAcademy</a>
+                        <a href="airsupport.html" class="dropdown-item">AirSupport</a>
+                        <a href="airchi.html" class="dropdown-item">AirChi</a>
+                    </div>
+                </div>
+                <a href="#demo" class="nav-link">Демо</a>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="ru">RU</button>
+                    <button class="lang-btn" data-lang="en">EN</button>
+                </div>
+                <button class="demo-btn">Запросить демо</button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="module-hero-section">
+            <div class="container">
+                <div class="module-hero-content">
+                    <div class="module-icon-large">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                            <circle cx="12" cy="12" r="4"/>
+                            <circle cx="12" cy="2" r="1"/>
+                            <circle cx="12" cy="22" r="1"/>
+                            <circle cx="22" cy="12" r="1"/>
+                            <circle cx="2" cy="12" r="1"/>
+                            <path d="M12 8v8"/>
+                            <path d="M8 12h8"/>
+                            <path d="M15 9l-6 6"/>
+                            <path d="M9 9l6 6"/>
+                        </svg>
+                    </div>
+                    <h1 class="module-title">AirChi</h1>
+                    <p class="module-subtitle">Центральный ИИ-оркестратор платформы</p>
+                    <p class="module-description">
+                        Продвинутая система обработки естественного языка, которая объединяет все модули платформы
+                        через разговорные интерфейсы. Ваш умный помощник проекта, понимающий естественную речь,
+                        координирующий рабочие процессы и предоставляющий единое представление всех операций.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="module-features-section">
+            <div class="container">
+                <h2 class="section-title">Ключевые возможности</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                                <path d="M13 8H7"/>
+                                <path d="M17 12H7"/>
+                            </svg>
+                        </div>
+                        <h3>Обработка естественного языка</h3>
+                        <p>Понимание и обработка запросов на русском и английском языках с высокой точностью</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <h3>Интеграция модулей</h3>
+                        <p>Единая точка доступа ко всем функциям платформы через один интерфейс</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"/>
+                                <circle cx="12" cy="12" r="9"/>
+                            </svg>
+                        </div>
+                        <h3>Автоматизация задач</h3>
+                        <p>Выполнение сложных многошаговых операций по голосовым и текстовым командам</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 3v18h18"/>
+                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                                <path d="M15 8h3.8v4"/>
+                            </svg>
+                        </div>
+                        <h3>Аналитические insights</h3>
+                        <p>Генерация отчетов и аналитики на основе данных всех модулей платформы</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <h3>Безопасность данных</h3>
+                        <p>Шифрование всех данных и соблюдение стандартов информационной безопасности</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                            </svg>
+                        </div>
+                        <h3>Персонализация</h3>
+                        <p>Адаптация к предпочтениям пользователя и особенностям рабочих процессов</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section id="demo" class="cta-section">
+            <div class="container">
+                <div class="cta-content">
+                    <h2 class="cta-title">Познакомьтесь с AirChi</h2>
+                    <p class="cta-description">
+                        Испытайте возможности центрального ИИ-помощника и узнайте, как он может
+                        упростить управление вашими строительными проектами.
+                    </p>
+                    <div class="cta-actions">
+                        <button class="demo-btn">Запросить демо</button>
+                        <a href="index.html" class="cta-secondary">Вернуться на главную</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
