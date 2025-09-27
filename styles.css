@@ -684,8 +684,10 @@ body {
 
 .module-hero-icon {
     flex-shrink: 0;
-    text-align: center;
-    max-width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    max-width: 400px;
 }
 
 .module-hero-text {
@@ -695,20 +697,21 @@ body {
 }
 
 .module-icon-large {
-    width: 80px;
-    height: 80px;
+    width: 64px;
+    height: 64px;
     background: white;
     border-radius: 16px;
     box-shadow: var(--shadow-lg);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 0 16px 0;
+    margin: 0;
+    flex-shrink: 0;
 }
 
 .module-icon-large svg {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     color: var(--primary-orange);
     stroke-width: 1;
 }
@@ -731,20 +734,20 @@ body {
 }
 
 .module-description-title {
-    font-size: clamp(28px, 4vw, 36px);
+    font-size: clamp(24px, 3.5vw, 32px);
     font-weight: 200;
     color: var(--text-primary);
     line-height: 1.2;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     letter-spacing: -0.5px;
 }
 
 .module-description {
-    font-size: 18px;
+    font-size: 16px;
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: 1.5;
     font-weight: 300;
-    max-width: 700px;
+    max-width: 600px;
     margin: 0;
 }
 
@@ -1131,6 +1134,9 @@ body {
     .module-hero-icon {
         order: -1;
         max-width: none;
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
     }
 
     /* Features section mobile */
