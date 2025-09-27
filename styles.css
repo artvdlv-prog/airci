@@ -310,9 +310,9 @@ body {
 }
 
 .demo-btn {
-    background: var(--text-primary);
-    color: white;
-    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--text-primary);
     padding: 12px 24px;
     border-radius: 24px;
     font-size: 15px;
@@ -321,11 +321,13 @@ body {
     letter-spacing: 0.5px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: var(--shadow-sm);
+    box-shadow: none;
 }
 
 .demo-btn:hover {
     background: var(--primary-orange);
+    border-color: var(--primary-orange);
+    color: white;
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
@@ -375,6 +377,60 @@ body {
 .lang-btn:hover:not(.active) {
     color: var(--text-primary);
     background-color: rgba(255, 255, 255, 0.8);
+}
+
+/* Language dropdown styles */
+.language-switcher.nav-dropdown .lang-current {
+    background: var(--gray-100);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 200;
+    color: var(--text-primary);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.language-switcher.nav-dropdown .lang-current::after {
+    content: '▼';
+    font-size: 10px;
+    transition: transform 0.3s ease;
+}
+
+.language-switcher.nav-dropdown:hover .lang-current::after {
+    transform: rotate(180deg);
+}
+
+.language-switcher .lang-dropdown {
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    min-width: 120px;
+    padding: 8px 0;
+}
+
+.language-switcher .lang-dropdown .lang-btn {
+    background: none;
+    border: none;
+    padding: 10px 16px;
+    width: 100%;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 200;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.language-switcher .lang-dropdown .lang-btn:hover {
+    background: var(--gray-50);
+    color: var(--primary-orange);
 }
 
 /* Main Wrapper */

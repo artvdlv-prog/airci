@@ -3,8 +3,14 @@ let currentLanguage = 'en';
 
 function switchLanguage(lang) {
     currentLanguage = lang;
-    
-    // Update active language button
+
+    // Update dropdown current language display
+    const langCurrent = document.querySelector('.lang-current');
+    if (langCurrent) {
+        langCurrent.textContent = lang.toUpperCase();
+    }
+
+    // Update active language button (for backward compatibility)
     document.querySelectorAll('.lang-btn').forEach(btn => {
         btn.classList.remove('active');
         if (btn.dataset.lang === lang) {
