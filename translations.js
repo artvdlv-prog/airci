@@ -152,7 +152,7 @@ const translations = {
             },
             collab: {
                 eyebrow: "One contract. Several professional perspectives.",
-                title: "AIRCHITECT helps you not only work with documents, but understand the details of each one.",
+                title: "The details of every document.",
                 lead1: "A single contract may call for different professional competencies.",
                 lead2: "Specialists help review a document from legal, contractual, financial and organizational points of view.",
                 cta: "How it works",
@@ -382,7 +382,7 @@ const translations = {
             },
             collab: {
                 eyebrow: "Один договор. Несколько профессиональных решений.",
-                title: "AIRCHITECT помогает не только работать с документами, но и понимать детали каждого документа.",
+                title: "Детали каждого документа.",
                 lead1: "При работе с одним договором могут потребоваться разные профессиональные компетенции.",
                 lead2: "Специалисты помогают рассмотреть документ с юридической, договорной, финансовой и организационной точек зрения.",
                 cta: "Как это работает",
