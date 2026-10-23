@@ -356,19 +356,8 @@ document.addEventListener('DOMContentLoaded', function() {
             renderHistory();
             renderRegistry();
 
-            // Question typed on a specialist card (?q=…): goes straight into the chat
-            const params = new URLSearchParams(location.search);
-            const incoming = (params.get('q') || '').trim();
-            if (incoming) {
-                input.value = incoming;
-                params.delete('q');
-                window.history.replaceState(null, '', `${location.pathname}?${params}${location.hash}`);
-            }
-
             if (!endpoint) {
                 chatRoot.querySelector('[data-chat-offline]').hidden = false;
-                form.querySelectorAll('textarea, input, button').forEach(el => { el.disabled = true; });
-                return;
             }
 
             input.addEventListener('keydown', e => {
@@ -410,6 +399,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 const text = input.value.trim();
                 if (busy || (!text && pendingFiles.length === 0)) return;
+
+                // No chat server yet: show the question and say so, without an imitated answer
+                if (!endpoint) {
+                    addMessage('user', text, pendingFiles.map(f => f.name));
+                    appendNotice(addMessage('assistant', ''), 'Специалист пока не подключён: ответ появится после подключения чата.');
+                    input.value = '';
+                    autoGrow();
+                    pendingFiles = [];
+                    renderPendingFiles();
+                    return;
+                }
 
                 busy = true;
                 sendButton.disabled = true;
@@ -474,8 +474,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     input.focus();
                 }
             });
-
-            if (incoming) form.requestSubmit();
 
             function greet() {
                 const title = local(item.title);
@@ -664,11 +662,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Specialist's workspace in a window over the page (staff.html in embed mode)
-        function openSpecialistWindow(item, url, question = '') {
+        function openSpecialistWindow(item, url) {
             const opener = document.activeElement;
             const title = local(item.title);
-            const embedUrl = url + (url.includes('?') ? '&' : '?') + 'embed=1'
-                + (question ? `&q=${encodeURIComponent(question)}` : '');
+            const embedUrl = url + (url.includes('?') ? '&' : '?') + 'embed=1';
 
             const win = document.createElement('div');
             win.className = 'home-window';
@@ -896,7 +893,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const li = document.createElement('li');
                 li.id = item.slug || item.id;
 
-                // Card: the title link covers the whole card, the question line sits above it
+                // Card: the title link covers the whole card
                 const card = document.createElement('div');
                 card.className = 'home-specialist';
 
@@ -922,15 +919,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     body.appendChild(text);
                 }
 
-                const ask = document.createElement('form');
-                ask.className = 'home-specialist__ask';
-                ask.innerHTML = '<input type="text" maxlength="2000" autocomplete="off">'
-                    + '<button type="submit"><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></button>';
-                const question = ask.querySelector('input');
-                question.placeholder = 'Ваш вопрос…';
-                question.setAttribute('aria-label', `Вопрос специалисту: ${local(item.title)}`);
-                ask.querySelector('button').setAttribute('aria-label', 'Отправить вопрос');
-                body.appendChild(ask);
+                const more = document.createElement('span');
+                more.className = 'home-specialist__more';
+                more.setAttribute('aria-hidden', 'true');
+                more.innerHTML = '<svg class="home-btn__arrow" viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg>';
+                body.appendChild(more);
 
                 card.append(icon, body);
                 li.appendChild(card);
@@ -946,18 +939,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         e.preventDefault();
                         openSpecialistWindow(item, url);
                     });
-                    ask.addEventListener('submit', e => {
-                        e.preventDefault();
-                        const text = question.value.trim();
-                        if (!text) {
-                            question.focus();
-                            return;
-                        }
-                        question.value = '';
-                        openSpecialistWindow(item, url, text);
-                    });
-                } else {
-                    ask.hidden = true;
                 }
             });
 
