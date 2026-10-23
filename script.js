@@ -356,6 +356,15 @@ document.addEventListener('DOMContentLoaded', function() {
             renderHistory();
             renderRegistry();
 
+            // Question typed on a specialist card (?q=…): goes straight into the chat
+            const params = new URLSearchParams(location.search);
+            const incoming = (params.get('q') || '').trim();
+            if (incoming) {
+                input.value = incoming;
+                params.delete('q');
+                window.history.replaceState(null, '', `${location.pathname}?${params}${location.hash}`);
+            }
+
             if (!endpoint) {
                 chatRoot.querySelector('[data-chat-offline]').hidden = false;
                 form.querySelectorAll('textarea, input, button').forEach(el => { el.disabled = true; });
@@ -465,6 +474,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     input.focus();
                 }
             });
+
+            if (incoming) form.requestSubmit();
 
             function greet() {
                 const title = local(item.title);
@@ -653,10 +664,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Specialist's workspace in a window over the page (staff.html in embed mode)
-        function openSpecialistWindow(item, url) {
+        function openSpecialistWindow(item, url, question = '') {
             const opener = document.activeElement;
             const title = local(item.title);
-            const embedUrl = url + (url.includes('?') ? '&' : '?') + 'embed=1';
+            const embedUrl = url + (url.includes('?') ? '&' : '?') + 'embed=1'
+                + (question ? `&q=${encodeURIComponent(question)}` : '');
 
             const win = document.createElement('div');
             win.className = 'home-window';
@@ -883,22 +895,24 @@ document.addEventListener('DOMContentLoaded', function() {
             specialists.forEach(item => {
                 const li = document.createElement('li');
                 li.id = item.slug || item.id;
-                const link = document.createElement('a');
-                link.className = 'home-specialist';
-                link.href = '#';
+
+                // Card: the title link covers the whole card, the question line sits above it
+                const card = document.createElement('div');
+                card.className = 'home-specialist';
 
                 const icon = document.createElement('span');
                 icon.className = 'home-specialist__icon';
                 icon.setAttribute('aria-hidden', 'true');
                 icon.innerHTML = specialistIcon(item);
 
-                const body = document.createElement('span');
+                const body = document.createElement('div');
                 body.className = 'home-specialist__body';
 
-                const title = document.createElement('span');
-                title.className = 'home-specialist__title';
-                title.textContent = local(item.title);
-                body.appendChild(title);
+                const link = document.createElement('a');
+                link.className = 'home-specialist__title';
+                link.href = '#';
+                link.textContent = local(item.title);
+                body.appendChild(link);
 
                 const description = local(item.description);
                 if (description) {
@@ -908,14 +922,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     body.appendChild(text);
                 }
 
-                const more = document.createElement('span');
-                more.className = 'home-specialist__more';
-                more.setAttribute('aria-hidden', 'true');
-                more.innerHTML = '<svg class="home-btn__arrow" viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg>';
-                body.appendChild(more);
+                const ask = document.createElement('form');
+                ask.className = 'home-specialist__ask';
+                ask.innerHTML = '<input type="text" maxlength="2000" autocomplete="off">'
+                    + '<button type="submit"><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></button>';
+                const question = ask.querySelector('input');
+                question.placeholder = 'Ваш вопрос…';
+                question.setAttribute('aria-label', `Вопрос специалисту: ${local(item.title)}`);
+                ask.querySelector('button').setAttribute('aria-label', 'Отправить вопрос');
+                body.appendChild(ask);
 
-                link.append(icon, body);
-                li.appendChild(link);
+                card.append(icon, body);
+                li.appendChild(card);
                 list.appendChild(li);
 
                 // One cabinet for all specialists: the route template points to the specialist's tab
@@ -928,6 +946,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         e.preventDefault();
                         openSpecialistWindow(item, url);
                     });
+                    ask.addEventListener('submit', e => {
+                        e.preventDefault();
+                        const text = question.value.trim();
+                        if (!text) {
+                            question.focus();
+                            return;
+                        }
+                        question.value = '';
+                        openSpecialistWindow(item, url, text);
+                    });
+                } else {
+                    ask.hidden = true;
                 }
             });
 

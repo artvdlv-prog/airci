@@ -1525,7 +1525,6 @@ body {
 
 .home-btn:focus-visible,
 .home-link:focus-visible,
-.home-specialist:focus-visible,
 .home-tech__item:focus-visible {
     outline: 2px solid var(--home-ink);
     outline-offset: 3px;
@@ -1840,12 +1839,75 @@ body {
     color: var(--home-muted);
 }
 
-.home-specialist__more {
-    display: inline-flex;
+/* The title link covers the whole card; the question line sits above it */
+.home-specialist {
+    position: relative;
+}
+
+.home-specialist__title {
+    display: block;
+    text-decoration: none;
+}
+
+.home-specialist__title::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+}
+
+.home-specialist:focus-within {
+    outline: 2px solid var(--home-ink);
+    outline-offset: 3px;
+}
+
+.home-specialist__ask {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     margin-top: auto;
-    padding-top: 18px;
-    color: var(--gray-400);
-    transition: color 0.3s ease;
+    padding-top: 16px;
+}
+
+.home-specialist__ask input {
+    flex: 1;
+    min-width: 0;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--home-line);
+    border-radius: 18px;
+    background: var(--gray-50);
+    font: inherit;
+    font-size: 13px;
+    color: var(--home-ink);
+    outline: none;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.home-specialist__ask input:focus {
+    border-color: var(--home-ink);
+    background: #ffffff;
+}
+
+.home-specialist__ask button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: #141414;
+    color: #ffffff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.home-specialist__ask button:hover {
+    background: var(--primary-orange);
 }
 
 /* Specialist opened by link (office.html#slug) */
@@ -1864,13 +1926,6 @@ body {
         transform: scale(1.06);
     }
 
-    .home-specialist:hover .home-specialist__more {
-        color: var(--home-ink);
-    }
-
-    .home-specialist:hover .home-btn__arrow {
-        transform: translateX(3px);
-    }
 
 }
 
@@ -3334,9 +3389,6 @@ body {
         font-size: 13px;
     }
 
-    .home-specialist__more {
-        padding-top: 10px;
-    }
 
     /* Collaboration scheme */
     .home-doc {
@@ -3999,6 +4051,24 @@ body {
 
     .demo-btn span {
         display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .home-specialist__ask {
+        padding-top: 12px;
+        gap: 4px;
+    }
+
+    .home-specialist__ask input {
+        height: 34px;
+        padding: 0 10px;
+        font-size: 16px; /* 16px stops iOS from zooming into the field */
+    }
+
+    .home-specialist__ask button {
+        width: 34px;
+        height: 34px;
     }
 }
 
