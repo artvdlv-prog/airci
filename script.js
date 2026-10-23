@@ -102,9 +102,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const navMenu = document.querySelector('.nav-menu');
 
     if (navToggle && navMenu) {
+        const setMenuOpen = open => {
+            navMenu.classList.toggle('active', open);
+            navToggle.classList.toggle('active', open);
+            // The page under the open menu does not scroll
+            document.documentElement.classList.toggle('nav-open', open);
+        };
+
         navToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-            navToggle.classList.toggle('active');
+            setMenuOpen(!navMenu.classList.contains('active'));
         });
 
         // Close mobile menu when clicking on nav links
@@ -113,8 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
             link.addEventListener('click', function() {
                 // Close menu only if it's not a dropdown toggle
                 if (!this.classList.contains('dropdown-toggle')) {
-                    navMenu.classList.remove('active');
-                    navToggle.classList.remove('active');
+                    setMenuOpen(false);
                 }
             });
         });
@@ -122,8 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Close mobile menu when clicking outside
         document.addEventListener('click', function(e) {
             if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
-                navMenu.classList.remove('active');
-                navToggle.classList.remove('active');
+                setMenuOpen(false);
             }
         });
     }

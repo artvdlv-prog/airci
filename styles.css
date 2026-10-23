@@ -3895,3 +3895,61 @@ body {
     }
 }
 
+/* ==========================================================================
+   Mobile header menu (last, overrides the older mobile navigation rules)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .nav-container {
+        height: 64px;
+    }
+
+    .nav-open,
+    .nav-open body {
+        overflow: hidden;
+    }
+
+    .nav-menu {
+        top: 64px;
+        height: calc(100vh - 64px);
+        height: calc(100dvh - 64px);
+        padding: 4px 20px 32px;
+        gap: 0;
+        align-items: stretch;
+        justify-content: flex-start;
+        overflow-y: auto;
+        background: #ffffff;
+        backdrop-filter: none;
+    }
+
+    .nav-menu .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--border-light);
+        font-size: 15px;
+        font-weight: 400;
+        letter-spacing: 0.06em;
+        text-align: left;
+        color: #141414;
+    }
+
+    .nav-menu .nav-link:not(.dropdown-toggle):hover::after {
+        display: none;
+    }
+
+    .home-registry__bar {
+        top: 64px;
+    }
+
+    .nav-menu .demo-btn {
+        width: 100%;
+        max-width: none;
+        height: 48px;
+        margin-top: 24px;
+        padding: 0;
+        font-size: 15px;
+    }
+}
+
