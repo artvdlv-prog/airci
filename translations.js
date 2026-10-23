@@ -205,7 +205,15 @@ const translations = {
                 codex: "Regulatory base",
                 academy: "Professional knowledge",
                 support: "Custom development",
-                chi: "Artificial intelligence"
+                chi: "Artificial intelligence",
+                controlDesc: "Deadlines, obligations and financial terms of a project.",
+                marketDesc: "Analysis of procurement documentation and participation terms.",
+                legalDesc: "Contracts, legal risks and counterparty checks.",
+                flowDesc: "Preparing, approving and organizing documents.",
+                codexDesc: "Legislation, building codes and standards.",
+                academyDesc: "Knowledge for construction company staff.",
+                supportDesc: "Adapting solutions to the company’s processes.",
+                chiDesc: "The technology behind AIRCHITECT specialists."
             },
             about: {
                 eyebrow: "About the company",
@@ -427,7 +435,15 @@ const translations = {
                 codex: "Нормативная база",
                 academy: "Профессиональные знания",
                 support: "Разработка под задачи компании",
-                chi: "Искусственный интеллект"
+                chi: "Искусственный интеллект",
+                controlDesc: "Сроки, обязательства и финансовые условия по объекту.",
+                marketDesc: "Анализ закупочной документации и условий участия.",
+                legalDesc: "Договоры, правовые риски и проверка контрагентов.",
+                flowDesc: "Подготовка, согласование и систематизация документов.",
+                codexDesc: "Законодательство, своды правил и стандарты.",
+                academyDesc: "Знания для сотрудников строительной компании.",
+                supportDesc: "Адаптация решений под процессы компании.",
+                chiDesc: "Технологическая основа специалистов AIRCHITECT."
             },
             about: {
                 eyebrow: "О компании",

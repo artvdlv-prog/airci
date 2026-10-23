@@ -40,14 +40,7 @@
                     </div>
                 </div>
                 <a href="company.html" class="nav-link" data-translate="nav.about">О компании</a>
-                <button class="demo-btn">Личный кабинет</button>
-                <div class="language-switcher nav-dropdown">
-                    <button class="lang-current nav-link dropdown-toggle">RU</button>
-                    <div class="dropdown-menu lang-dropdown">
-                        <button class="dropdown-item lang-btn" data-lang="ru">Русский</button>
-                        <button class="dropdown-item lang-btn" data-lang="en">English</button>
-                    </div>
-                </div>
+                <button class="demo-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0114 0"/></svg><span>Личный кабинет</span></button>
             </div>
             <div class="nav-toggle">
                 <span></span>
@@ -220,7 +213,7 @@
                 </div>
                 <ul class="home-products home-reveal">
                     <li class="home-product">
-                        <div class="home-media" data-arch-seed="office" data-image=""></div>
+                        <span class="home-product__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M3 12h18M11 12v2h2v-2"/></svg></span>
                         <div class="home-product__body">
                             <h3 class="home-product__title" data-translate="home.products.office.title">Цифровой проектный офис</h3>
                             <p class="home-product__code">AIRCHITECT OFFICE</p>
@@ -229,7 +222,7 @@
                         </div>
                     </li>
                     <li class="home-product">
-                        <div class="home-media" data-arch-seed="docs" data-image=""></div>
+                        <span class="home-product__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="8" y="3" width="12" height="15" rx="1"/><path d="M5 6v15h12"/><path d="M11 8h6M11 11h6M11 14h4"/></svg></span>
                         <div class="home-product__body">
                             <h3 class="home-product__title" data-translate="home.products.docs.title">Электронный документооборот</h3>
                             <p class="home-product__code">AIRCHITECT DOCS</p>
@@ -238,7 +231,7 @@
                         </div>
                     </li>
                     <li class="home-product">
-                        <div class="home-media" data-arch-seed="complex" data-image=""></div>
+                        <span class="home-product__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 16.5l9 5 9-5"/></svg></span>
                         <div class="home-product__body">
                             <h3 class="home-product__title" data-translate="home.products.complex.title">Комплексное решение</h3>
                             <p class="home-product__code">AIRCHITECT COMPLEX</p>
@@ -273,6 +266,7 @@
                             </span>
                             <span class="home-tech__name">AirControl</span>
                             <span class="home-tech__text" data-translate="home.tech.control">Строительные проекты</span>
+                            <span class="home-tech__desc" data-translate="home.tech.controlDesc">Сроки, обязательства и финансовые условия по объекту.</span>
                         </a>
                     </li>
                     <li>
@@ -290,6 +284,7 @@
                             </span>
                             <span class="home-tech__name">AirMarket</span>
                             <span class="home-tech__text" data-translate="home.tech.market">Закупки и тендеры</span>
+                            <span class="home-tech__desc" data-translate="home.tech.marketDesc">Анализ закупочной документации и условий участия.</span>
                         </a>
                     </li>
                     <li>
@@ -302,6 +297,7 @@
                             </span>
                             <span class="home-tech__name">AirLegal</span>
                             <span class="home-tech__text" data-translate="home.tech.legal">Юридические вопросы</span>
+                            <span class="home-tech__desc" data-translate="home.tech.legalDesc">Договоры, правовые риски и проверка контрагентов.</span>
                         </a>
                     </li>
                     <li>
@@ -320,6 +316,7 @@
                             </span>
                             <span class="home-tech__name">AirFlow</span>
                             <span class="home-tech__text" data-translate="home.tech.flow">Документы и согласования</span>
+                            <span class="home-tech__desc" data-translate="home.tech.flowDesc">Подготовка, согласование и систематизация документов.</span>
                         </a>
                     </li>
                     <li>
@@ -336,6 +333,7 @@
                             </span>
                             <span class="home-tech__name">AirCodex</span>
                             <span class="home-tech__text" data-translate="home.tech.codex">Нормативная база</span>
+                            <span class="home-tech__desc" data-translate="home.tech.codexDesc">Законодательство, своды правил и стандарты.</span>
                         </a>
                     </li>
                     <li>
@@ -351,6 +349,7 @@
                             </span>
                             <span class="home-tech__name">AirAcademy</span>
                             <span class="home-tech__text" data-translate="home.tech.academy">Профессиональные знания</span>
+                            <span class="home-tech__desc" data-translate="home.tech.academyDesc">Знания для сотрудников строительной компании.</span>
                         </a>
                     </li>
                     <li>
@@ -364,6 +363,7 @@
                             </span>
                             <span class="home-tech__name">AirSupport</span>
                             <span class="home-tech__text" data-translate="home.tech.support">Разработка под задачи компании</span>
+                            <span class="home-tech__desc" data-translate="home.tech.supportDesc">Адаптация решений под процессы компании.</span>
                         </a>
                     </li>
                     <li>
@@ -383,6 +383,7 @@
                             </span>
                             <span class="home-tech__name">AirChi</span>
                             <span class="home-tech__text" data-translate="home.tech.chi">Искусственный интеллект</span>
+                            <span class="home-tech__desc" data-translate="home.tech.chiDesc">Технологическая основа специалистов AIRCHITECT.</span>
                         </a>
                     </li>
                 </ul>

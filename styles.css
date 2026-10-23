@@ -311,26 +311,40 @@ body {
 }
 
 .demo-btn {
-    background: transparent;
-    color: var(--text-primary);
-    border: 1px solid var(--text-primary);
-    padding: 12px 24px;
-    border-radius: 24px;
-    font-size: 15px;
-    font-weight: 200;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 18px 0 14px;
+    background: #141414;
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: none;
+    transition: background-color 0.3s ease;
+}
+
+.demo-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
 }
 
 .demo-btn:hover {
-    background: var(--primary-orange);
-    border-color: var(--primary-orange);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    background: #000000;
+}
+
+.demo-btn:focus-visible {
+    outline: 2px solid #141414;
+    outline-offset: 3px;
 }
 
 .nav-toggle {
@@ -1841,10 +1855,6 @@ body {
         transform: translateX(3px);
     }
 
-    .home-product:hover .home-media svg,
-    .home-product:hover .home-media img {
-        transform: scale(1.03);
-    }
 }
 
 /* Collaboration diagram */
@@ -1956,55 +1966,96 @@ body {
 .home-products {
     list-style: none;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
 }
 
+/* Product card: compact white tile like the hero module tiles; the whole card is a link */
 .home-product {
+    position: relative;
     display: flex;
     flex-direction: column;
+    padding: 22px 22px 20px;
     background: var(--home-bg);
-    border: 1px solid var(--home-line);
-    border-radius: 4px;
-    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.home-product .home-media {
-    aspect-ratio: 16 / 10;
+.home-product__icon {
+    display: flex;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 16px;
+    color: var(--gray-400);
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.home-product__icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .home-product__body {
     display: flex;
     flex-direction: column;
     flex: 1;
-    padding: 26px 24px;
 }
 
 .home-product__title {
-    font-size: clamp(22px, 2vw, 26px);
-    font-weight: 400;
-    line-height: 1.25;
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.3;
     color: var(--home-ink);
 }
 
 .home-product__code {
-    margin-top: 8px;
-    font-size: 12px;
-    letter-spacing: 0.16em;
+    margin-top: 4px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
     color: var(--home-soft);
 }
 
 .home-product__text {
-    margin-top: 18px;
-    font-size: 15.5px;
-    line-height: 1.6;
-    color: var(--home-text);
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--home-muted);
 }
 
 .home-product .home-link {
     margin-top: auto;
-    padding-top: 28px;
+    padding-top: 16px;
     align-self: flex-start;
+    font-size: 14px;
+}
+
+.home-product .home-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+}
+
+@media (hover: hover) {
+    .home-product:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .home-product:hover .home-product__icon {
+        color: var(--primary-orange);
+        transform: scale(1.06);
+    }
+
+    .home-product:hover .home-btn__arrow {
+        transform: translateX(3px);
+    }
 }
 
 .home-note {
@@ -2339,6 +2390,13 @@ body {
     font-size: 14.5px;
     line-height: 1.5;
     color: var(--home-muted);
+}
+
+.home-tech__desc {
+    margin-top: 10px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--home-soft);
 }
 
 @media (hover: hover) {
@@ -3275,24 +3333,18 @@ body {
 
     /* Products */
     .home-products {
-        gap: 14px;
+        gap: 10px;
     }
 
-    .home-product .home-media {
-        aspect-ratio: 16 / 7;
+    .home-product {
+        padding: 18px 16px 16px;
+        border-radius: 14px;
     }
 
-    .home-product__body {
-        padding: 18px 18px 20px;
-    }
-
-    .home-product__text {
-        margin-top: 12px;
-        font-size: 14.5px;
-    }
-
-    .home-product .home-link {
-        padding-top: 16px;
+    .home-product__icon {
+        width: 28px;
+        height: 28px;
+        margin-bottom: 12px;
     }
 
     .home-note {
@@ -3435,6 +3487,215 @@ body {
 
     .home-registry__row {
         font-size: 14px;
+    }
+}
+
+/* Specialist window over the page (cards open staff.html?id=…&embed=1 inside) */
+.home-window-open,
+.home-window-open body {
+    overflow: hidden;
+}
+
+.home-window {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.home-window__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 20, 20, 0.38);
+    backdrop-filter: blur(4px);
+}
+
+.home-window__panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: min(980px, 100%);
+    height: min(780px, 100%);
+    overflow: hidden;
+    background: var(--background-primary);
+    border-radius: 18px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22);
+    animation: home-window-in 0.25s ease;
+}
+
+@keyframes home-window-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+}
+
+.home-window__bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.home-window__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    color: var(--gray-500);
+}
+
+.home-window__icon svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.home-window__heading {
+    flex: 1;
+    min-width: 0;
+}
+
+.home-window__title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #141414;
+}
+
+.home-window__text {
+    font-size: 13px;
+    color: var(--gray-500);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.home-window__full {
+    flex-shrink: 0;
+    font-size: 13px;
+    color: #141414;
+}
+
+.home-window__close {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: var(--gray-100);
+    font-size: 22px;
+    line-height: 1;
+    color: #141414;
+    cursor: pointer;
+}
+
+.home-window__close:hover {
+    background: var(--gray-200);
+}
+
+.home-window__close:focus-visible {
+    outline: 2px solid #141414;
+    outline-offset: 2px;
+}
+
+.home-window__frame {
+    flex: 1;
+    width: 100%;
+    border: none;
+}
+
+/* Embed mode: staff.html inside the window shows only the workspace */
+.is-embed .navbar,
+.is-embed .home-staff__head,
+.is-embed .home-staff__list,
+.is-embed .home-staff__top {
+    display: none;
+}
+
+.is-embed .home-chat {
+    padding: 16px 0;
+    background: var(--background-primary);
+}
+
+.is-embed .home-staff {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.is-embed .home-chat__window {
+    height: calc(100vh - 100px);
+    min-height: 320px;
+}
+
+.is-embed .home-staff__panel {
+    min-height: calc(100vh - 100px);
+}
+
+/* The window already sits on the page that carries this note */
+.is-embed .home-staff__work > .home-note {
+    display: none;
+}
+
+.is-embed .home-tabs {
+    margin-bottom: 12px;
+}
+
+.is-embed .container {
+    padding: 0 20px;
+}
+
+@media (max-width: 600px) {
+    .home-window {
+        padding: 10px;
+    }
+
+    .home-window__panel {
+        height: 100%;
+        border-radius: 14px;
+    }
+
+    .home-window__bar {
+        gap: 10px;
+        padding: 10px 12px;
+    }
+
+    .home-window__icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .home-window__title {
+        font-size: 16px;
+    }
+
+    .home-window__full {
+        display: none;
+    }
+
+    .is-embed .container {
+        padding: 0 12px;
+    }
+
+    .is-embed .home-chat {
+        padding: 10px 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .home-tech__desc {
+        margin-top: 6px;
+        font-size: 12.5px;
     }
 }
 

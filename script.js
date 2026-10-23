@@ -1,3 +1,8 @@
+// Inside the specialist window (staff.html?…&embed=1): hide the site chrome before first paint
+if (new URLSearchParams(location.search).get('embed') === '1') {
+    document.documentElement.classList.add('is-embed');
+}
+
 // Language functionality
 let currentLanguage = 'ru';
 
@@ -50,6 +55,8 @@ function getNestedProperty(obj, path) {
 }
 
 function loadSavedLanguage() {
+    // The header has no language switcher: the site stays in Russian
+    if (!document.querySelector('.lang-btn')) return;
     const savedLang = localStorage.getItem('airchitect-language');
     if (savedLang && translations[savedLang]) {
         switchLanguage(savedLang);
@@ -641,6 +648,48 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // Specialist's workspace in a window over the page (staff.html in embed mode)
+        function openSpecialistWindow(item, url) {
+            const opener = document.activeElement;
+            const title = local(item.title);
+            const embedUrl = url + (url.includes('?') ? '&' : '?') + 'embed=1';
+
+            const win = document.createElement('div');
+            win.className = 'home-window';
+            win.innerHTML = `
+                <div class="home-window__backdrop" data-window-close></div>
+                <div class="home-window__panel" role="dialog" aria-modal="true" aria-labelledby="home-window-title">
+                    <div class="home-window__bar">
+                        <span class="home-window__icon" aria-hidden="true">${specialistIcon(item)}</span>
+                        <div class="home-window__heading">
+                            <h2 class="home-window__title" id="home-window-title"></h2>
+                            <p class="home-window__text"></p>
+                        </div>
+                        <a class="home-window__full" href="${url}">На всю страницу</a>
+                        <button type="button" class="home-window__close" aria-label="Закрыть" data-window-close>×</button>
+                    </div>
+                    <iframe class="home-window__frame" src="${embedUrl}" title="${title.replace(/"/g, '&quot;')}"></iframe>
+                </div>`;
+            win.querySelector('.home-window__title').textContent = title;
+            win.querySelector('.home-window__text').textContent = local(item.description);
+
+            const close = () => {
+                win.remove();
+                document.documentElement.classList.remove('home-window-open');
+                document.removeEventListener('keydown', onKey);
+                if (opener && opener.focus) opener.focus();
+            };
+            const onKey = e => {
+                if (e.key === 'Escape') close();
+            };
+            win.querySelectorAll('[data-window-close]').forEach(el => el.addEventListener('click', close));
+            document.addEventListener('keydown', onKey);
+
+            document.body.appendChild(win);
+            document.documentElement.classList.add('home-window-open');
+            win.querySelector('.home-window__close').focus();
+        }
+
         // Regulatory registry (aircodex.html): filter rows by number, title or specialist
         function initRegistrySearch() {
             const input = document.querySelector('[data-registry-search]');
@@ -868,6 +917,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 // One cabinet for all specialists: the route template points to the specialist's tab
                 const url = routes.specialist ? routes.specialist.replace('{slug}', encodeURIComponent(item.slug || item.id)) : null;
                 bindRoute(link, url);
+                if (url) {
+                    link.addEventListener('click', e => {
+                        // Ctrl/Cmd/Shift-click keeps the browser's own behaviour (new tab or window)
+                        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                        e.preventDefault();
+                        openSpecialistWindow(item, url);
+                    });
+                }
             });
 
             // Specialist opened by link (office.html#slug): cards are rendered here, so mark and scroll manually
