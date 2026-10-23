@@ -1400,7 +1400,7 @@ body {
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--home-muted);
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .home-title {
@@ -1409,7 +1409,7 @@ body {
     line-height: 1.18;
     letter-spacing: -0.015em;
     color: var(--home-ink);
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .home-text {
@@ -1428,7 +1428,7 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    margin-top: 40px;
+    margin-top: 28px;
 }
 
 .home-btn {
@@ -1502,7 +1502,7 @@ body {
 
 /* Sections */
 .home-section {
-    padding: clamp(80px, 10vw, 136px) 0;
+    padding: clamp(48px, 6vw, 80px) 0;
     background: var(--home-bg);
 }
 
@@ -1512,7 +1512,7 @@ body {
 
 .home-head {
     max-width: 760px;
-    margin-bottom: 64px;
+    margin-bottom: 40px;
 }
 
 .home-head--wide {
@@ -1650,7 +1650,11 @@ body {
 .home-page-icon svg {
     width: 60px;
     height: 60px;
+    fill: none;
+    stroke: currentColor;
     stroke-width: 0.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
     color: var(--home-muted);
 }
 
@@ -1690,7 +1694,7 @@ body {
 }
 
 .home-task {
-    padding: 40px 24px 44px;
+    padding: 28px 20px 30px;
     border-left: 1px solid var(--home-line);
     border-bottom: 1px solid var(--home-line);
 }
@@ -1703,7 +1707,7 @@ body {
     stroke-width: 1.2;
     stroke-linecap: round;
     stroke-linejoin: round;
-    margin-bottom: 28px;
+    margin-bottom: 18px;
 }
 
 .home-task__title {
@@ -1748,28 +1752,47 @@ body {
     gap: 16px;
 }
 
-.home-specialists .home-media {
-    aspect-ratio: 16 / 11;
+.home-specialists li {
+    scroll-margin-top: 120px;
 }
 
+/* Specialist card: white rounded tile with a line icon, same as the hero module tiles */
 .home-specialist {
     display: flex;
     flex-direction: column;
     height: 100%;
+    padding: 24px 22px 22px;
     background: var(--home-bg);
-    border: 1px solid var(--home-line);
-    border-radius: 4px;
-    overflow: hidden;
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
     color: inherit;
     text-decoration: none;
-    transition: border-color 0.3s ease, transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.home-specialist__icon {
+    display: flex;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 20px;
+    color: var(--gray-400);
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.home-specialist__icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .home-specialist__body {
     display: flex;
     flex-direction: column;
     flex: 1;
-    padding: 18px 18px 20px;
 }
 
 .home-specialist__title {
@@ -1788,36 +1811,26 @@ body {
 
 .home-specialist__more {
     display: inline-flex;
-    align-items: center;
-    gap: 8px;
     margin-top: auto;
-    padding-top: 16px;
-    font-size: 13px;
-    color: var(--home-muted);
+    padding-top: 18px;
+    color: var(--gray-400);
     transition: color 0.3s ease;
 }
 
 /* Specialist opened by link (office.html#slug) */
-.home-specialists li {
-    scroll-margin-top: 120px;
-}
-
 .home-specialists li.is-target .home-specialist {
-    border-color: var(--home-ink);
-    box-shadow: 0 0 0 1px var(--home-ink);
+    box-shadow: 0 0 0 1px var(--home-ink), var(--shadow-md);
 }
 
 @media (hover: hover) {
     .home-specialist:hover {
-        border-color: var(--home-line-strong);
-        transform: translateY(-3px);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
     }
 
-    .home-specialist:hover .home-media svg,
-    .home-specialist:hover .home-media img,
-    .home-product:hover .home-media svg,
-    .home-product:hover .home-media img {
-        transform: scale(1.03);
+    .home-specialist:hover .home-specialist__icon {
+        color: var(--primary-orange);
+        transform: scale(1.06);
     }
 
     .home-specialist:hover .home-specialist__more {
@@ -1826,6 +1839,11 @@ body {
 
     .home-specialist:hover .home-btn__arrow {
         transform: translateX(3px);
+    }
+
+    .home-product:hover .home-media svg,
+    .home-product:hover .home-media img {
+        transform: scale(1.03);
     }
 }
 
@@ -1896,7 +1914,7 @@ body {
     grid-template-columns: 1fr 1fr;
     align-content: space-between;
     column-gap: 220px;
-    min-height: 500px;
+    min-height: 420px;
 }
 
 .home-role {
@@ -1959,7 +1977,7 @@ body {
     display: flex;
     flex-direction: column;
     flex: 1;
-    padding: 32px 28px;
+    padding: 26px 24px;
 }
 
 .home-product__title {
@@ -2054,44 +2072,214 @@ body {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-/* Regulatory typographic composition */
+/* Regulatory base: summary cards (home) and full registry (aircodex.html) */
 .home-norms {
-    list-style: none;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1px;
-    background: var(--home-line);
-    border: 1px solid var(--home-line);
+    gap: 14px;
 }
 
 .home-norm {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    min-height: 200px;
-    padding: 32px 28px;
-    background: var(--home-bg-alt);
+    padding: 22px 22px 20px;
+    background: var(--home-bg);
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
 }
 
-.home-norm__mark {
-    font-size: clamp(48px, 6vw, 84px);
-    font-weight: 200;
-    line-height: 1;
-    letter-spacing: -0.02em;
-    color: #a9a9a6;
+.home-norm__head,
+.home-registry__head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.home-norm__mark--word {
-    font-size: clamp(28px, 3.2vw, 44px);
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-}
-
-.home-norm__label {
-    margin-top: 24px;
-    font-size: 14px;
+.home-norm__code {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border: 1px solid var(--home-line-strong);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
     color: var(--home-muted);
 }
+
+.home-norm__title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--home-ink);
+}
+
+.home-norm__list {
+    list-style: none;
+    margin: 14px 0 16px;
+}
+
+.home-norm__list li {
+    padding: 9px 0;
+    border-top: 1px solid var(--home-line);
+    font-size: 13.5px;
+    line-height: 1.45;
+}
+
+.home-norm__num,
+.home-registry__num {
+    display: block;
+    font-weight: 500;
+    color: var(--home-ink);
+}
+
+.home-norm__name {
+    display: block;
+    margin-top: 2px;
+    color: var(--home-muted);
+}
+
+.home-norm__more {
+    margin-top: auto;
+    font-size: 14px;
+}
+
+/* Full registry */
+.home-registry__bar {
+    position: sticky;
+    top: 80px;
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+    padding: 14px 0;
+    margin-bottom: 8px;
+    background: var(--home-bg);
+    border-bottom: 1px solid var(--home-line);
+}
+
+.home-registry__search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 320px;
+    max-width: 460px;
+    height: 46px;
+    padding: 0 16px;
+    border: 1px solid var(--home-line-strong);
+    border-radius: 23px;
+    color: var(--home-muted);
+}
+
+.home-registry__search:focus-within {
+    border-color: var(--home-ink);
+}
+
+.home-registry__search svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+}
+
+.home-registry__search input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    font-size: 15px;
+    color: var(--home-ink);
+}
+
+.home-registry__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+}
+
+.home-registry__jump {
+    font-size: 13.5px;
+    color: var(--home-muted);
+    text-decoration: none;
+}
+
+.home-registry__jump:hover {
+    color: var(--home-ink);
+}
+
+.home-registry__group {
+    padding-top: 28px;
+    scroll-margin-top: 150px;
+}
+
+.home-registry__title {
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--home-ink);
+}
+
+.home-registry__lead {
+    max-width: 420px;
+    margin-left: auto;
+    font-size: 13.5px;
+    color: var(--home-muted);
+    text-align: right;
+}
+
+.home-registry__list {
+    list-style: none;
+    margin-top: 14px;
+    border-top: 1px solid var(--home-ink);
+}
+
+.home-registry__row {
+    display: grid;
+    grid-template-columns: minmax(150px, 2fr) minmax(0, 5fr) minmax(0, 3fr);
+    gap: 16px;
+    align-items: baseline;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--home-line);
+    font-size: 14.5px;
+    line-height: 1.5;
+}
+
+.home-registry__name {
+    color: var(--home-text);
+}
+
+.home-registry__tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.home-registry__tag {
+    padding: 2px 8px;
+    background: var(--home-bg-alt);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--home-muted);
+    white-space: nowrap;
+}
+
+.home-registry__empty {
+    padding: 28px 0;
+    color: var(--home-muted);
+}
+
+.home-registry .home-note {
+    margin-top: 28px;
+}
+
+
+
+
 
 /* Technology directions */
 .home-tech {
@@ -2113,7 +2301,7 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: 36px 28px 40px;
+    padding: 28px 24px 30px;
     color: inherit;
     text-decoration: none;
 }
@@ -2177,7 +2365,7 @@ body {
 
 .home-final__title {
     font-size: clamp(34px, 4.4vw, 56px);
-    margin-bottom: 28px;
+    margin-bottom: 20px;
 }
 
 .home-final .home-text {
@@ -2912,10 +3100,6 @@ body {
         height: 20px;
     }
 
-    .home-norm {
-        min-height: 150px;
-        padding: 24px 20px;
-    }
 }
 
 @media (max-width: 480px) {
@@ -2944,7 +3128,313 @@ body {
         grid-template-columns: minmax(0, 1fr);
     }
 
-    .home-norms {
-        grid-template-columns: minmax(0, 1fr);
+}
+
+
+/* ==========================================================================
+   Phones: compact spacing and denser grids (last, so it wins over the rules above)
+   ========================================================================== */
+@media (max-width: 600px) {
+    .home section {
+        scroll-margin-top: 72px;
+    }
+
+    .home-section {
+        padding: 40px 0;
+    }
+
+    .home-hero {
+        padding: 100px 0 36px;
+    }
+
+    .home-hero__title {
+        font-size: clamp(28px, 8vw, 34px);
+    }
+
+    .home-hero__lead {
+        margin-top: 12px;
+    }
+
+    .home-hero .home-actions {
+        margin-top: 22px;
+    }
+
+    .home-hero__directions {
+        margin-top: 18px;
+    }
+
+    .home-hero__inner {
+        gap: 24px;
+    }
+
+    .home-eyebrow {
+        margin-bottom: 12px;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+    }
+
+    .home-title {
+        margin-bottom: 14px;
+        font-size: clamp(24px, 6.8vw, 30px);
+        line-height: 1.2;
+    }
+
+    .home-text {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+
+    .home-head {
+        margin-bottom: 24px;
+    }
+
+    .home-actions {
+        margin-top: 22px;
+    }
+
+    .home-split {
+        gap: 24px;
+    }
+
+    /* Business tasks: two columns instead of a long single list */
+    .home-tasks__grid,
+    .home-tasks__grid--3,
+    .home-tasks__grid--4,
+    .home-tasks__grid--5 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .home-tasks__grid.home-tasks__grid--auto {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .home-task {
+        padding: 18px 12px 20px;
+    }
+
+    .home-icon {
+        width: 24px;
+        height: 24px;
+        margin-bottom: 12px;
+    }
+
+    .home-task__title {
+        font-size: 15px;
+        margin-bottom: 6px;
+    }
+
+    .home-task__text {
+        font-size: 13.5px;
+    }
+
+    /* Specialists */
+    .home-specialists {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .home-specialist {
+        padding: 16px 14px;
+        border-radius: 14px;
+    }
+
+    .home-specialist__icon {
+        width: 28px;
+        height: 28px;
+        margin-bottom: 12px;
+    }
+
+    .home-specialist__title {
+        font-size: 14.5px;
+    }
+
+    .home-specialist__text {
+        font-size: 13px;
+    }
+
+    .home-specialist__more {
+        padding-top: 10px;
+    }
+
+    /* Collaboration scheme */
+    .home-doc {
+        margin-bottom: 20px;
+    }
+
+    .home-role__title {
+        font-size: 15px;
+    }
+
+    .home-role__title::before {
+        margin-bottom: 8px;
+    }
+
+    .home-role__text {
+        font-size: 14px;
+    }
+
+    /* Products */
+    .home-products {
+        gap: 14px;
+    }
+
+    .home-product .home-media {
+        aspect-ratio: 16 / 7;
+    }
+
+    .home-product__body {
+        padding: 18px 18px 20px;
+    }
+
+    .home-product__text {
+        margin-top: 12px;
+        font-size: 14.5px;
+    }
+
+    .home-product .home-link {
+        padding-top: 16px;
+    }
+
+    .home-note {
+        margin-top: 18px;
+    }
+
+    /* Contract steps */
+    .home-steps {
+        gap: 18px;
+    }
+
+    .home-step__title {
+        font-size: 15px;
+        margin-bottom: 4px;
+    }
+
+    .home-step__text {
+        font-size: 14px;
+    }
+
+    /* Regulatory tiles: keep two columns */
+
+
+
+
+
+    /* Technology directions: two columns */
+    .home-tech {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .home-tech__item {
+        padding: 18px 12px 20px;
+    }
+
+    .home-tech__icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+    }
+
+    .home-tech__icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .home-tech__name {
+        margin-top: 12px;
+        font-size: 15px;
+    }
+
+    .home-tech__text {
+        font-size: 13px;
+    }
+
+    .home-final__title {
+        font-size: clamp(26px, 7.4vw, 32px);
+    }
+
+    /* Staff section */
+    .home-chat {
+        padding: 96px 0 32px;
+    }
+
+    .home-staff__head {
+        margin-bottom: 18px;
+    }
+
+    .home-staff__name {
+        font-size: 24px;
+    }
+
+    .home-chat__window {
+        height: calc(100svh - 150px);
+        min-height: 400px;
+    }
+
+    .home-chat__message {
+        font-size: 15px;
+        margin-bottom: 14px;
+    }
+
+    .home-chat__footer .home-note {
+        font-size: 11.5px;
     }
 }
+
+/* Regulatory base on tablets and phones */
+@media (max-width: 960px) {
+    .home-registry__row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 4px;
+    }
+
+    .home-registry__tags {
+        justify-content: flex-start;
+        margin-top: 4px;
+    }
+
+    .home-registry__head {
+        flex-wrap: wrap;
+    }
+
+    .home-registry__lead {
+        flex-basis: 100%;
+        margin-left: 0;
+        text-align: left;
+    }
+}
+
+@media (max-width: 600px) {
+    .home-norms {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+    }
+
+    .home-norm {
+        padding: 18px 16px 16px;
+        border-radius: 14px;
+    }
+
+    .home-norm__list {
+        margin: 10px 0 12px;
+    }
+
+    .home-registry__bar {
+        top: 72px;
+    }
+
+    .home-registry__search {
+        flex-basis: 100%;
+        max-width: none;
+    }
+
+    .home-registry__nav {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .home-registry__row {
+        font-size: 14px;
+    }
+}
+

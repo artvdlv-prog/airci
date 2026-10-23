@@ -194,7 +194,7 @@ const translations = {
                 sp: "Building codes",
                 gost: "State standards",
                 normsMark: "Norms",
-                norms: "Official industry documents"
+                norms: "Industry documents"
             },
             tech: {
                 title: "Technology that works for results.",
@@ -416,7 +416,7 @@ const translations = {
                 sp: "Строительные правила",
                 gost: "Государственные стандарты",
                 normsMark: "Нормативы",
-                norms: "Официальные отраслевые документы"
+                norms: "Отраслевые документы"
             },
             tech: {
                 title: "Технологии, которые работают на результат.",

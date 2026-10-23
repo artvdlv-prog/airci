@@ -25,7 +25,7 @@ const HOME_ASSISTANT_API = null;
 // Specialists. The list is open-ended: add, edit or disable entries
 // (enabled: false) and the home page grid rebuilds itself. Do not reference
 // the number of specialists anywhere in texts or layout.
-// image: optional path to an architectural image; a generated line drawing is used otherwise.
+// icon: optional icon name from SPECIALIST_ICONS in script.js (defaults to the id).
 // tasks: what the specialist helps with, shown on the specialist's own page (specialist.html?id=slug).
 // registry: name of the specialist's register tab in "Штат" (staff.html?id=slug).
 const HOME_SPECIALISTS = [
