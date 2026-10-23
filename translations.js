@@ -134,7 +134,7 @@ const translations = {
             },
             tasks: {
                 eyebrow: "Construction takes more than the ability to build",
-                title: "Behind every project are hundreds of non-construction tasks.",
+                title: "Behind every project are hundreds of administrative tasks.",
                 lead: "AIRCHITECT helps organize this work in one digital environment.",
                 contracts: { title: "Contracts", text: "Review terms and keep track of obligations." },
                 procurement: { title: "Procurement", text: "Analyze documentation and participation terms." },
@@ -364,7 +364,7 @@ const translations = {
             },
             tasks: {
                 eyebrow: "Строительство требует больше, чем умения строить",
-                title: "За каждым объектом стоят сотни нестроительных задач.",
+                title: "За каждым объектом стоят сотни административных задач.",
                 lead: "AIRCHITECT помогает организовать эту работу в одной цифровой среде.",
                 contracts: { title: "Договоры", text: "Проверять условия и контролировать обязательства." },
                 procurement: { title: "Закупки", text: "Анализировать документацию и условия участия." },
