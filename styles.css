@@ -137,7 +137,8 @@ body {
     color: var(--text-primary);
 }
 
-.nav-link:hover::after {
+/* Hover marker for plain links only: dropdown toggles keep their arrow, so nothing shifts */
+.nav-link:not(.dropdown-toggle):hover::after {
     content: '';
     position: absolute;
     bottom: -8px;
@@ -156,6 +157,7 @@ body {
 
 .dropdown-toggle::after {
     content: '▼';
+    display: inline-block;
     font-size: 10px;
     margin-left: 8px;
     transition: transform 0.2s ease;
@@ -183,6 +185,16 @@ body {
     transform: translateX(-50%) translateY(-10px);
     transition: all 0.3s ease;
     z-index: 1000;
+}
+
+/* Invisible bridge over the gap, so the menu stays open on the way to it */
+.dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -18px;
+    left: 0;
+    right: 0;
+    height: 18px;
 }
 
 .nav-dropdown:hover .dropdown-menu {
@@ -1516,7 +1528,7 @@ body {
 
 /* Sections */
 .home-section {
-    padding: clamp(48px, 6vw, 80px) 0;
+    padding: clamp(36px, 4.5vw, 60px) 0;
     background: var(--home-bg);
 }
 
@@ -1526,7 +1538,7 @@ body {
 
 .home-head {
     max-width: 760px;
-    margin-bottom: 40px;
+    margin-bottom: 28px;
 }
 
 .home-head--wide {
@@ -1560,7 +1572,7 @@ body {
 /* Hero */
 /* Same look as the original airchi.tech banner: light gradient, thin title, module icon grid */
 .home-hero {
-    padding: 128px 0 56px;
+    padding: 112px 0 44px;
     background: linear-gradient(135deg, #ffffff 0%, var(--gray-50) 100%);
     border-bottom: 1px solid var(--border-light);
 }
@@ -1924,7 +1936,7 @@ body {
     grid-template-columns: 1fr 1fr;
     align-content: space-between;
     column-gap: 220px;
-    min-height: 420px;
+    min-height: 380px;
 }
 
 .home-role {
@@ -2367,7 +2379,7 @@ body {
     border: 1px solid var(--home-line);
     border-radius: 16px;
     box-shadow: var(--shadow-sm);
-    transition: transform 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .home-tech__icon svg {
@@ -2383,6 +2395,7 @@ body {
     font-size: 17px;
     font-weight: 500;
     color: var(--home-ink);
+    transition: color 0.3s ease;
 }
 
 .home-tech__text {
@@ -2400,13 +2413,19 @@ body {
 }
 
 @media (hover: hover) {
+    /* Same highlight as the hero module tiles */
     .home-tech__item:hover .home-tech__icon {
-        transform: translateY(-2px);
+        transform: translateY(-3px);
         border-color: var(--home-line-strong);
+        box-shadow: var(--shadow-md);
     }
 
     .home-tech__item:hover .home-tech__icon svg {
-        color: var(--home-ink);
+        color: var(--primary-orange);
+    }
+
+    .home-tech__item:hover .home-tech__name {
+        color: var(--primary-orange);
     }
 }
 
@@ -3198,11 +3217,11 @@ body {
     }
 
     .home-section {
-        padding: 40px 0;
+        padding: 28px 0;
     }
 
     .home-hero {
-        padding: 100px 0 36px;
+        padding: 92px 0 28px;
     }
 
     .home-hero__title {
@@ -3243,15 +3262,15 @@ body {
     }
 
     .home-head {
-        margin-bottom: 24px;
+        margin-bottom: 18px;
     }
 
     .home-actions {
-        margin-top: 22px;
+        margin-top: 18px;
     }
 
     .home-split {
-        gap: 24px;
+        gap: 18px;
     }
 
     /* Business tasks: two columns instead of a long single list */
@@ -3696,6 +3715,183 @@ body {
     .home-tech__desc {
         margin-top: 6px;
         font-size: 12.5px;
+    }
+}
+
+/* Phones: drop secondary details, keep the essentials */
+@media (max-width: 600px) {
+    .home-hero__media-card {
+        display: none;
+    }
+
+    /* Regulatory cards show document numbers only; full titles are in the registry */
+    .home-norm__name {
+        display: none;
+    }
+
+    .home-norm__list li {
+        padding: 7px 0;
+    }
+
+    .home-product__text {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .home-doc {
+        width: 140px;
+        padding: 14px 14px 18px;
+    }
+
+    .home-doc__label {
+        margin-bottom: 12px;
+        font-size: 13px;
+    }
+
+    .home-doc__line {
+        height: 3px;
+        margin-top: 7px;
+    }
+
+    .home-collab__roles {
+        row-gap: 2px;
+    }
+
+    .home-role,
+    .home-role:nth-child(even) {
+        padding: 6px 0 6px 16px;
+    }
+
+    .home-final .home-actions {
+        margin-top: 16px;
+    }
+
+    .home-registry__row {
+        padding: 10px 0;
+        gap: 2px;
+    }
+
+    .home-registry__tags {
+        margin-top: 2px;
+    }
+
+    .home-registry__tag {
+        padding: 1px 7px;
+        font-size: 11px;
+    }
+
+    .home-registry__group {
+        padding-top: 20px;
+    }
+}
+
+/* Tiles on solution pages: same look as the home page product cards */
+.home-tiles {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.home-tile {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 22px 22px 20px;
+    background: var(--home-bg);
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.home-tile__icon {
+    display: flex;
+    width: 34px;
+    height: 34px;
+    margin-bottom: 16px;
+    color: var(--gray-400);
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.home-tile__icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.home-tile__title {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--home-ink);
+}
+
+.home-tile__text {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--home-muted);
+}
+
+.home-tile__more {
+    display: inline-flex;
+    margin-top: auto;
+    padding-top: 16px;
+    color: var(--gray-400);
+    transition: color 0.3s ease;
+}
+
+@media (hover: hover) {
+    .home-tile:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .home-tile:hover .home-tile__icon {
+        color: var(--primary-orange);
+        transform: scale(1.06);
+    }
+
+    a.home-tile:hover .home-tile__more {
+        color: var(--home-ink);
+    }
+
+    a.home-tile:hover .home-btn__arrow {
+        transform: translateX(3px);
+    }
+}
+
+@media (max-width: 600px) {
+    .home-tiles {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .home-tile {
+        padding: 16px 14px;
+        border-radius: 14px;
+    }
+
+    .home-tile__icon {
+        width: 28px;
+        height: 28px;
+        margin-bottom: 12px;
+    }
+
+    .home-tile__title {
+        font-size: 15px;
+    }
+
+    .home-tile__text {
+        font-size: 13px;
     }
 }
 

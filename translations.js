@@ -134,7 +134,7 @@ const translations = {
             },
             tasks: {
                 eyebrow: "Construction takes more than the ability to build",
-                title: "Behind every project are dozens of tasks not directly related to construction work.",
+                title: "Behind every project are hundreds of non-construction tasks.",
                 lead: "AIRCHITECT helps organize this work in one digital environment.",
                 contracts: { title: "Contracts", text: "Review terms and keep track of obligations." },
                 procurement: { title: "Procurement", text: "Analyze documentation and participation terms." },
@@ -152,7 +152,7 @@ const translations = {
             },
             collab: {
                 eyebrow: "One contract. Several professional perspectives.",
-                title: "AIRCHITECT helps you not only work with documents, but understand their content and consequences.",
+                title: "AIRCHITECT helps you not only work with documents, but understand the details of each one.",
                 lead1: "A single contract may call for different professional competencies.",
                 lead2: "Specialists help review a document from legal, contractual, financial and organizational points of view.",
                 cta: "How it works",
@@ -174,7 +174,7 @@ const translations = {
             },
             support: {
                 eyebrow: "From contract review to fulfilment of obligations",
-                title: "A contract doesn't end with signing.",
+                title: "Fulfilment of contract obligations.",
                 lead1: "Once a contract is concluded, you need to account for payment terms, monitor deadlines, fulfil obligations, formalize changes and respond to emerging risks in time.",
                 lead2: "AIRCHITECT helps organize consistent work with a contract — from initial analysis to execution support.",
                 cta: "More about contract support",
@@ -364,7 +364,7 @@ const translations = {
             },
             tasks: {
                 eyebrow: "Строительство требует больше, чем умения строить",
-                title: "За каждым объектом стоят десятки задач, не связанных напрямую со строительными работами.",
+                title: "За каждым объектом стоят сотни нестроительных задач.",
                 lead: "AIRCHITECT помогает организовать эту работу в одной цифровой среде.",
                 contracts: { title: "Договоры", text: "Проверять условия и контролировать обязательства." },
                 procurement: { title: "Закупки", text: "Анализировать документацию и условия участия." },
@@ -382,7 +382,7 @@ const translations = {
             },
             collab: {
                 eyebrow: "Один договор. Несколько профессиональных решений.",
-                title: "AIRCHITECT помогает не только работать с документами, но и понимать их содержание и последствия.",
+                title: "AIRCHITECT помогает не только работать с документами, но и понимать детали каждого документа.",
                 lead1: "При работе с одним договором могут потребоваться разные профессиональные компетенции.",
                 lead2: "Специалисты помогают рассмотреть документ с юридической, договорной, финансовой и организационной точек зрения.",
                 cta: "Как это работает",
@@ -404,7 +404,7 @@ const translations = {
             },
             support: {
                 eyebrow: "От проверки договора до исполнения обязательств",
-                title: "Договор не заканчивается подписанием.",
+                title: "Исполнение обязательств по договорам.",
                 lead1: "После заключения договора необходимо учитывать условия оплаты, контролировать сроки, исполнять обязательства, оформлять изменения и своевременно реагировать на возникающие риски.",
                 lead2: "AIRCHITECT помогает организовать последовательную работу с договором — от первоначального анализа до сопровождения исполнения.",
                 cta: "Подробнее о сопровождении договоров",
