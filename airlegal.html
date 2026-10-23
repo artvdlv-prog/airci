@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.8em' font-size='45' font-family='Arial,sans-serif' font-weight='bold' fill='%23FF6A00'>AI</text></svg>">
-    <title>AirLegal — ИИ-помощник по правовым вопросам | Airchitect</title>
+    <meta name="description" content="AirLegal — технологическое направление AIRCHITECT: юридические вопросы.">
+    <title>AirLegal — Юридические вопросы | AIRCHITECT</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,11 +17,17 @@
                 </a>
             </div>
             <div class="nav-menu">
-                <a href="index.html" class="nav-link">Главная</a>
-                <a href="projekty.html" class="nav-link">Проекты</a>
-                <a href="tseli.html" class="nav-link">Цели</a>
+                <a href="index.html#specialists" class="nav-link" data-translate="nav.specialists">Специалисты</a>
                 <div class="nav-dropdown">
-                    <a href="index.html#modules" class="nav-link dropdown-toggle">Модули</a>
+                    <a href="index.html#products" class="nav-link dropdown-toggle" data-translate="nav.solutions">Решения</a>
+                    <div class="dropdown-menu">
+                        <a href="office.html" class="dropdown-item" data-translate="nav.office">Проектный офис</a>
+                        <a href="docs.html" class="dropdown-item" data-translate="nav.docs">Документооборот</a>
+                        <a href="complex.html" class="dropdown-item" data-translate="nav.complex">Комплексное решение</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <a href="index.html#modules" class="nav-link dropdown-toggle" data-translate="nav.technologies">Технологии</a>
                     <div class="dropdown-menu">
                         <a href="aircontrol.html" class="dropdown-item">AirControl</a>
                         <a href="airmarket.html" class="dropdown-item">AirMarket</a>
@@ -32,6 +39,8 @@
                         <a href="airchi.html" class="dropdown-item">AirChi</a>
                     </div>
                 </div>
+                <a href="company.html" class="nav-link" data-translate="nav.about">О компании</a>
+                <button class="demo-btn">Личный кабинет</button>
                 <div class="language-switcher nav-dropdown">
                     <button class="lang-current nav-link dropdown-toggle">RU</button>
                     <div class="dropdown-menu lang-dropdown">
@@ -39,76 +48,101 @@
                         <button class="dropdown-item lang-btn" data-lang="en">English</button>
                     </div>
                 </div>
-                <button class="demo-btn">Личный кабинет</button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
     </nav>
 
-    <main>
-        <section class="module-hero-section">
-            <div class="container">
-                <div class="module-hero-content">
-                    <div class="module-hero-icon">
-                        <div class="module-icon-large">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                                <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
-                                <path d="M9 12l2 2 4-4"/>
-                            </svg>
-                        </div>
-                        <h1 class="module-title">AirLegal</h1>
+    <main class="home">
+        <section id="intro" class="home-hero home-hero--page">
+            <div class="container home-hero__inner">
+                <div class="home-hero__content home-reveal">
+                    <p class="home-eyebrow">Технологическое направление</p>
+                    <h1 class="home-hero__title">
+                        <span>AirLegal</span>
+                        <span class="home-hero__title-muted">Юридические вопросы</span>
+                    </h1>
+                    <p class="home-hero__lead">Направление, связанное с правовыми вопросами строительной деятельности: договорной работой и оценкой правовых рисков.</p>
+                    <div class="home-actions">
+                        <a href="index.html#modules" class="home-btn home-btn--secondary">Все направления</a>
                     </div>
-                    <div class="module-hero-text">
-                        <h2 class="module-description-title">ИИ-помощник по правовым вопросам</h2>
-                        <p class="module-description">
-                            Продвинутый юридический ИИ-помощник для анализа договоров, генерации исковых заявлений,
-                            мониторинга изменений в законодательстве и обеспечения соответствия всех проектных
-                            мероприятий правовым требованиям.
-                        </p>
+                </div>
+                <div class="home-hero__modules home-reveal" aria-hidden="true">
+                    <span class="home-page-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                            <path d="M9 12l2 2 4-4"/>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+        </section>
+        <section id="tasks" class="home-section">
+            <div class="container">
+                <div class="home-head home-reveal">
+                    <p class="home-eyebrow">Задачи направления</p>
+                    <h2 class="home-title">С какими задачами работает направление.</h2>
+                </div>
+                <div class="home-tasks home-reveal">
+                    <ul class="home-tasks__grid home-tasks__grid--4">
+                        <li class="home-task">
+                            <h3 class="home-task__title">Договорная работа</h3>
+                            <p class="home-task__text">Выделение существенных условий и обязательств сторон.</p>
+                        </li>
+                        <li class="home-task">
+                            <h3 class="home-task__title">Правовые риски</h3>
+                            <p class="home-task__text">Оценка рисков, связанных с условиями договора.</p>
+                        </li>
+                        <li class="home-task">
+                            <h3 class="home-task__title">Контрагенты</h3>
+                            <p class="home-task__text">Оценка рисков сотрудничества с контрагентами.</p>
+                        </li>
+                        <li class="home-task">
+                            <h3 class="home-task__title">Изменения договора</h3>
+                            <p class="home-task__text">Работа с изменениями и дополнительными соглашениями.</p>
+                        </li>
+                    </ul>
+                </div>
+                <p class="home-note home-reveal">AirLegal — технологическое направление разработчика, а не отдельный коммерческий продукт. Его наработки используются в решениях AIRCHITECT. Рекомендации специалистов носят вспомогательный характер и не заменяют решений, которые принимают сотрудники компании.</p>
+            </div>
+        </section>
+        <section class="home-section home-section--alt">
+            <div class="container home-split">
+                <div class="home-split__text home-reveal">
+                    <p class="home-eyebrow">Где используется</p>
+                    <h2 class="home-title">Цифровой проектный офис.</h2>
+                </div>
+                <div class="home-split__text home-reveal">
+                    <p class="home-text">Правовыми вопросами в цифровом проектном офисе занимаются строительный юрист и договорной специалист.</p>
+                    <div class="home-actions">
+                        <a href="office.html" class="home-btn home-btn--secondary" data-route="office">Подробнее</a>
                     </div>
                 </div>
             </div>
         </section>
-
-        <section id="features" class="module-features-section">
+        <section class="home-section home-final">
             <div class="container">
-                <h2 class="section-title">Ключевые возможности</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                                <polyline points="14,2 14,8 20,8"/>
-                                <line x1="16" y1="13" x2="8" y2="13"/>
-                                <line x1="16" y1="17" x2="8" y2="17"/>
-                            </svg>
-                        </div>
-                        <h3>Анализ договоров</h3>
-                        <p>Автоматическая проверка договоров на риски, противоречия и соответствие законодательству</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            </svg>
-                        </div>
-                        <h3>Контроль соответствия</h3>
-                        <p>Мониторинг соблюдения строительных норм, СНиП, ГОСТ и других регуляторных требований</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                            </svg>
-                        </div>
-                        <h3>Генерация документов</h3>
-                        <p>Автоматическое создание исковых заявлений, претензий и других юридических документов</p>
+                <div class="home-final__inner home-reveal">
+                    <h2 class="home-final__title">
+                        <span>Сосредоточьтесь на строительстве.</span>
+                        <span class="home-hero__title-muted">Остальное доверьте AIRCHITECT.</span>
+                    </h2>
+                    <p class="home-text">Начните с специалистов, подключите электронный документооборот или используйте комплексное решение.</p>
+                    <div class="home-actions">
+                        <a href="#" class="home-btn home-btn--primary" data-route="cabinet"><span>Начать работу</span><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+                        <a href="index.html#products" class="home-btn home-btn--secondary">Выбрать решение</a>
                     </div>
                 </div>
             </div>
         </section>
-
     </main>
 
+    <script src="translations.js"></script>
+    <script src="home-config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

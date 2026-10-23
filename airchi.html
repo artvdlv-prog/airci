@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.8em' font-size='45' font-family='Arial,sans-serif' font-weight='bold' fill='%23FF6A00'>AI</text></svg>">
-    <title>AirChi — Центральный ИИ-оркестратор | Airchitect</title>
+    <meta name="description" content="AirChi — технологическое направление AIRCHITECT: искусственный интеллект.">
+    <title>AirChi — Искусственный интеллект | AIRCHITECT</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,11 +17,17 @@
                 </a>
             </div>
             <div class="nav-menu">
-                <a href="index.html" class="nav-link">Главная</a>
-                <a href="projekty.html" class="nav-link">Проекты</a>
-                <a href="tseli.html" class="nav-link">Цели</a>
+                <a href="index.html#specialists" class="nav-link" data-translate="nav.specialists">Специалисты</a>
                 <div class="nav-dropdown">
-                    <a href="index.html#modules" class="nav-link dropdown-toggle">Модули</a>
+                    <a href="index.html#products" class="nav-link dropdown-toggle" data-translate="nav.solutions">Решения</a>
+                    <div class="dropdown-menu">
+                        <a href="office.html" class="dropdown-item" data-translate="nav.office">Проектный офис</a>
+                        <a href="docs.html" class="dropdown-item" data-translate="nav.docs">Документооборот</a>
+                        <a href="complex.html" class="dropdown-item" data-translate="nav.complex">Комплексное решение</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <a href="index.html#modules" class="nav-link dropdown-toggle" data-translate="nav.technologies">Технологии</a>
                     <div class="dropdown-menu">
                         <a href="aircontrol.html" class="dropdown-item">AirControl</a>
                         <a href="airmarket.html" class="dropdown-item">AirMarket</a>
@@ -32,6 +39,8 @@
                         <a href="airchi.html" class="dropdown-item">AirChi</a>
                     </div>
                 </div>
+                <a href="company.html" class="nav-link" data-translate="nav.about">О компании</a>
+                <button class="demo-btn">Личный кабинет</button>
                 <div class="language-switcher nav-dropdown">
                     <button class="lang-current nav-link dropdown-toggle">RU</button>
                     <div class="dropdown-menu lang-dropdown">
@@ -39,7 +48,6 @@
                         <button class="dropdown-item lang-btn" data-lang="en">English</button>
                     </div>
                 </div>
-                <button class="demo-btn">Личный кабинет</button>
             </div>
             <div class="nav-toggle">
                 <span></span>
@@ -49,13 +57,23 @@
         </div>
     </nav>
 
-    <main>
-        <!-- Hero Section -->
-        <section class="module-hero-section">
-            <div class="container">
-                <div class="module-hero-content">
-                    <div class="module-icon-large">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+    <main class="home">
+        <section id="intro" class="home-hero home-hero--page">
+            <div class="container home-hero__inner">
+                <div class="home-hero__content home-reveal">
+                    <p class="home-eyebrow">Технологическое направление</p>
+                    <h1 class="home-hero__title">
+                        <span>AirChi</span>
+                        <span class="home-hero__title-muted">Искусственный интеллект</span>
+                    </h1>
+                    <p class="home-hero__lead">Технологическая основа специалистов AIRCHITECT: работа с вопросами и документами на естественном языке.</p>
+                    <div class="home-actions">
+                        <a href="index.html#modules" class="home-btn home-btn--secondary">Все направления</a>
+                    </div>
+                </div>
+                <div class="home-hero__modules home-reveal" aria-hidden="true">
+                    <span class="home-page-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                             <circle cx="12" cy="12" r="4"/>
                             <circle cx="12" cy="2" r="1"/>
                             <circle cx="12" cy="22" r="1"/>
@@ -66,95 +84,72 @@
                             <path d="M15 9l-6 6"/>
                             <path d="M9 9l6 6"/>
                         </svg>
-                    </div>
-                    <h1 class="module-title">AirChi</h1>
-                    <p class="module-subtitle">Центральный ИИ-оркестратор платформы</p>
-                    <p class="module-description">
-                        Продвинутая система обработки естественного языка, которая объединяет все модули платформы
-                        через разговорные интерфейсы. Ваш умный помощник проекта, понимающий естественную речь,
-                        координирующий рабочие процессы и предоставляющий единое представление всех операций.
-                    </p>
+                    </span>
                 </div>
             </div>
         </section>
-
-        <!-- Features Section -->
-        <section id="features" class="module-features-section">
+        <section id="tasks" class="home-section">
             <div class="container">
-                <h2 class="section-title">Ключевые возможности</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                                <path d="M13 8H7"/>
-                                <path d="M17 12H7"/>
-                            </svg>
-                        </div>
-                        <h3>Обработка естественного языка</h3>
-                        <p>Понимание и обработка запросов на русском и английском языках с высокой точностью</p>
+                <div class="home-head home-reveal">
+                    <p class="home-eyebrow">Задачи направления</p>
+                    <h2 class="home-title">С какими задачами работает направление.</h2>
+                </div>
+                <div class="home-tasks home-reveal">
+                    <ul class="home-tasks__grid home-tasks__grid--4">
+                        <li class="home-task">
+                            <h3 class="home-task__title">Вопросы</h3>
+                            <p class="home-task__text">Работа с вопросами, заданными на естественном языке.</p>
+                        </li>
+                        <li class="home-task">
+                            <h3 class="home-task__title">Документы</h3>
+                            <p class="home-task__text">Работа с загруженными документами.</p>
+                        </li>
+                        <li class="home-task">
+                            <h3 class="home-task__title">Отраслевой контекст</h3>
+                            <p class="home-task__text">Учёт специфики строительной деятельности.</p>
+                        </li>
+                        <li class="home-task">
+                            <h3 class="home-task__title">Источники</h3>
+                            <p class="home-task__text">Использование проверяемых нормативных источников.</p>
+                        </li>
+                    </ul>
+                </div>
+                <p class="home-note home-reveal">AirChi — технологическое направление разработчика, а не отдельный коммерческий продукт. Его наработки используются в решениях AIRCHITECT. Рекомендации специалистов носят вспомогательный характер и не заменяют решений, которые принимают сотрудники компании.</p>
+            </div>
+        </section>
+        <section class="home-section home-section--alt">
+            <div class="container home-split">
+                <div class="home-split__text home-reveal">
+                    <p class="home-eyebrow">Где используется</p>
+                    <h2 class="home-title">Цифровой проектный офис.</h2>
+                </div>
+                <div class="home-split__text home-reveal">
+                    <p class="home-text">Пользователь работает не с технологией, а с специалистами — по юридическим, финансовым, техническим и организационным вопросам.</p>
+                    <div class="home-actions">
+                        <a href="office.html" class="home-btn home-btn--secondary" data-route="office">Подробнее</a>
                     </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                                <path d="M2 17l10 5 10-5"/>
-                                <path d="M2 12l10 5 10-5"/>
-                            </svg>
-                        </div>
-                        <h3>Интеграция модулей</h3>
-                        <p>Единая точка доступа ко всем функциям платформы через один интерфейс</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M9 12l2 2 4-4"/>
-                                <circle cx="12" cy="12" r="9"/>
-                            </svg>
-                        </div>
-                        <h3>Автоматизация задач</h3>
-                        <p>Выполнение сложных многошаговых операций по голосовым и текстовым командам</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 3v18h18"/>
-                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
-                                <path d="M15 8h3.8v4"/>
-                            </svg>
-                        </div>
-                        <h3>Аналитические insights</h3>
-                        <p>Генерация отчетов и аналитики на основе данных всех модулей платформы</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            </svg>
-                        </div>
-                        <h3>Безопасность данных</h3>
-                        <p>Шифрование всех данных и соблюдение стандартов информационной безопасности</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
-                            </svg>
-                        </div>
-                        <h3>Персонализация</h3>
-                        <p>Адаптация к предпочтениям пользователя и особенностям рабочих процессов</p>
+                </div>
+            </div>
+        </section>
+        <section class="home-section home-final">
+            <div class="container">
+                <div class="home-final__inner home-reveal">
+                    <h2 class="home-final__title">
+                        <span>Сосредоточьтесь на строительстве.</span>
+                        <span class="home-hero__title-muted">Остальное доверьте AIRCHITECT.</span>
+                    </h2>
+                    <p class="home-text">Начните с специалистов, подключите электронный документооборот или используйте комплексное решение.</p>
+                    <div class="home-actions">
+                        <a href="#" class="home-btn home-btn--primary" data-route="cabinet"><span>Начать работу</span><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+                        <a href="index.html#products" class="home-btn home-btn--secondary">Выбрать решение</a>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
+    <script src="translations.js"></script>
+    <script src="home-config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

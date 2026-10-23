@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.8em' font-size='45' font-family='Arial,sans-serif' font-weight='bold' fill='%23FF6A00'>AI</text></svg>">
+    <meta name="description" content="Штат AIRCHITECT: специалисты по договорным, юридическим, финансовым, техническим и организационным вопросам строительного бизнеса.">
+    <title>Штат — специалисты AIRCHITECT</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="Logo Airchitect.jpg" alt="Airchitect" class="nav-logo">
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html#specialists" class="nav-link" data-translate="nav.specialists">Специалисты</a>
+                <div class="nav-dropdown">
+                    <a href="index.html#products" class="nav-link dropdown-toggle" data-translate="nav.solutions">Решения</a>
+                    <div class="dropdown-menu">
+                        <a href="office.html" class="dropdown-item" data-translate="nav.office">Проектный офис</a>
+                        <a href="docs.html" class="dropdown-item" data-translate="nav.docs">Документооборот</a>
+                        <a href="complex.html" class="dropdown-item" data-translate="nav.complex">Комплексное решение</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <a href="index.html#modules" class="nav-link dropdown-toggle" data-translate="nav.technologies">Технологии</a>
+                    <div class="dropdown-menu">
+                        <a href="aircontrol.html" class="dropdown-item">AirControl</a>
+                        <a href="airmarket.html" class="dropdown-item">AirMarket</a>
+                        <a href="airlegal.html" class="dropdown-item">AirLegal</a>
+                        <a href="airflow.html" class="dropdown-item">AirFlow</a>
+                        <a href="aircodex.html" class="dropdown-item">AirCodex</a>
+                        <a href="airacademy.html" class="dropdown-item">AirAcademy</a>
+                        <a href="airsupport.html" class="dropdown-item">AirSupport</a>
+                        <a href="airchi.html" class="dropdown-item">AirChi</a>
+                    </div>
+                </div>
+                <a href="company.html" class="nav-link" data-translate="nav.about">О компании</a>
+                <button class="demo-btn">Личный кабинет</button>
+                <div class="language-switcher nav-dropdown">
+                    <button class="lang-current nav-link dropdown-toggle">RU</button>
+                    <div class="dropdown-menu lang-dropdown">
+                        <button class="dropdown-item lang-btn" data-lang="ru">Русский</button>
+                        <button class="dropdown-item lang-btn" data-lang="en">English</button>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="home" data-chat-page>
+        <section id="intro" class="home-chat">
+            <div class="container">
+                <div class="home-staff__head">
+                    <p class="home-eyebrow">Штат</p>
+                    <h1 class="home-chat__title">Ваша команда специалистов.</h1>
+                    <p class="home-chat__text">Профессиональная помощь по договорным, юридическим, финансовым, техническим и организационным вопросам строительного бизнеса.</p>
+                </div>
+                <div class="home-staff">
+                    <nav class="home-staff__list" aria-label="Специалисты">
+                        <!-- Rendered from HOME_SPECIALISTS (home-config.js) -->
+                        <ul data-staff-list></ul>
+                    </nav>
+                    <div class="home-staff__work">
+                        <div class="home-staff__top">
+                            <div>
+                                <h2 class="home-staff__name" data-sp-title>Специалист</h2>
+                                <p class="home-chat__text" data-sp-description></p>
+                            </div>
+                            <a href="specialist.html" data-sp-page class="home-link"><span>О специалисте</span><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+                        </div>
+                        <div class="home-tabs" role="tablist" aria-label="Разделы специалиста">
+                            <button type="button" role="tab" class="home-tab" data-tab="chat" aria-selected="true">Чат</button>
+                            <button type="button" role="tab" class="home-tab" data-tab="history" aria-selected="false">История</button>
+                            <button type="button" role="tab" class="home-tab" data-tab="registry" aria-selected="false" data-registry-title>Реестр</button>
+                        </div>
+                        <p class="home-chat__notice" data-chat-missing hidden>Такого специалиста нет в команде. Выберите специалиста из списка.</p>
+
+                        <div class="home-chat__window" role="tabpanel" data-tab-panel="chat">
+                            <div class="home-chat__log" data-chat-log aria-live="polite"></div>
+                            <p class="home-chat__notice" data-chat-offline hidden>Чат со специалистами ещё не подключён: не настроен адрес сервера. Как только подключение будет готово, здесь можно будет задать вопрос и загрузить документы.</p>
+                            <form class="home-chat__form" data-chat-form>
+                                <ul class="home-chat__files" data-chat-files></ul>
+                                <div class="home-chat__row">
+                                    <label class="home-chat__attach" title="Приложить документ">
+                                        <input type="file" multiple accept=".pdf,.txt,.png,.jpg,.jpeg,.webp,.gif" data-chat-file>
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5l-8.5 8.5a5 5 0 01-7-7L14 4.5a3.5 3.5 0 015 5l-8.5 8.5a2 2 0 01-3-3L15 7.5"/></svg>
+                                        <span class="home-chat__sr">Приложить документ</span>
+                                    </label>
+                                    <textarea rows="1" data-chat-input placeholder="Опишите задачу или задайте вопрос" aria-label="Сообщение"></textarea>
+                                    <button type="submit" class="home-btn home-btn--primary home-chat__send" data-chat-send><span>Отправить</span><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></button>
+                                </div>
+                            </form>
+                            <div class="home-chat__footer">
+                                <p class="home-note">Сообщения и документы обрабатываются внешним ИИ-сервисом (Claude, Anthropic). Не загружайте сведения, которые компания не разрешает передавать третьим лицам.</p>
+                                <button type="button" class="home-chat__reset" data-chat-reset>Новый диалог</button>
+                            </div>
+                        </div>
+
+                        <div class="home-staff__panel" role="tabpanel" data-tab-panel="history" hidden>
+                            <ul class="home-records" data-history-list></ul>
+                            <p class="home-staff__empty" data-history-empty>Диалогов пока нет. Задайте вопрос во вкладке «Чат» — диалог сохранится здесь.</p>
+                        </div>
+
+                        <div class="home-staff__panel" role="tabpanel" data-tab-panel="registry" hidden>
+                            <ul class="home-records" data-registry-list></ul>
+                            <p class="home-staff__empty" data-registry-empty>Реестр пуст. Документы, приложенные в диалогах с этим специалистом, появятся здесь.</p>
+                        </div>
+
+                        <p class="home-note">Рекомендации специалистов носят вспомогательный характер и не заменяют решений, которые принимают сотрудники компании. История и реестры хранятся только в этом браузере.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="translations.js"></script>
+    <script src="home-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

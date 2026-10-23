@@ -6,7 +6,14 @@ const translations = {
             concept: "Concept", 
             goals: "Goals",
             modules: "Modules",
-            demo: "Request Demo"
+            demo: "Request Demo",
+            specialists: "Specialists",
+            solutions: "Solutions",
+            office: "Project office",
+            docs: "Document management",
+            complex: "Complete solution",
+            technologies: "Technologies",
+            about: "About"
         },
         intro: {
             tagline: "Platform for automation, optimization, and compliance in construction.",
@@ -111,6 +118,108 @@ const translations = {
         },
         module: {
             back: "← Back to Modules"
+        },
+        home: {
+            pending: "This section is being prepared and will be available soon.",
+            actions: { start: "Get started" },
+            hero: {
+                eyebrow: "Technology for the construction business",
+                title: "Do what you do best.",
+                titleMuted: "We'll help with the rest.",
+                lead: "Contracts, procurement, documents, finance and construction questions — professional digital support for your company.",
+                capabilities: "Our capabilities",
+                dir1: "Specialists",
+                dir2: "Document workflow and approvals",
+                dir3: "Contract support"
+            },
+            tasks: {
+                eyebrow: "Construction takes more than the ability to build",
+                title: "Behind every project are dozens of tasks not directly related to construction work.",
+                lead: "AIRCHITECT helps organize this work in one digital environment.",
+                contracts: { title: "Contracts", text: "Review terms and keep track of obligations." },
+                procurement: { title: "Procurement", text: "Analyze documentation and participation terms." },
+                documents: { title: "Documents", text: "Prepare, approve and organize." },
+                finance: { title: "Finance", text: "Understand payments and financial terms." },
+                counterparties: { title: "Counterparties", text: "Assess the risks of cooperation." },
+                construction: { title: "Construction questions", text: "Work with technical documentation and regulations." }
+            },
+            specialists: {
+                eyebrow: "Not just software. Professional help with your work.",
+                title: "Your team of specialists.",
+                lead: "Professional help with contractual, legal, financial, technical and organizational matters of the construction business.",
+                cta: "Meet the specialists",
+                open: "Open"
+            },
+            collab: {
+                eyebrow: "One contract. Several professional perspectives.",
+                title: "AIRCHITECT helps you not only work with documents, but understand their content and consequences.",
+                lead1: "A single contract may call for different professional competencies.",
+                lead2: "Specialists help review a document from legal, contractual, financial and organizational points of view.",
+                cta: "How it works",
+                doc: "Construction contract",
+                contracts: { title: "Contract specialist", text: "Highlights essential terms and obligations." },
+                lawyer: { title: "Construction lawyer", text: "Assesses legal risks." },
+                finance: { title: "Financier", text: "Analyzes payment terms, advances and retentions." },
+                pm: { title: "Project manager", text: "Helps define actions and control dates." }
+            },
+            products: {
+                eyebrow: "Choose where to start",
+                title: "Solutions for construction companies.",
+                lead: "Use individual products or combine them in a single system.",
+                more: "Learn more",
+                office: { title: "Digital project office", text: "Professional specialists for legal, financial, technical and organizational questions." },
+                docs: { title: "Electronic document management", text: "Documents, approvals and execution control in a system that reflects how construction companies work." },
+                complex: { title: "Complete solution", text: "Specialists and document management in one system. From document analysis to approval and support of contract execution." },
+                note: "The digital project office and electronic document management can each be used on their own. The complete solution combines both. All options share a single account and a common workspace."
+            },
+            support: {
+                eyebrow: "From contract review to fulfilment of obligations",
+                title: "A contract doesn't end with signing.",
+                lead1: "Once a contract is concluded, you need to account for payment terms, monitor deadlines, fulfil obligations, formalize changes and respond to emerging risks in time.",
+                lead2: "AIRCHITECT helps organize consistent work with a contract — from initial analysis to execution support.",
+                cta: "More about contract support",
+                s1: { title: "Contract", text: "Upload the contract and its annexes." },
+                s2: { title: "Analysis", text: "Highlight essential terms and risks." },
+                s3: { title: "Contract passport", text: "Structure terms, deadlines and obligations." },
+                s4: { title: "Obligation control", text: "Work with control events, documents and deadlines." },
+                s5: { title: "Execution", text: "Support changes and record results." }
+            },
+            regulatory: {
+                eyebrow: "Professional decisions need a basis",
+                title: "We know what to rely on.",
+                lead1: "The construction industry operates within complex legislation, technical regulation and contractual requirements.",
+                lead2: "AIRCHITECT provides for the use of verifiable regulatory sources: Russian legislation, building codes, state standards and official industry documents.",
+                cta: "Regulatory and legal base",
+                fz: "Russian legislation",
+                sp: "Building codes",
+                gost: "State standards",
+                normsMark: "Norms",
+                norms: "Official industry documents"
+            },
+            tech: {
+                title: "Technology that works for results.",
+                control: "Construction projects",
+                market: "Procurement and tenders",
+                legal: "Legal questions",
+                flow: "Documents and approvals",
+                codex: "Regulatory base",
+                academy: "Professional knowledge",
+                support: "Custom development",
+                chi: "Artificial intelligence"
+            },
+            about: {
+                eyebrow: "About the company",
+                title: "We build technology for the practical tasks of construction.",
+                lead1: "AIRCHITECT creates software that reflects the real processes of construction organizations: contract work, procurement, document management, financial and technical matters.",
+                lead2: "We aim to make professional tools available in a single workspace that is clear to both managers and staff of construction companies.",
+                cta: "More about the company"
+            },
+            final: {
+                title1: "Focus on construction.",
+                title2: "Leave the rest to AIRCHITECT.",
+                lead: "Start with specialists, add electronic document management or use the complete solution.",
+                choose: "Choose a solution"
+            }
         }
     },
     ru: {
@@ -119,7 +228,14 @@ const translations = {
             concept: "Концепция", 
             goals: "Цели",
             modules: "Модули",
-            demo: "Запросить демо"
+            demo: "Запросить демо",
+            specialists: "Специалисты",
+            solutions: "Решения",
+            office: "Проектный офис",
+            docs: "Документооборот",
+            complex: "Комплексное решение",
+            technologies: "Технологии",
+            about: "О компании"
         },
         intro: {
             tagline: "Платформа для автоматизации, оптимизации и соблюдения требований в строительстве.",
@@ -224,6 +340,108 @@ const translations = {
         },
         module: {
             back: "← Назад к модулям"
+        },
+        home: {
+            pending: "Раздел готовится и скоро будет доступен.",
+            actions: { start: "Начать работу" },
+            hero: {
+                eyebrow: "Технологии для строительного бизнеса",
+                title: "Делайте то, что умеете лучше всего.",
+                titleMuted: "В остальном мы поможем.",
+                lead: "Договоры, закупки, документы, финансы и строительные вопросы — профессиональная цифровая поддержка вашей компании.",
+                capabilities: "Наши возможности",
+                dir1: "Специалисты",
+                dir2: "Документооборот и согласования",
+                dir3: "Сопровождение договоров"
+            },
+            tasks: {
+                eyebrow: "Строительство требует больше, чем умения строить",
+                title: "За каждым объектом стоят десятки задач, не связанных напрямую со строительными работами.",
+                lead: "AIRCHITECT помогает организовать эту работу в одной цифровой среде.",
+                contracts: { title: "Договоры", text: "Проверять условия и контролировать обязательства." },
+                procurement: { title: "Закупки", text: "Анализировать документацию и условия участия." },
+                documents: { title: "Документы", text: "Готовить, согласовывать и систематизировать." },
+                finance: { title: "Финансы", text: "Разбираться в платежах и финансовых условиях." },
+                counterparties: { title: "Контрагенты", text: "Оценивать риски сотрудничества." },
+                construction: { title: "Строительные вопросы", text: "Работать с технической документацией и нормативами." }
+            },
+            specialists: {
+                eyebrow: "Не просто программа. Профессиональная помощь в работе.",
+                title: "Ваша команда специалистов.",
+                lead: "Профессиональная помощь по договорным, юридическим, финансовым, техническим и организационным вопросам строительного бизнеса.",
+                cta: "Познакомиться со специалистами",
+                open: "Открыть"
+            },
+            collab: {
+                eyebrow: "Один договор. Несколько профессиональных решений.",
+                title: "AIRCHITECT помогает не только работать с документами, но и понимать их содержание и последствия.",
+                lead1: "При работе с одним договором могут потребоваться разные профессиональные компетенции.",
+                lead2: "Специалисты помогают рассмотреть документ с юридической, договорной, финансовой и организационной точек зрения.",
+                cta: "Как это работает",
+                doc: "Договор подряда",
+                contracts: { title: "Договорной специалист", text: "Выделяет существенные условия и обязательства." },
+                lawyer: { title: "Строительный юрист", text: "Оценивает правовые риски." },
+                finance: { title: "Финансист", text: "Анализирует порядок оплаты, авансы и удержания." },
+                pm: { title: "Руководитель проекта", text: "Помогает определить действия и контрольные сроки." }
+            },
+            products: {
+                eyebrow: "Выберите, с чего начать",
+                title: "Решения для строительных компаний.",
+                lead: "Используйте отдельные продукты или объедините их в единой системе.",
+                more: "Подробнее",
+                office: { title: "Цифровой проектный офис", text: "Профессиональные специалисты для решения юридических, финансовых, технических и организационных вопросов." },
+                docs: { title: "Электронный документооборот", text: "Документы, согласования и контроль исполнения в системе, учитывающей специфику строительной компании." },
+                complex: { title: "Комплексное решение", text: "Специалисты и документооборот в единой системе. От анализа документов до их согласования и сопровождения исполнения обязательств." },
+                note: "Цифровой проектный офис и электронный документооборот можно использовать самостоятельно. Комплексное решение объединяет оба продукта. Все варианты работают в единой учётной записи и общей рабочей среде."
+            },
+            support: {
+                eyebrow: "От проверки договора до исполнения обязательств",
+                title: "Договор не заканчивается подписанием.",
+                lead1: "После заключения договора необходимо учитывать условия оплаты, контролировать сроки, исполнять обязательства, оформлять изменения и своевременно реагировать на возникающие риски.",
+                lead2: "AIRCHITECT помогает организовать последовательную работу с договором — от первоначального анализа до сопровождения исполнения.",
+                cta: "Подробнее о сопровождении договоров",
+                s1: { title: "Договор", text: "Загрузка договора и приложений." },
+                s2: { title: "Анализ", text: "Выделение существенных условий и рисков." },
+                s3: { title: "Паспорт договора", text: "Структурирование условий, сроков и обязательств." },
+                s4: { title: "Контроль обязательств", text: "Работа с контрольными событиями, документами и сроками." },
+                s5: { title: "Исполнение", text: "Сопровождение изменений и фиксация результатов." }
+            },
+            regulatory: {
+                eyebrow: "Профессиональные решения требуют оснований",
+                title: "Знаем, на что опираться.",
+                lead1: "Строительная отрасль работает в условиях сложного законодательства, технического регулирования и договорных требований.",
+                lead2: "AIRCHITECT предусматривает использование проверяемых нормативных источников: законодательства РФ, строительных правил, государственных стандартов и официальных отраслевых документов.",
+                cta: "Нормативно-правовая база",
+                fz: "Законодательство РФ",
+                sp: "Строительные правила",
+                gost: "Государственные стандарты",
+                normsMark: "Нормативы",
+                norms: "Официальные отраслевые документы"
+            },
+            tech: {
+                title: "Технологии, которые работают на результат.",
+                control: "Строительные проекты",
+                market: "Закупки и тендеры",
+                legal: "Юридические вопросы",
+                flow: "Документы и согласования",
+                codex: "Нормативная база",
+                academy: "Профессиональные знания",
+                support: "Разработка под задачи компании",
+                chi: "Искусственный интеллект"
+            },
+            about: {
+                eyebrow: "О компании",
+                title: "Разрабатываем технологии для практических задач строительства.",
+                lead1: "AIRCHITECT создаёт программные решения, учитывающие реальные процессы строительных организаций: договорную работу, закупки, документооборот, финансовые и технические вопросы.",
+                lead2: "Мы стремимся сделать профессиональные инструменты доступными в единой рабочей среде, понятной руководителям и сотрудникам строительных компаний.",
+                cta: "Подробнее о компании"
+            },
+            final: {
+                title1: "Сосредоточьтесь на строительстве.",
+                title2: "Остальное доверьте AIRCHITECT.",
+                lead: "Начните с специалистов, подключите электронный документооборот или используйте комплексное решение.",
+                choose: "Выбрать решение"
+            }
         }
     }
 };

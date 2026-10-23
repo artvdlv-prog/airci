@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.8em' font-size='45' font-family='Arial,sans-serif' font-weight='bold' fill='%23FF6A00'>AI</text></svg>">
-    <title>AirCodex — База знаний строительных кодов | Airchitect</title>
+    <meta name="description" content="Нормативно-правовая база AIRCHITECT: законодательство РФ, строительные правила, государственные стандарты и официальные отраслевые документы.">
+    <title>Нормативно-правовая база — AirCodex | AIRCHITECT</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,11 +17,17 @@
                 </a>
             </div>
             <div class="nav-menu">
-                <a href="index.html" class="nav-link">Главная</a>
-                <a href="projekty.html" class="nav-link">Проекты</a>
-                <a href="tseli.html" class="nav-link">Цели</a>
+                <a href="index.html#specialists" class="nav-link" data-translate="nav.specialists">Специалисты</a>
                 <div class="nav-dropdown">
-                    <a href="index.html#modules" class="nav-link dropdown-toggle">Модули</a>
+                    <a href="index.html#products" class="nav-link dropdown-toggle" data-translate="nav.solutions">Решения</a>
+                    <div class="dropdown-menu">
+                        <a href="office.html" class="dropdown-item" data-translate="nav.office">Проектный офис</a>
+                        <a href="docs.html" class="dropdown-item" data-translate="nav.docs">Документооборот</a>
+                        <a href="complex.html" class="dropdown-item" data-translate="nav.complex">Комплексное решение</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <a href="index.html#modules" class="nav-link dropdown-toggle" data-translate="nav.technologies">Технологии</a>
                     <div class="dropdown-menu">
                         <a href="aircontrol.html" class="dropdown-item">AirControl</a>
                         <a href="airmarket.html" class="dropdown-item">AirMarket</a>
@@ -32,6 +39,8 @@
                         <a href="airchi.html" class="dropdown-item">AirChi</a>
                     </div>
                 </div>
+                <a href="company.html" class="nav-link" data-translate="nav.about">О компании</a>
+                <button class="demo-btn">Личный кабинет</button>
                 <div class="language-switcher nav-dropdown">
                     <button class="lang-current nav-link dropdown-toggle">RU</button>
                     <div class="dropdown-menu lang-dropdown">
@@ -39,17 +48,32 @@
                         <button class="dropdown-item lang-btn" data-lang="en">English</button>
                     </div>
                 </div>
-                <button class="demo-btn">Личный кабинет</button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
     </nav>
 
-    <main>
-        <section class="module-hero-section">
-            <div class="container">
-                <div class="module-hero-content">
-                    <div class="module-icon-large">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+    <main class="home">
+        <section id="intro" class="home-hero home-hero--page">
+            <div class="container home-hero__inner">
+                <div class="home-hero__content home-reveal">
+                    <p class="home-eyebrow">Нормативно-правовая база</p>
+                    <h1 class="home-hero__title">
+                        <span>Знаем, на что опираться.</span>
+                        <span class="home-hero__title-muted">AirCodex — нормативная база</span>
+                    </h1>
+                    <p class="home-hero__lead">Строительная отрасль работает в условиях сложного законодательства, технического регулирования и договорных требований.</p>
+                    <div class="home-actions">
+                        <a href="index.html#modules" class="home-btn home-btn--secondary">Все направления</a>
+                    </div>
+                </div>
+                <div class="home-hero__modules home-reveal" aria-hidden="true">
+                    <span class="home-page-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                             <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
                             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
                             <path d="M9 9h5"/>
@@ -57,57 +81,60 @@
                             <path d="M9 17h3"/>
                             <circle cx="11" cy="6" r="1"/>
                         </svg>
-                    </div>
-                    <h1 class="module-title">AirCodex</h1>
-                    <p class="module-subtitle">База знаний строительных кодов</p>
-                    <p class="module-description">
-                        Интеллектуальная база знаний с расширенными возможностями поиска по строительным кодам,
-                        стандартам и нормативам включая СНиП, ГОСТ и международные строительные кодексы.
-                        Мгновенный доступ к актуальным требованиям и техническим спецификациям.
-                    </p>
+                    </span>
                 </div>
             </div>
         </section>
-
-        <section id="features" class="module-features-section">
+        <section id="sources" class="home-section">
+            <div class="container home-split">
+                <div class="home-split__text home-reveal">
+                    <p class="home-eyebrow">Профессиональные решения требуют оснований</p>
+                    <h2 class="home-title">Проверяемые источники.</h2>
+                    <p class="home-text">AIRCHITECT предусматривает использование проверяемых нормативных источников: законодательства РФ, строительных правил, государственных стандартов и официальных отраслевых документов.</p>
+                    <p class="home-text">Специалисты опираются на эти источники при работе с юридическими, техническими и договорными вопросами.</p>
+                    <p class="home-note">AirCodex — технологическое направление разработчика, а не отдельный коммерческий продукт. Его наработки используются в решениях AIRCHITECT.</p>
+                </div>
+                <ul class="home-norms home-reveal" aria-label="ФЗ, СП, ГОСТ, нормативы">
+                    <li class="home-norm"><span class="home-norm__mark">ФЗ</span><span class="home-norm__label" data-translate="home.regulatory.fz">Законодательство РФ</span></li>
+                    <li class="home-norm"><span class="home-norm__mark">СП</span><span class="home-norm__label" data-translate="home.regulatory.sp">Строительные правила</span></li>
+                    <li class="home-norm"><span class="home-norm__mark">ГОСТ</span><span class="home-norm__label" data-translate="home.regulatory.gost">Государственные стандарты</span></li>
+                    <li class="home-norm"><span class="home-norm__mark home-norm__mark--word" data-translate="home.regulatory.normsMark">Нормативы</span><span class="home-norm__label" data-translate="home.regulatory.norms">Официальные отраслевые документы</span></li>
+                </ul>
+            </div>
+        </section>
+        <section class="home-section home-section--alt">
+            <div class="container home-split">
+                <div class="home-split__text home-reveal">
+                    <p class="home-eyebrow">Где используется</p>
+                    <h2 class="home-title">Цифровой проектный офис.</h2>
+                </div>
+                <div class="home-split__text home-reveal">
+                    <p class="home-text">Нормативная база используется специалистами — строительным юристом, инженером ПТО, главным инженером и другими.</p>
+                    <div class="home-actions">
+                        <a href="office.html" class="home-btn home-btn--secondary" data-route="office">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="home-section home-final">
             <div class="container">
-                <h2 class="section-title">Ключевые возможности</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="11" cy="11" r="8"/>
-                                <path d="m21 21-4.35-4.35"/>
-                            </svg>
-                        </div>
-                        <h3>Поиск по кодам</h3>
-                        <p>Быстрый поиск по всем строительным нормам и техническим регламентам</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            </svg>
-                        </div>
-                        <h3>СНиП интеграция</h3>
-                        <p>Полная база данных строительных норм и правил РФ с регулярными обновлениями</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M9 12l2 2 4-4"/>
-                                <circle cx="12" cy="12" r="9"/>
-                            </svg>
-                        </div>
-                        <h3>ГОСТ соответствие</h3>
-                        <p>Проверка соответствия государственным стандартам и техническим условиям</p>
+                <div class="home-final__inner home-reveal">
+                    <h2 class="home-final__title">
+                        <span>Сосредоточьтесь на строительстве.</span>
+                        <span class="home-hero__title-muted">Остальное доверьте AIRCHITECT.</span>
+                    </h2>
+                    <p class="home-text">Начните с специалистов, подключите электронный документооборот или используйте комплексное решение.</p>
+                    <div class="home-actions">
+                        <a href="#" class="home-btn home-btn--primary" data-route="cabinet"><span>Начать работу</span><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+                        <a href="index.html#products" class="home-btn home-btn--secondary">Выбрать решение</a>
                     </div>
                 </div>
             </div>
         </section>
-
     </main>
 
+    <script src="translations.js"></script>
+    <script src="home-config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

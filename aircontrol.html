@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.8em' font-size='45' font-family='Arial,sans-serif' font-weight='bold' fill='%23FF6A00'>AI</text></svg>">
-    <title>AirControl — Комплексный контроль проектов | Airchitect</title>
+    <meta name="description" content="AirControl — технологическое направление AIRCHITECT: строительные проекты.">
+    <title>AirControl — Строительные проекты | AIRCHITECT</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -16,11 +17,17 @@
                 </a>
             </div>
             <div class="nav-menu">
-                <a href="index.html" class="nav-link">Главная</a>
-                <a href="projekty.html" class="nav-link">Проекты</a>
-                <a href="tseli.html" class="nav-link">Цели</a>
+                <a href="index.html#specialists" class="nav-link" data-translate="nav.specialists">Специалисты</a>
                 <div class="nav-dropdown">
-                    <a href="index.html#modules" class="nav-link dropdown-toggle">Модули</a>
+                    <a href="index.html#products" class="nav-link dropdown-toggle" data-translate="nav.solutions">Решения</a>
+                    <div class="dropdown-menu">
+                        <a href="office.html" class="dropdown-item" data-translate="nav.office">Проектный офис</a>
+                        <a href="docs.html" class="dropdown-item" data-translate="nav.docs">Документооборот</a>
+                        <a href="complex.html" class="dropdown-item" data-translate="nav.complex">Комплексное решение</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <a href="index.html#modules" class="nav-link dropdown-toggle" data-translate="nav.technologies">Технологии</a>
                     <div class="dropdown-menu">
                         <a href="aircontrol.html" class="dropdown-item">AirControl</a>
                         <a href="airmarket.html" class="dropdown-item">AirMarket</a>
@@ -32,6 +39,8 @@
                         <a href="airchi.html" class="dropdown-item">AirChi</a>
                     </div>
                 </div>
+                <a href="company.html" class="nav-link" data-translate="nav.about">О компании</a>
+                <button class="demo-btn">Личный кабинет</button>
                 <div class="language-switcher nav-dropdown">
                     <button class="lang-current nav-link dropdown-toggle">RU</button>
                     <div class="dropdown-menu lang-dropdown">
@@ -39,7 +48,6 @@
                         <button class="dropdown-item lang-btn" data-lang="en">English</button>
                     </div>
                 </div>
-                <button class="demo-btn">Личный кабинет</button>
             </div>
             <div class="nav-toggle">
                 <span></span>
@@ -49,116 +57,99 @@
         </div>
     </nav>
 
-    <main>
-        <!-- Hero Section -->
-        <section class="module-hero-section">
-            <div class="container">
-                <div class="module-hero-content">
-                    <div class="module-hero-icon">
-                        <div class="module-icon-large">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-                                <rect x="3" y="4" width="18" height="12" rx="2"/>
-                                <circle cx="8" cy="10" r="2"/>
-                                <path d="M14 8h4"/>
-                                <path d="M14 10h4"/>
-                                <path d="M14 12h4"/>
-                                <path d="M12 18l2 2"/>
-                                <path d="M12 18l-2 2"/>
-                                <path d="M12 16v2"/>
-                                <circle cx="8" cy="10" r="1"/>
-                            </svg>
-                        </div>
-                        <h1 class="module-title">AirControl</h1>
+    <main class="home">
+        <section id="intro" class="home-hero home-hero--page">
+            <div class="container home-hero__inner">
+                <div class="home-hero__content home-reveal">
+                    <p class="home-eyebrow">Технологическое направление</p>
+                    <h1 class="home-hero__title">
+                        <span>AirControl</span>
+                        <span class="home-hero__title-muted">Строительные проекты</span>
+                    </h1>
+                    <p class="home-hero__lead">Направление разработки AIRCHITECT, связанное с организацией работы по строительным проектам: документами, сроками и обязательствами участников.</p>
+                    <div class="home-actions">
+                        <a href="index.html#modules" class="home-btn home-btn--secondary">Все направления</a>
                     </div>
-                    <div class="module-hero-text">
-                        <h2 class="module-description-title">Комплексный контроль строительных проектов</h2>
-                        <p class="module-description">
-                            Всесторонний надзор за проектами через ИИ-аудит, интеграцию IoT-датчиков в реальном времени,
-                            дрон-наблюдение и предиктивный анализ рисков. Отслеживайте прогресс строительства,
-                            выявляйте потенциальные проблемы до их критического развития.
-                        </p>
+                </div>
+                <div class="home-hero__modules home-reveal" aria-hidden="true">
+                    <span class="home-page-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="12" rx="2"/>
+                            <circle cx="8" cy="10" r="2"/>
+                            <path d="M14 8h4"/>
+                            <path d="M14 10h4"/>
+                            <path d="M14 12h4"/>
+                            <path d="M12 18l2 2"/>
+                            <path d="M12 18l-2 2"/>
+                            <path d="M12 16v2"/>
+                            <circle cx="8" cy="10" r="1"/>
+                        </svg>
+                    </span>
+                </div>
+            </div>
+        </section>
+        <section id="tasks" class="home-section">
+            <div class="container">
+                <div class="home-head home-reveal">
+                    <p class="home-eyebrow">Задачи направления</p>
+                    <h2 class="home-title">С какими задачами работает направление.</h2>
+                </div>
+                <div class="home-tasks home-reveal">
+                    <ul class="home-tasks__grid home-tasks__grid--4">
+                        <li class="home-task">
+                            <h3 class="home-task__title">Документы проекта</h3>
+                            <p class="home-task__text">Систематизация документации по объекту в общей рабочей среде.</p>
+                        </li>
+                        <li class="home-task">
+                            <h3 class="home-task__title">Контрольные сроки</h3>
+                            <p class="home-task__text">Работа с контрольными событиями и сроками исполнения обязательств.</p>
+                        </li>
+                        <li class="home-task">
+                            <h3 class="home-task__title">Обязательства участников</h3>
+                            <p class="home-task__text">Учёт условий договоров и обязательств сторон.</p>
+                        </li>
+                        <li class="home-task">
+                            <h3 class="home-task__title">Организация работы</h3>
+                            <p class="home-task__text">Определение действий и ответственных по задачам проекта.</p>
+                        </li>
+                    </ul>
+                </div>
+                <p class="home-note home-reveal">AirControl — технологическое направление разработчика, а не отдельный коммерческий продукт. Его наработки используются в решениях AIRCHITECT.</p>
+            </div>
+        </section>
+        <section class="home-section home-section--alt">
+            <div class="container home-split">
+                <div class="home-split__text home-reveal">
+                    <p class="home-eyebrow">Где используется</p>
+                    <h2 class="home-title">Комплексное решение.</h2>
+                </div>
+                <div class="home-split__text home-reveal">
+                    <p class="home-text">Наработки направления используются в комплексном решении — от анализа документов до сопровождения исполнения обязательств.</p>
+                    <div class="home-actions">
+                        <a href="complex.html" class="home-btn home-btn--secondary" data-route="complex">Подробнее</a>
                     </div>
                 </div>
             </div>
         </section>
-
-        <!-- Features Section -->
-        <section id="features" class="module-features-section">
+        <section class="home-section home-final">
             <div class="container">
-                <h2 class="section-title">Ключевые возможности</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M9 12l2 2 4-4"/>
-                                <circle cx="12" cy="12" r="9"/>
-                            </svg>
-                        </div>
-                        <h3>ИИ-аудит проектов</h3>
-                        <p>Автоматическая проверка соответствия строительным нормам и стандартам с помощью искусственного интеллекта</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
-                            </svg>
-                        </div>
-                        <h3>IoT мониторинг</h3>
-                        <p>Датчики контролируют температуру, влажность, вибрации и другие параметры в режиме реального времени</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                                <path d="M2 17l10 5 10-5"/>
-                                <path d="M2 12l10 5 10-5"/>
-                            </svg>
-                        </div>
-                        <h3>Дрон-наблюдение</h3>
-                        <p>Воздушная съемка объектов для контроля прогресса и обнаружения отклонений от проекта</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                            </svg>
-                        </div>
-                        <h3>Анализ рисков</h3>
-                        <p>Предиктивная аналитика для выявления потенциальных проблем и рисков на ранних стадиях</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                                <polyline points="14,2 14,8 20,8"/>
-                                <line x1="16" y1="13" x2="8" y2="13"/>
-                                <line x1="16" y1="17" x2="8" y2="17"/>
-                                <polyline points="10,9 9,9 8,9"/>
-                            </svg>
-                        </div>
-                        <h3>Автоматическая отчетность</h3>
-                        <p>Генерация детальных отчетов о ходе работ, соблюдении сроков и качестве выполнения</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            </svg>
-                        </div>
-                        <h3>Контроль безопасности</h3>
-                        <p>Мониторинг соблюдения норм безопасности и автоматические уведомления о нарушениях</p>
+                <div class="home-final__inner home-reveal">
+                    <h2 class="home-final__title">
+                        <span>Сосредоточьтесь на строительстве.</span>
+                        <span class="home-hero__title-muted">Остальное доверьте AIRCHITECT.</span>
+                    </h2>
+                    <p class="home-text">Начните с специалистов, подключите электронный документооборот или используйте комплексное решение.</p>
+                    <div class="home-actions">
+                        <a href="#" class="home-btn home-btn--primary" data-route="cabinet"><span>Начать работу</span><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+                        <a href="index.html#products" class="home-btn home-btn--secondary">Выбрать решение</a>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
+    <script src="translations.js"></script>
+    <script src="home-config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

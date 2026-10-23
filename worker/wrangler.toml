@@ -1,0 +1,16 @@
+name = "airchitect-chat"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Sites allowed to call the chat (comma-separated). Add the local address for testing if needed.
+ALLOWED_ORIGINS = "https://www.airchi.tech,https://airchi.tech"
+
+# Limit: 20 messages per minute from one IP address
+[[ratelimits]]
+name = "CHAT_LIMITER"
+namespace_id = "1001"
+simple = { limit = 20, period = 60 }
+
+# The API key is a secret, not a variable: npx wrangler secret put ANTHROPIC_API_KEY

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.8em' font-size='45' font-family='Arial,sans-serif' font-weight='bold' fill='%23FF6A00'>AI</text></svg>">
+    <meta name="description" content="AIRCHITECT OFFICE — профессиональные специалисты для решения юридических, финансовых, технических и организационных вопросов строительной компании.">
+    <title>Цифровой проектный офис — AIRCHITECT OFFICE</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="Logo Airchitect.jpg" alt="Airchitect" class="nav-logo">
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html#specialists" class="nav-link" data-translate="nav.specialists">Специалисты</a>
+                <div class="nav-dropdown">
+                    <a href="index.html#products" class="nav-link dropdown-toggle" data-translate="nav.solutions">Решения</a>
+                    <div class="dropdown-menu">
+                        <a href="office.html" class="dropdown-item" data-translate="nav.office">Проектный офис</a>
+                        <a href="docs.html" class="dropdown-item" data-translate="nav.docs">Документооборот</a>
+                        <a href="complex.html" class="dropdown-item" data-translate="nav.complex">Комплексное решение</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <a href="index.html#modules" class="nav-link dropdown-toggle" data-translate="nav.technologies">Технологии</a>
+                    <div class="dropdown-menu">
+                        <a href="aircontrol.html" class="dropdown-item">AirControl</a>
+                        <a href="airmarket.html" class="dropdown-item">AirMarket</a>
+                        <a href="airlegal.html" class="dropdown-item">AirLegal</a>
+                        <a href="airflow.html" class="dropdown-item">AirFlow</a>
+                        <a href="aircodex.html" class="dropdown-item">AirCodex</a>
+                        <a href="airacademy.html" class="dropdown-item">AirAcademy</a>
+                        <a href="airsupport.html" class="dropdown-item">AirSupport</a>
+                        <a href="airchi.html" class="dropdown-item">AirChi</a>
+                    </div>
+                </div>
+                <a href="company.html" class="nav-link" data-translate="nav.about">О компании</a>
+                <button class="demo-btn">Личный кабинет</button>
+                <div class="language-switcher nav-dropdown">
+                    <button class="lang-current nav-link dropdown-toggle">RU</button>
+                    <div class="dropdown-menu lang-dropdown">
+                        <button class="dropdown-item lang-btn" data-lang="ru">Русский</button>
+                        <button class="dropdown-item lang-btn" data-lang="en">English</button>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="home">
+        <section id="intro" class="home-hero home-hero--page">
+            <div class="container home-hero__inner">
+                <div class="home-hero__content home-reveal">
+                    <p class="home-eyebrow">AIRCHITECT OFFICE</p>
+                    <h1 class="home-hero__title">
+                        <span>Цифровой проектный офис.</span>
+                        <span class="home-hero__title-muted">Ваша команда специалистов.</span>
+                    </h1>
+                    <p class="home-hero__lead">Профессиональные специалисты для решения юридических, финансовых, технических и организационных вопросов.</p>
+                    <div class="home-actions">
+                        <a href="#" class="home-btn home-btn--primary" data-route="cabinet"><span>Начать работу</span><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+                        <a href="#specialists" class="home-btn home-btn--secondary">Познакомиться со специалистами</a>
+                    </div>
+                </div>
+                <div class="home-hero__modules home-hero__media-card home-reveal" aria-hidden="true">
+                    <div class="home-media" data-arch-seed="office" data-image=""></div>
+                </div>
+            </div>
+        </section>
+        <section id="specialists" class="home-section home-section--alt">
+            <div class="container">
+                <div class="home-head home-reveal">
+                    <p class="home-eyebrow">Не просто программа. Профессиональная помощь в работе.</p>
+                    <h2 class="home-title">Специалисты для строительного бизнеса.</h2>
+                    <p class="home-text">Задавайте вопросы, загружайте документы и получайте профессиональную помощь по юридическим, финансовым, техническим и организационным вопросам строительного бизнеса.</p>
+                </div>
+                <!-- Cards are rendered from HOME_SPECIALISTS (home-config.js) -->
+                <ul class="home-specialists home-specialists--wide home-reveal" data-specialists></ul>
+            </div>
+        </section>
+        <section id="how" class="home-section">
+            <div class="container home-split">
+                <div class="home-split__text home-reveal">
+                    <p class="home-eyebrow">Один договор. Несколько профессиональных решений.</p>
+                    <h2 class="home-title">Как это работает.</h2>
+                    <p class="home-text">При работе с одним договором могут потребоваться разные профессиональные компетенции.</p>
+                    <p class="home-text">Специалисты помогают рассмотреть документ с юридической, договорной, финансовой и организационной точек зрения.</p>
+                    <p class="home-note">Рекомендации специалистов носят вспомогательный характер и не заменяют решений, которые принимают сотрудники компании.</p>
+                </div>
+                <div class="home-collab home-reveal">
+                    <svg class="home-collab__lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+                        <path d="M25 18L50 50M75 18L50 50M25 82L50 50M75 82L50 50"/>
+                    </svg>
+                    <div class="home-doc">
+                        <span class="home-doc__label" data-translate="home.collab.doc">Договор подряда</span>
+                        <span class="home-doc__line"></span>
+                        <span class="home-doc__line"></span>
+                        <span class="home-doc__line home-doc__line--short"></span>
+                        <span class="home-doc__line"></span>
+                        <span class="home-doc__line home-doc__line--short"></span>
+                    </div>
+                    <ul class="home-collab__roles">
+                        <li class="home-role">
+                            <h3 class="home-role__title" data-translate="home.collab.contracts.title">Договорной специалист</h3>
+                            <p class="home-role__text" data-translate="home.collab.contracts.text">Выделяет существенные условия и обязательства.</p>
+                        </li>
+                        <li class="home-role">
+                            <h3 class="home-role__title" data-translate="home.collab.lawyer.title">Строительный юрист</h3>
+                            <p class="home-role__text" data-translate="home.collab.lawyer.text">Оценивает правовые риски.</p>
+                        </li>
+                        <li class="home-role">
+                            <h3 class="home-role__title" data-translate="home.collab.finance.title">Финансист</h3>
+                            <p class="home-role__text" data-translate="home.collab.finance.text">Анализирует порядок оплаты, авансы и удержания.</p>
+                        </li>
+                        <li class="home-role">
+                            <h3 class="home-role__title" data-translate="home.collab.pm.title">Руководитель проекта</h3>
+                            <p class="home-role__text" data-translate="home.collab.pm.text">Помогает определить действия и контрольные сроки.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section class="home-section home-section--alt">
+            <div class="container home-split">
+                <div class="home-split__text home-reveal">
+                    <p class="home-eyebrow">Принцип работы</p>
+                    <h2 class="home-title">Самостоятельно или в составе комплексного решения.</h2>
+                </div>
+                <div class="home-split__text home-reveal">
+                    <p class="home-text">Цифровой проектный офис и электронный документооборот можно использовать самостоятельно. Комплексное решение объединяет оба продукта. Все варианты работают в единой учётной записи и общей рабочей среде.</p>
+                    <div class="home-actions">
+                        <a href="complex.html" class="home-btn home-btn--secondary" data-route="complex">Комплексное решение</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="home-section home-final">
+            <div class="container">
+                <div class="home-final__inner home-reveal">
+                    <h2 class="home-final__title">
+                        <span>Сосредоточьтесь на строительстве.</span>
+                        <span class="home-hero__title-muted">Остальное доверьте AIRCHITECT.</span>
+                    </h2>
+                    <p class="home-text">Начните с специалистов, подключите электронный документооборот или используйте комплексное решение.</p>
+                    <div class="home-actions">
+                        <a href="#" class="home-btn home-btn--primary" data-route="cabinet"><span>Начать работу</span><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+                        <a href="index.html#products" class="home-btn home-btn--secondary">Выбрать решение</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="translations.js"></script>
+    <script src="home-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
