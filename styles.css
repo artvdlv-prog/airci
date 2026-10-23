@@ -43,6 +43,11 @@
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background-color: var(--background-primary);
@@ -3908,6 +3913,25 @@ body {
         overflow: hidden;
     }
 
+    /* Appears in place (no slide from the side, nothing moves sideways) */
+    .nav-menu,
+    .nav-menu.active {
+        left: 0;
+        right: 0;
+        width: 100%;
+    }
+
+    .nav-menu {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+
+    .nav-menu.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
     .nav-menu {
         top: 64px;
         height: calc(100vh - 64px);
@@ -3950,6 +3974,31 @@ body {
         margin-top: 24px;
         padding: 0;
         font-size: 15px;
+    }
+}
+
+/* Narrow desktop menu (tablets, phones in landscape): everything fits on one line */
+@media (min-width: 769px) and (max-width: 960px) {
+    .nav-menu {
+        gap: 16px;
+    }
+
+    .nav-link {
+        font-size: 13px;
+        letter-spacing: 0.3px;
+    }
+
+    .nav-logo {
+        height: 34px;
+    }
+
+    .demo-btn {
+        width: 40px;
+        padding: 0;
+    }
+
+    .demo-btn span {
+        display: none;
     }
 }
 
