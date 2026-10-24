@@ -1046,7 +1046,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (action === 'notice') prepareNotice(c);
         if (action === 'claim') { prepareNotice(c); const sel = el.dialog.querySelector('[name=type]'); if (sel) sel.value = 'claim'; }
         if (action === 'amendment') editAmendment(c);
-        if (action === 'terms' && root.querySelector('[data-ct-tab="terms"]')) root.querySelector('[data-ct-tab="terms"]').click();
+        if ((action === 'terms' || action === 'closing') && root.querySelector('[data-ct-tab="terms"]')) root.querySelector('[data-ct-tab="terms"]').click();
+        if (action === 'closing') { const blocks = el.terms.querySelectorAll('.home-ct__block'); if (blocks.length) blocks[blocks.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     }
     runAction((new URLSearchParams(location.search).get('id') || '').split('~')[1]);
 

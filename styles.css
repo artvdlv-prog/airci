@@ -6235,12 +6235,9 @@ a.home-registry__num::after {
 }
 
 .home-ws--contracts {
-    margin: 0 0 22px;
-    padding: 18px 20px;
+    margin: 0 0 18px;
+    padding: 0;
     border-top: 0;
-    background: var(--home-bg);
-    border-radius: 16px;
-    box-shadow: inset 0 3px 0 var(--primary-orange), var(--shadow-sm);
 }
 
 .home-ws__context-box {
@@ -6259,8 +6256,58 @@ a.home-registry__num::after {
     font-size: 14px;
 }
 
-@media (max-width: 600px) {
-    .home-ws--contracts {
-        padding: 14px;
-    }
+
+
+/* Quick actions and the collapsible summary above the contracts list */
+.home-chat__action.is-primary {
+    background: var(--home-ink);
+    border-color: var(--home-ink);
+    color: #fff;
+}
+
+.home-ws__summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.home-ws__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--home-bg-alt);
+    border: 1px solid var(--home-line);
+    border-radius: 999px;
+    color: var(--home-text);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.home-ws__chip:hover,
+.home-ws__chip:focus-visible,
+.home-ws__chip[aria-selected="true"] {
+    border-color: var(--home-ink);
+    color: var(--home-ink);
+}
+
+.home-ws__count {
+    min-width: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--home-bg);
+    color: var(--home-ink);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.home-ws--contracts .home-ws__panel {
+    margin-top: 10px;
+    padding: 4px 16px;
+    background: var(--home-bg);
+    border: 1px solid var(--home-line);
+    border-radius: 14px;
 }

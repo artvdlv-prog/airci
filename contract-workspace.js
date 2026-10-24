@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function needContract() {
         const c = selectedContract();
-        if (!c) notify('Выберите договор в «Мои договоры» или создайте карточку.');
+        if (!c) notify('Откройте договор в списке или создайте новый из файла.');
         return c;
     }
 
@@ -59,90 +59,66 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             notify(`Карточка создана, но договор не прочитан: ${err.message}`);
         }
-        tab = 'obligations';
         render();
-        document.dispatchEvent(new Event('contractselect'));
+        openCard(c);
     }
 
-    // ---- Layout ----------------------------------------------------------------------------------
+    // ---- Layout: a row of quick actions and a collapsible summary of all contracts -----------------
 
     const fileInput = h('input', { type: 'file', accept: '.pdf,.docx,.txt', hidden: true, onchange: ev => { if (ev.target.files[0]) createFromFile(ev.target.files[0]); ev.target.value = ''; } });
-    const root = h('section', { class: 'home-ws home-ws--contracts', 'aria-label': 'Рабочее пространство договорного специалиста' });
+    const root = h('section', { class: 'home-ws home-ws--contracts', 'aria-label': 'Быстрые действия и сводка по договорам' });
     layout.before(root);
-    root.appendChild(fileInput);
 
+    // Actions on the open card use it; the summary covers all contracts
     const ACTIONS = [
+        ['Новый договор из файла', () => fileInput.click(), true],
         ['Проверить договор', () => { const c = needContract(); if (c) askChat(`Проверь договор: стороны, предмет, цена и сроки, финансовые условия, ответственность сторон, порядок оплаты и приёмки, приложения. Выдели юридические и финансовые риски и сформируй краткое заключение.${c.file ? ' Приложи файл договора к сообщению для полной проверки текста.' : ''}`); }],
-        ['Создать карточку договора', () => fileInput.click()],
-        ['Показать обязательства', () => { tab = 'obligations'; onlyPayments = false; render(); }],
-        ['Проверить сроки оплаты', () => { tab = 'deadlines'; onlyPayments = true; render(); }],
         ['Выявить риски', () => { const c = needContract(); if (c) askChat('Выяви договорные, финансовые и организационные риски по договору с учётом предупреждений системы и предложи меры их снижения. Отдели риски, подтверждённые условиями договора, от предположений.'); }],
-        ['Подготовить дополнительное соглашение', () => { const c = needContract(); if (c) openCard(c, 'amendment'); }],
-        ['Подготовить уведомление', () => { const c = needContract(); if (c) openCard(c, 'notice'); }],
-        ['Подготовить претензию', () => { const c = needContract(); if (c) openCard(c, 'claim'); }],
-        ['Проверить готовность к закрытию', () => { tab = 'contracts'; render(); setTimeout(() => { const el = root.querySelector('[data-ws-ready]'); if (el) el.scrollIntoView({ block: 'center' }); }, 50); }]
+        ['Доп. соглашение', () => { const c = needContract(); if (c) openCard(c, 'amendment'); }],
+        ['Претензия', () => { const c = needContract(); if (c) openCard(c, 'claim'); }],
+        ['Готовность к закрытию', () => { const c = needContract(); if (c) openCard(c, 'closing'); }]
     ];
-    const TEAM = [
-        ['Юрист', 'construction-lawyer', 'Правовая экспертиза условий, претензии, ответственность, изменение и расторжение договора.'],
-        ['Финансист', 'financier', 'Авансы, платежи, удержания, денежный поток и финансовые риски по договору.'],
-        ['Инженер ПТО', 'pto-engineer', 'Объёмы работ, техническая и исполнительная документация, приёмка.'],
-        ['Специалист по безопасности', 'security-specialist', 'Проверка контрагента и связанных рисков.'],
-        ['Тендерный специалист', 'tender-specialist', 'Условия закупки, по которой заключён договор.'],
-        ['Руководитель проекта', 'project-manager', 'Состояние договора, просроченные обязательства и задачи руководителя.']
-    ];
-    const TABS = [['contracts', 'Мои договоры'], ['obligations', 'Обязательства'], ['deadlines', 'Сроки'], ['documents', 'Документы'], ['risks', 'Риски'], ['history', 'История']];
+    const TABS = [['obligations', 'Обязательства'], ['deadlines', 'Сроки'], ['documents', 'Документы'], ['risks', 'Риски'], ['history', 'История']];
+    tab = null;
+
+    function counts() {
+        const active = data.contracts.filter(x => !x.closed);
+        const warn = active.flatMap(x => CC.warnings(x));
+        return {
+            obligations: active.reduce((n, x) => n + x.obligations.filter(o => CC.obligationStatus(o) !== 'done').length, 0),
+            deadlines: warn.length,
+            documents: data.contracts.reduce((n, x) => n + CC.documents(x).length, 0),
+            risks: warn.filter(w => w.level >= 2).length + active.reduce((n, x) => n + x.risks.length, 0),
+            history: null
+        };
+    }
 
     function render() {
         data = CC.read();
         data.contracts.forEach(CC.ensure);
-        const c = selectedContract();
         root.textContent = '';
         root.appendChild(fileInput);
-        const select = h('select', { 'aria-label': 'Договор', onchange: ev => { CC.select(ev.target.value); const x = data.contracts.find(y => y.id === ev.target.value); if (x) openCard(x); else render(); } },
-            h('option', { value: '' }, data.contracts.length ? '— выберите договор —' : 'Договоров пока нет'), data.contracts.map(x => h('option', { value: x.id, selected: c && x.id === c.id }, `${CC.name(x)}${x.subject ? ' — ' + x.subject : ''}${x.closed ? ' (закрыт)' : ''}`)));
+        const n = counts();
         root.append(
-            h('div', { class: 'home-ws__head' }, h('div', {}, h('p', { class: 'home-eyebrow' }, 'Договорной специалист'), h('h3', { class: 'home-ws__title' }, 'Сопровождение договоров от подписания до окончательного расчёта')),
-                h('div', { class: 'home-ws__pick' }, select, h('button', { type: 'button', class: 'home-btn home-btn--primary home-cab__small', onclick: () => askChat('') }, 'Диалог со специалистом'))),
-            h('div', { class: 'home-ws__actions' }, ACTIONS.map(([l, fn]) => h('button', { type: 'button', class: 'home-chat__action', onclick: fn }, l))),
-            h('div', { class: 'home-tabs', role: 'tablist', 'aria-label': 'Рабочие вкладки' }, TABS.map(([k, l]) => h('button', { type: 'button', role: 'tab', class: 'home-tab', 'aria-selected': String(k === tab), onclick: () => { tab = k; if (k !== 'deadlines') onlyPayments = false; render(); } }, l))));
+            h('div', { class: 'home-ws__actions' }, ACTIONS.map(([l, fn, primary]) => h('button', { type: 'button', class: 'home-chat__action' + (primary ? ' is-primary' : ''), onclick: fn }, l))),
+            h('div', { class: 'home-ws__summary', role: 'tablist', 'aria-label': 'Сводка по договорам' }, TABS.map(([k, l]) => h('button', {
+                type: 'button', role: 'tab', class: 'home-ws__chip', 'aria-selected': String(k === tab), 'aria-expanded': String(k === tab),
+                onclick: () => { tab = tab === k ? null : k; if (k !== 'deadlines') onlyPayments = false; render(); }
+            }, l, n[k] !== null && n[k] !== undefined ? h('span', { class: 'home-ws__count' }, String(n[k])) : null))));
+        if (!tab) return;
         const panel = h('div', { class: 'home-ws__panel' });
         root.appendChild(panel);
-        ({ contracts: renderContracts, obligations: renderObligations, deadlines: renderDeadlines, documents: renderDocuments, risks: renderRisks, history: renderHistory })[tab](panel, c);
-        if (c) root.appendChild(h('div', { class: 'home-ws__team' }, h('p', { class: 'home-dialog__label' }, 'Подключить специалиста к договору'), h('div', { class: 'home-ws__actions' },
-            TEAM.map(([l, slug, task]) => h('button', { type: 'button', class: 'home-chat__action', title: task, onclick: () => {
-                if (typeof window.AirchitectOpenSpecialist === 'function') window.AirchitectOpenSpecialist(slug, `${CC.context(c)}\n\nЗадача от договорного специалиста: ${task}\n\nВопрос: `);
-            } }, l)))));
-        root.appendChild(h('p', { class: 'home-note' }, 'Договорной специалист работает с карточками договоров ниже: изменения сразу видны в карточке. Срок без сведений об исполнении отмечается как «Требует подтверждения», а не как нарушение.'));
-    }
-
-    function stats(c) {
-        const s = c.obligations.map(CC.obligationStatus);
-        const n = k => s.filter(x => x === k).length;
-        return `обязательств ${c.obligations.length} · исполнено ${n('done')} · требуют подтверждения ${n('pastdue') + n('review')} · не исполнено ${n('overdue')}`;
-    }
-
-    function renderContracts(panel, c) {
-        const active = data.contracts.filter(x => !x.closed);
-        const closed = data.contracts.filter(x => x.closed);
-        const list = (items, empty) => h('ul', { class: 'home-ct__list' }, items.length ? items.map(x => rowEl([x.id === (c && c.id) ? badge('Выбран', 'done') : null, `${CC.name(x)}${x.subject ? ' · ' + x.subject : ''}`],
-            [[x.customer && `Заказчик: ${x.customer}`, x.contractor && `Подрядчик: ${x.contractor}`, x.price && `цена ${x.price}`, x.end && `окончание ${formatDate(x.end)}`].filter(Boolean).join(' · '), stats(x), CC.warnings(x).filter(w => w.level >= 2).length ? `Предупреждений: ${CC.warnings(x).filter(w => w.level >= 2).length}` : ''],
-            [['Открыть карточку', () => openCard(x)]])) : h('li', { class: 'home-ct__none' }, empty));
-        panel.append(h('p', { class: 'home-dialog__label' }, 'Действующие'), list(active, 'Действующих договоров нет. Нажмите «Создать карточку договора» и загрузите файл.'), h('p', { class: 'home-dialog__label' }, 'Завершённые'), list(closed, 'Завершённых договоров нет.'));
-        if (c) {
-            const ready = CC.closeReadiness(c);
-            panel.appendChild(h('div', { class: 'home-ws__ready', 'data-ws-ready': '' }, h('p', { class: 'home-dialog__label' }, `Готовность к закрытию: ${CC.name(c)} — ${ready.ready ? 'готов' : 'не готов'}`),
-                h('ul', { class: 'home-ct__list' }, ready.items.map(i => rowEl([badge(i.ok ? 'Готово' : 'Не готово', i.ok ? 'done' : 'soon'), i.text], [])))));
-        }
+        ({ obligations: renderObligations, deadlines: renderDeadlines, documents: renderDocuments, risks: renderRisks, history: renderHistory })[tab](panel, null);
     }
 
     function renderObligations(panel, c) {
-        const items = (c ? [c] : data.contracts).flatMap(x => x.obligations.map(o => ({ x, o, s: CC.obligationStatus(o) })))
+        const items = (c ? [c] : data.contracts.filter(x => !x.closed)).flatMap(x => x.obligations.map(o => ({ x, o, s: CC.obligationStatus(o) }))).filter(i => i.s !== 'done')
             .sort((a, b) => ({ overdue: 0, pastdue: 1, soon: 2, review: 3, active: 4, done: 5 }[a.s] - { overdue: 0, pastdue: 1, soon: 2, review: 3, active: 4, done: 5 }[b.s]) || (a.o.due || '9').localeCompare(b.o.due || '9'));
         panel.appendChild(h('ul', { class: 'home-ct__list' }, items.length ? items.map(({ x, o, s }) => rowEl([badge(STATUS_LABEL[s], STATUS_TONE[s]), o.text],
             [`${PARTIES[o.party] || ''} · п. ${o.clause || '—'} · ${o.due ? 'срок ' + formatDate(o.due) : o.condition || 'срок не указан'}${c ? '' : ' · ' + CC.name(x)}`, o.status === 'done' ? `Исполнено ${formatDate(o.doneAt)}${o.doneNote ? ' — ' + o.doneNote : ''}` : '', o.status === 'breached' ? `Не исполнено: ${o.breachBasis}` : ''],
             [...(!o.confirmed ? [['Подтвердить', () => { o.confirmed = true; x.log.unshift({ at: Date.now(), text: `Подтверждено обязательство (п. ${o.clause || '—'}) договорным специалистом` }); save(); render(); }]] : []),
                 ...(o.status !== 'done' ? [['Исполнено', () => ask('Подтвердить исполнение', [{ name: 'date', label: 'Дата исполнения', type: 'date', value: CC.today(), required: true }, { name: 'note', label: 'Подтверждение (документ, письмо)', required: true }], v => { Object.assign(o, { status: 'done', doneAt: v.date, doneNote: v.note }); x.log.unshift({ at: Date.now(), text: `Исполнено (п. ${o.clause || '—'}): ${o.text.slice(0, 80)} — ${v.note}` }); })]] : []),
-                ...(o.status !== 'done' && o.status !== 'breached' && o.confirmed ? [['Не исполнено', () => ask('Обязательство не исполнено', [{ name: 'date', label: 'Дата фиксации', type: 'date', value: CC.today(), required: true }, { name: 'basis', label: 'Чем подтверждается неисполнение', type: 'textarea', required: true }], v => { Object.assign(o, { status: 'breached', breachAt: v.date, breachBasis: v.basis }); x.log.unshift({ at: Date.now(), text: `Отмечено неисполнение (п. ${o.clause || '—'}): ${v.basis}` }); })]] : [])])) : h('li', { class: 'home-ct__none' }, 'Обязательств нет.')));
+                ...(o.status !== 'done' && o.status !== 'breached' && o.confirmed ? [['Не исполнено', () => ask('Обязательство не исполнено', [{ name: 'date', label: 'Дата фиксации', type: 'date', value: CC.today(), required: true }, { name: 'basis', label: 'Чем подтверждается неисполнение', type: 'textarea', required: true }], v => { Object.assign(o, { status: 'breached', breachAt: v.date, breachBasis: v.basis }); x.log.unshift({ at: Date.now(), text: `Отмечено неисполнение (п. ${o.clause || '—'}): ${v.basis}` }); })]] : [])])) : h('li', { class: 'home-ct__none' }, 'Открытых обязательств нет.')));
     }
 
     function renderDeadlines(panel, c) {
@@ -158,15 +134,11 @@ document.addEventListener('DOMContentLoaded', () => {
         panel.appendChild(h('ul', { class: 'home-ct__list' }, docs.length ? docs.map(d => rowEl([badge(d.kind), d.file ? h('button', { type: 'button', class: 'home-ct__file', onclick: () => openFile(d.file) }, d.title) : d.title], [[d.meta, c ? '' : CC.name(d.x)].filter(Boolean).join(' · ')])) : h('li', { class: 'home-ct__none' }, 'Документов нет.')));
     }
 
-    function renderRisks(panel, c) {
-        if (!c) { panel.appendChild(h('p', { class: 'home-staff__empty' }, 'Выберите договор.')); return; }
-        const w = CC.warnings(c).filter(x => x.level >= 2);
-        panel.appendChild(h('ul', { class: 'home-ct__list' },
-            ...w.map(x => rowEl([badge(x.level >= 3 ? 'Нарушение' : 'Внимание', x.level >= 3 ? 'overdue' : 'soon'), x.text], ['Предупреждение системы по данным карточки'])),
-            ...c.risks.map(x => rowEl([badge(x.level === 'high' ? 'Высокий' : x.level === 'medium' ? 'Средний' : 'Низкий', x.level === 'high' ? 'overdue' : 'soon'), x.text], [[x.kind, x.measure && 'мера: ' + x.measure, x.source].filter(Boolean).join(' · ')])),
-            ...c.analyses.slice(0, 3).map(x => rowEl([badge('Заключение', 'review'), `${x.by}, ${new Date(x.at).toLocaleDateString('ru-RU')}`], [x.text.slice(0, 400) + (x.text.length > 400 ? '…' : '')])),
-            !w.length && !c.risks.length && !c.analyses.length ? h('li', { class: 'home-ct__none' }, 'Рисков пока нет. Нажмите «Выявить риски» — ответ специалиста можно сохранить в карточку.') : null));
-        panel.appendChild(h('div', { class: 'home-ct__actions' }, h('button', { type: 'button', class: 'home-btn home-btn--secondary home-cab__small', onclick: () => ask('Риск по договору', [{ name: 'text', label: 'Риск', type: 'textarea', required: true }, { name: 'measure', label: 'Мера снижения' }, { name: 'source', label: 'Источник (пункт договора, заключение)' }], v => { c.risks.push({ id: CC.uid(), at: Date.now(), kind: 'Договорной', level: 'medium', ...v }); c.log.unshift({ at: Date.now(), text: `Добавлен риск: ${v.text.slice(0, 80)}` }); }) }, 'Добавить риск')));
+    function renderRisks(panel) {
+        const items = data.contracts.filter(x => !x.closed).flatMap(x => [
+            ...CC.warnings(x).filter(w => w.level >= 2).map(w => rowEl([badge(w.level >= 3 ? 'Нарушение' : 'Внимание', w.level >= 3 ? 'overdue' : 'soon'), w.text], [CC.name(x)], [['Карточка', () => openCard(x)]])),
+            ...x.risks.map(r => rowEl([badge(r.level === 'high' ? 'Высокий' : r.level === 'medium' ? 'Средний' : 'Низкий', r.level === 'high' ? 'overdue' : 'soon'), r.text], [[CC.name(x), r.kind, r.measure && 'мера: ' + r.measure].filter(Boolean).join(' · ')], [['Карточка', () => openCard(x)]]))]);
+        panel.appendChild(h('ul', { class: 'home-ct__list' }, items.length ? items : h('li', { class: 'home-ct__none' }, 'Рисков нет. «Выявить риски» отправит открытый договор специалисту; ответ сохраняется в карточку.')));
     }
 
     function renderHistory(panel, c) {
