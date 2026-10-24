@@ -405,7 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         o.clause ? `п. ${o.clause}` : 'пункт не указан',
                         dueText(o),
                         o.responsible ? `Ответственный: ${o.responsible}` : '',
-                        o.source === 'ai' ? 'извлечено из договора' : ''
+                        o.source === 'ai' ? 'извлечено специалистом' : o.source === 'auto' ? 'найдено автоматически' : ''
                     ].filter(Boolean).join(' · ')),
                     o.condition && o.due ? h('p', { class: 'home-ct__row-meta' }, `Условие: ${o.condition}`) : null,
                     o.status === 'done' ? h('p', { class: 'home-ct__row-meta' },
@@ -489,9 +489,9 @@ document.addEventListener('DOMContentLoaded', () => {
             input.value = contract[name] || '';
             el.info.appendChild(h('label', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, label), input));
         });
-        const fileInput = h('input', { type: 'file', name: 'file', accept: '.pdf,.txt' });
+        const fileInput = h('input', { type: 'file', name: 'file', accept: '.pdf,.docx,.txt' });
         el.info.appendChild(h('label', { class: 'home-dialog__field home-ct__wide' },
-            h('span', { class: 'home-dialog__label' }, 'Файл договора (PDF или текст)'),
+            h('span', { class: 'home-dialog__label' }, 'Файл договора (PDF, DOCX или TXT)'),
             contract.file ? h('span', {}, fileLinks([contract.file])) : null,
             fileInput));
         el.info.appendChild(h('div', { class: 'home-ct__wide home-ct__info-actions' },
@@ -523,6 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
         save();
         render();
         notify('Сведения о договоре сохранены.');
+        if (file) extractObligations(contract, true);
     });
 
     // ---- Actions ------------------------------------------------------------
@@ -534,7 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { name: 'subject', label: 'Предмет договора', hint: 'Например: строительство жилого дома по адресу…' },
             { name: 'customer', label: 'Заказчик' },
             { name: 'contractor', label: 'Подрядчик' },
-            { name: 'file', label: 'Файл договора (PDF или текст)', type: 'file' }
+            { name: 'file', label: 'Файл договора (PDF, DOCX или TXT)', type: 'file', hint: 'Контрольные точки будут найдены автоматически' }
         ], 'Добавить', async v => {
             const contract = {
                 id: uid(), number: v.number, date: v.date, subject: v.subject, customer: v.customer, contractor: v.contractor,
@@ -546,6 +547,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentId = contract.id;
             window.history.replaceState(null, '', `?id=${contract.id}`);
             save();
+            if (contract.file) setTimeout(() => extractObligations(contract, true), 0);
         });
     }
 
@@ -763,47 +765,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- Extraction of obligations from the contract file ----------------------
 
-    async function extractObligations(contract) {
+    async function extractObligations(contract, auto = false) {
         if (!contract.file) {
             return notify('Сначала приложите файл договора во вкладке «Сведения о договоре».');
         }
-        if (!EXTRACT_API) {
-            return openDialog('Извлечь обязательства из договора', [], 'Добавить вручную', () => {
-                setTimeout(() => addObligation(contract), 0);
-            }, h('p', { class: 'home-dialog__hint' },
-                'Автоматическое извлечение заработает после подключения сервера специалистов. Пока обязательства можно добавить вручную.'));
-        }
         const blob = await readFileBlob(contract.file);
         if (!blob) return notify('Файл договора не найден в браузере. Приложите его заново.');
-        const data64 = await new Promise(resolve => {
+        const extractor = window.AirchitectContractExtract;
+        notify(EXTRACT_API ? 'Специалист читает договор. Это может занять минуту-две.' : 'Читаю договор и ищу контрольные точки…');
+        try {
+            let result;
+            if (EXTRACT_API) {
+                // Server: Claude reads the document; DOCX is converted to text in the browser first
+                const isPdf = (contract.file.type || '').includes('pdf') || /\.pdf$/i.test(contract.file.name);
+                const payload = isPdf
+                    ? { name: contract.file.name, type: 'application/pdf', data: await toBase64(blob) }
+                    : { name: contract.file.name, type: 'text/plain', data: await toBase64(new Blob([await extractor.readText(blob, contract.file.name)], { type: 'text/plain' })) };
+                const response = await fetch(EXTRACT_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file: payload })
+                });
+                result = await response.json();
+                if (!response.ok) throw new Error(result.error || 'Сервер не смог обработать договор.');
+            } else {
+                result = await extractor.extract(blob, contract.file.name);
+            }
+
+            ['number', 'date', 'subject', 'customer', 'contractor', 'price', 'start', 'end'].forEach(key => {
+                if (!contract[key] && result.contract && result.contract[key]) contract[key] = result.contract[key];
+            });
+            // Skip control points already in the registry (same clause and beginning of the text)
+            const known = new Set(contract.obligations.map(o => `${o.clause}|${(o.text || '').slice(0, 60)}`));
+            const added = (result.obligations || [])
+                .filter(o => !known.has(`${o.clause}|${(o.text || '').slice(0, 60)}`))
+                .map(o => ({
+                    id: uid(), party: o.party || 'both', text: o.text, clause: o.clause,
+                    due: /^\d{4}-\d{2}-\d{2}$/.test(o.due) ? o.due : '', condition: o.condition || '',
+                    responsible: '', status: 'active', confirmed: false, source: EXTRACT_API ? 'ai' : 'auto', files: []
+                }));
+            contract.obligations.push(...added);
+            log(contract, `Из договора «${contract.file.name}» найдено контрольных точек: ${added.length} (требуют подтверждения)`);
+            save();
+            el.filterStatus.value = added.length ? 'review' : 'all';
+            render();
+            notify(added.length
+                ? `Найдено контрольных точек: ${added.length}. Проверьте и подтвердите каждую.`
+                : 'Новых контрольных точек не найдено. Добавьте обязательства вручную.');
+        } catch (err) {
+            notify(err.message || 'Не удалось прочитать договор.');
+            if (!auto) console.error(err);
+        }
+    }
+
+    function toBase64(blob) {
+        return new Promise(resolve => {
             const reader = new FileReader();
             reader.onload = () => resolve(String(reader.result).split(',')[1] || '');
             reader.readAsDataURL(blob);
         });
-        notify('Специалист читает договор. Это может занять минуту-две.');
-        try {
-            const response = await fetch(EXTRACT_API, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ file: { name: contract.file.name, type: contract.file.type || 'application/pdf', data: data64 } })
-            });
-            const result = await response.json();
-            if (!response.ok) throw new Error(result.error || 'Сервер не смог обработать договор.');
-            ['number', 'date', 'subject', 'customer', 'contractor', 'price', 'start', 'end'].forEach(key => {
-                if (!contract[key] && result.contract && result.contract[key]) contract[key] = result.contract[key];
-            });
-            const added = (result.obligations || []).map(o => ({
-                id: uid(), party: o.party, text: o.text, clause: o.clause, due: /^\d{4}-\d{2}-\d{2}$/.test(o.due) ? o.due : '',
-                condition: o.condition, responsible: '', status: 'active', confirmed: false, source: 'ai', files: []
-            }));
-            contract.obligations.push(...added);
-            log(contract, `Из договора извлечено обязательств: ${added.length} (требуют подтверждения)`);
-            save();
-            render();
-            notify(`Извлечено обязательств: ${added.length}. Проверьте и подтвердите каждое.`);
-        } catch (err) {
-            notify(err.message || 'Не удалось извлечь обязательства.');
-        }
     }
 
     // ---- Wiring -------------------------------------------------------------
