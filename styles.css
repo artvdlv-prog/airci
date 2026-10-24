@@ -5909,3 +5909,63 @@ a.home-registry__num::after {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
+
+/* ==========================================================================
+   Estimates (estimates.html)
+   ========================================================================== */
+
+[data-es-tabs] {
+    flex-wrap: wrap;
+    row-gap: 0;
+}
+
+.home-es__table td {
+    vertical-align: top;
+}
+
+.home-es__num {
+    white-space: nowrap;
+    text-align: right;
+}
+
+.home-es__total-row td {
+    color: var(--home-ink);
+    font-weight: 600;
+}
+
+.home-es__subline span {
+    color: var(--home-muted);
+    font-size: 13px;
+}
+
+.home-es__extra {
+    display: grid;
+    gap: 8px;
+}
+
+.home-es__rows {
+    display: grid;
+    gap: 6px;
+}
+
+.home-es__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.home-es__row input,
+.home-es__row select {
+    flex: 1 1 140px;
+    min-width: 0;
+    padding: 6px 8px;
+    border: 1px solid var(--home-line-strong);
+    border-radius: 8px;
+    font: inherit;
+    font-size: 14px;
+}
+
+.home-es__row .home-es__short {
+    flex: 0 1 100px;
+}
