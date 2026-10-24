@@ -9,7 +9,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const STORE_KEY = 'airchitect-contracts-v1';
     const SOON_DAYS = 7;
-    const DOCS_CONNECTED = typeof HOME_DOCS_CONNECTED !== 'undefined' && HOME_DOCS_CONNECTED;
+    // DOCS is connected when the cabinet runs AIRCHITECT DOCS or COMPLEX (or by the site setting)
+    const cabinetProduct = (() => {
+        try {
+            return (JSON.parse(localStorage.getItem('airchitect-cabinet-v1')) || {}).product;
+        } catch (e) {
+            return null;
+        }
+    })();
+    const DOCS_CONNECTED = cabinetProduct === 'complex' || cabinetProduct === 'docs' || (typeof HOME_DOCS_CONNECTED !== 'undefined' && HOME_DOCS_CONNECTED);
+    const DOCS_KEY = 'airchitect-docs-v1';
+    const readDocs = () => {
+        try {
+            return JSON.parse(localStorage.getItem(DOCS_KEY)) || { docs: [] };
+        } catch (e) {
+            return { docs: [] };
+        }
+    };
+    const DOCS_LABEL = { draft: 'передано в DOCS', approval: 'на согласовании в DOCS', approved: 'согласовано в DOCS', rejected: 'отклонено в DOCS', done: 'исполнено в DOCS' };
+    const withCabinet = query => (document.documentElement.classList.contains('is-cabinet') ? `${query}&cabinet=1` : query);
     const CHAT_API = typeof HOME_ASSISTANT_API !== 'undefined' ? HOME_ASSISTANT_API : null;
     const EXTRACT_API = CHAT_API ? CHAT_API.replace(/\/chat$/, '/extract') : null;
 
@@ -319,13 +337,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const soon = c.obligations.some(o => obligationStatus(o) === 'soon');
             el.list.appendChild(h('li', {},
                 h('a', {
-                    href: `contracts.html?id=${c.id}`,
+                    href: withCabinet(`contracts.html?id=${c.id}`),
                     class: 'home-staff__item' + (c.id === currentId ? ' is-active' : ''),
                     'aria-current': c.id === currentId ? 'page' : null,
                     onclick: e => {
                         e.preventDefault();
                         currentId = c.id;
-                        window.history.replaceState(null, '', `?id=${c.id}`);
+                        window.history.replaceState(null, '', withCabinet(`?id=${c.id}`));
                         render();
                     }
                 },
@@ -427,8 +445,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const actions = [['Текст', () => showNotice(contract, n)]];
             if (n.status === 'draft') actions.push(['Отметить отправку', () => markSent(contract, n)]);
             if (n.status === 'sent') actions.push(['Отметить получение', () => markReceived(contract, n)]);
-            // Integration point for AIRCHITECT DOCS: approval and sending of the notice (no API yet)
-            if (n.status === 'draft' && DOCS_CONNECTED) actions.push(['Согласовать в DOCS', () => notify('Интеграция с AIRCHITECT DOCS ещё не настроена: отправьте уведомление вручную и отметьте отправку.')]);
+            // AIRCHITECT DOCS: the notice draft goes to the document registry for approval
+            const docsEntry = DOCS_CONNECTED ? readDocs().docs.find(d => d.noticeId === n.id) : null;
+            if (n.status === 'draft' && DOCS_CONNECTED && !docsEntry) actions.push(['Согласовать в DOCS', () => sendToDocs(contract, n)]);
             actions.push(['Юрист', () => askExpert('construction-lawyer', contract, obligation, n)]);
 
             el.notices.appendChild(h('li', { class: 'home-ct__row' },
@@ -446,6 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     n.status === 'received' ? h('p', { class: 'home-ct__row-meta' },
                         `Получено ${formatDate(n.receivedAt)}${n.receivedRef ? ' · ' + n.receivedRef : ''}`) : null,
                     fileLinks([...(n.sentFiles || []), ...(n.receivedFiles || [])]),
+                    docsEntry ? h('p', { class: 'home-ct__row-meta' }, `DOCS: ${DOCS_LABEL[docsEntry.status] || docsEntry.status}`) : null,
                     n.status === 'draft' && !DOCS_CONNECTED ? h('p', { class: 'home-ct__row-meta home-ct__muted' },
                         'Согласование и отправка через AIRCHITECT DOCS станут доступны после подключения электронного документооборота.') : null),
                 h('div', { class: 'home-record__actions' },
@@ -545,7 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
             log(contract, 'Договор добавлен');
             data.contracts.unshift(contract);
             currentId = contract.id;
-            window.history.replaceState(null, '', `?id=${contract.id}`);
+            window.history.replaceState(null, '', withCabinet(`?id=${contract.id}`));
             save();
             if (contract.file) setTimeout(() => extractObligations(contract, true), 0);
         });
@@ -695,6 +715,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }, 'Сохранить') : null);
         el.dialog.showModal();
+    }
+
+    function sendToDocs(contract, n) {
+        const store = readDocs();
+        const now = Date.now();
+        store.docs.unshift({
+            id: uid(), title: `${NOTICE_TYPES[n.type].title} — договор${contract.number ? ' № ' + contract.number : ''}`,
+            type: 'Уведомление', contractId: contract.id, noticeId: n.id, responsible: '', due: n.due || '',
+            text: n.text, files: [], route: [], status: 'draft', created: now,
+            history: [{ at: now, text: 'Создан из раздела «Контракты»' }]
+        });
+        try {
+            localStorage.setItem(DOCS_KEY, JSON.stringify(store));
+        } catch (e) {
+            return notify('Не удалось передать документ: хранилище браузера недоступно.');
+        }
+        log(contract, `Проект «${NOTICE_TYPES[n.type].title}» передан на согласование в DOCS`);
+        save();
+        render();
+        notify('Проект передан в DOCS. Направьте его на согласование в разделе «Документы» кабинета.');
     }
 
     // A notice counts as sent only with proof of the actual dispatch
@@ -851,6 +891,19 @@ document.addEventListener('DOMContentLoaded', () => {
             root.querySelectorAll('[data-ct-tab]').forEach(t => t.setAttribute('aria-selected', String(t === tab)));
             root.querySelectorAll('[data-ct-panel]').forEach(p => { p.hidden = p.dataset.ctPanel !== tab.dataset.ctTab; });
         });
+    });
+
+    // Changes from the cabinet (DOCS approvals) or another tab: reload and redraw
+    window.addEventListener('storage', e => {
+        if (e.key !== STORE_KEY && e.key !== DOCS_KEY) return;
+        if (e.key === STORE_KEY) {
+            try {
+                data = JSON.parse(localStorage.getItem(STORE_KEY)) || { contracts: [] };
+            } catch (err) {
+                data = { contracts: [] };
+            }
+        }
+        if (!el.dialog.open) render();
     });
 
     render();

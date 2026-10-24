@@ -5,7 +5,7 @@
 // null = destination is not implemented yet: the button stays visible and
 // shows a "section in preparation" notice instead of leading to a fake page.
 const HOME_ROUTES = {
-    cabinet: 'start.html',  // Start page until authorization / personal cabinet exists
+    cabinet: 'cabinet.html', // Personal cabinet (open access, data in the browser)
     staff: 'staff.html',    // "Штат": specialists' workspace (open access for now)
     specialist: 'staff.html?id={slug}', // Specialist's tab in "Штат"
     office: 'office.html',

@@ -2,6 +2,10 @@
 if (new URLSearchParams(location.search).get('embed') === '1') {
     document.documentElement.classList.add('is-embed');
 }
+// Inside the personal cabinet (staff.html / contracts.html ?cabinet=1): no site header and page title
+if (new URLSearchParams(location.search).get('cabinet') === '1') {
+    document.documentElement.classList.add('is-cabinet');
+}
 
 // Language functionality
 let currentLanguage = 'ru';
@@ -501,7 +505,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const sSlug = s.slug || s.id;
                     const li = document.createElement('li');
                     const link = document.createElement('a');
-                    link.href = `staff.html?id=${encodeURIComponent(sSlug)}`;
+                    link.href = `staff.html?id=${encodeURIComponent(sSlug)}${document.documentElement.classList.contains('is-cabinet') ? '&cabinet=1' : ''}`;
                     link.className = 'home-staff__item';
                     if (sSlug === slug) {
                         link.classList.add('is-active');
