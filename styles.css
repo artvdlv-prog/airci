@@ -5814,3 +5814,98 @@ a.home-registry__num::after {
     width: auto;
     margin: 0 0 0 6px;
 }
+
+/* ==========================================================================
+   Construction forms in Объекты (objects-ks.js)
+   ========================================================================== */
+
+.home-ks__subtabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.home-ks__subtab {
+    padding: 7px 14px;
+    background: var(--home-bg);
+    border: 1px solid var(--home-line);
+    border-radius: 999px;
+    color: var(--home-muted);
+    font: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.home-ks__subtab:hover,
+.home-ks__subtab:focus-visible {
+    border-color: var(--home-line-strong);
+    color: var(--home-ink);
+}
+
+.home-ks__subtab[aria-selected="true"] {
+    background: var(--home-ink);
+    border-color: var(--home-ink);
+    color: #fff;
+}
+
+.home-ks__link {
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--home-ink);
+    font: inherit;
+    font-size: 13px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+}
+
+.home-ks__link:hover,
+.home-ks__link:focus-visible {
+    color: var(--primary-orange);
+}
+
+.home-ks__cell-actions {
+    white-space: nowrap;
+}
+
+.home-ks__cell-actions .home-ks__link + .home-ks__link {
+    margin-left: 10px;
+}
+
+.home-ks__sub {
+    display: block;
+    margin-top: 2px;
+    color: var(--home-muted);
+    font-size: 12px;
+}
+
+.home-ks__stat {
+    font-size: 17px;
+}
+
+.home-ks__lines {
+    display: grid;
+    gap: 8px;
+}
+
+.home-ks__lines .home-cab__table td,
+.home-ks__lines .home-cab__table th {
+    padding: 6px 8px;
+}
+
+.home-ks__qty {
+    width: 110px;
+    padding: 6px 8px;
+    border: 1px solid var(--home-line-strong);
+    border-radius: 8px;
+    font: inherit;
+}
+
+@media (min-width: 601px) {
+    .home-ct__stats.home-ks__stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}

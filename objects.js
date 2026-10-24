@@ -21,7 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
         g21101: { title: 'ГОСТ Р 21.101-2026', url: 'https://protect.gost.ru/gost/details/17bc12e8-6579-4145-b141-56855e772e7f' },
         g51872: { title: 'ГОСТ Р 51872-2024', url: 'https://protect.gost.ru/gost/details/201cb77e-3cec-42a6-a47e-bad3caac224b' },
         g70108: { title: 'ГОСТ Р 70108-2025', url: 'https://protect.gost.ru/gost/details/23f0a882-4624-475d-86c0-e4ae8f262177' },
-        sp543: { title: 'СП 543.1325800.2024', url: 'https://www.minstroyrf.gov.ru/docs/419099/' }
+        sp543: { title: 'СП 543.1325800.2024', url: 'https://www.minstroyrf.gov.ru/docs/419099/' },
+        l402: { title: 'Федеральный закон № 402-ФЗ, ст. 9', url: 'http://www.kremlin.ru/acts/bank/34440' },
+        l44: { title: 'Федеральный закон № 44-ФЗ, ст. 94', url: 'http://www.kremlin.ru/acts/bank/37056' }
     };
 
     // Kinds of ИД documents
@@ -268,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const TABS = [
-        ['overview', 'Контроль'], ['info', 'Сведения'], ['rd', 'РД'], ['id', 'ИД'],
+        ['overview', 'Контроль'], ['info', 'Сведения'], ['rd', 'РД'], ['id', 'ИД'], ['ks', 'Формы КС'],
         ['materials', 'Материалы и испытания'], ['check', 'Нормативный контроль'], ['remarks', 'Замечания'], ['handover', 'Сдача']
     ];
 
@@ -311,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
             onclick: () => { tab = key; render(); }
         }, label)));
         el.panel.textContent = '';
-        ({ overview: renderOverview, info: renderInfo, rd: renderRd, id: renderId, materials: renderMaterials, check: renderCheck, remarks: renderRemarks, handover: renderHandover })[tab](o);
+        ({ overview: renderOverview, info: renderInfo, rd: renderRd, id: renderId, ks: KS.renderTab, materials: renderMaterials, check: renderCheck, remarks: renderRemarks, handover: renderHandover })[tab](o);
     }
 
     function renderList() {
@@ -387,6 +389,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 d.title, [`${workName(o, d.workId)} · ${ID_STATUS[d.status]} · ${d.responsible || 'ответственный не назначен'}`],
                 [['Открыть', () => { tab = 'id'; render(); }]]);
         })));
+
+        const ks = KS.overview(o);
+        if (ks) el.panel.appendChild(ks);
 
         const open = o.remarks.filter(r => r.status === 'open');
         el.panel.appendChild(block('Открытые замечания', null, rows(open.slice(0, 6), 'Открытых замечаний нет.', r =>
@@ -1025,6 +1030,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { id: uid(), source: 'Заказчик', target: 'rd', refId: o.rd[2].id, text: 'Комплект АР не согласован заказчиком для производства работ', due: day(7), status: 'open', created: day(-2) }
         );
         o.handovers.push({ id: uid(), title: 'Комплект ИД № 1 — геодезия и основание фундаментов', items: o.id.slice(0, 3).map(d => d.id), status: 'accepted', created: day(-125), sentAt: day(-124), letterNo: '45', method: 'Нарочно под подпись', acceptedAt: day(-120), acceptRef: 'реестр с отметкой заказчика, вх. № 112', files: [] });
+        KS.demo(o, { works, signedIds: [a1.id, a2.id] });
         log(o, 'Создан демонстрационный объект');
         data.objects.unshift(o);
         currentId = o.id;
@@ -1033,6 +1039,13 @@ document.addEventListener('DOMContentLoaded', () => {
         render();
         notify('Демонстрационный объект создан.');
     }
+
+    // ---- Construction forms (objects-ks.js): КС-2, КС-3, КС-6а, journals, other forms ---------------
+
+    const KS = window.AirchitectObjectsKs({
+        h, block, row, rows, small, save, render, log, openDialog, notify, formatDate, today, uid, daysUntil, contracts, storeFiles, fileLinks, normLink, workName,
+        ID_STATUS, askPto, el, setTab: key => { tab = key; }
+    });
 
     // ---- Wiring ----------------------------------------------------------------------
 

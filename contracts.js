@@ -343,6 +343,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const signed = ob.id.filter(d => d.status === 'signed').length;
                 return `ИД «${ob.name}»: ${ob.id.length ? Math.round(signed / ob.id.length * 100) : 0}%`;
             }).join(', ');
+            // Acts КС-2 of this contract (Объекты → Формы КС): signed and awaiting the customer
+            const acts = linked.flatMap(ob => (ob.ks2 || []).filter(a => a.contractId === contract.id));
+            if (acts.length) {
+                const pending = acts.filter(a => ['sent', 'resent', 'remarks'].includes(a.status)).length;
+                el.meta.textContent += ` · КС-2: подписано ${acts.filter(a => a.status === 'signed').length} из ${acts.length}${pending ? `, на подписании ${pending}` : ''}`;
+            }
         }
 
         renderExecution(contract);

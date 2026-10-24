@@ -690,6 +690,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }))
         },
         {
+            id: 'ks', title: 'Акты КС-2 и КС-3', products: ['office', 'complex'],
+            columns: ['Объект', 'Документ', 'Дата', 'Период', 'Стоимость без НДС', 'Статус', 'Передан', 'Подписан'],
+            rows: () => objects().flatMap(ob => [
+                ...(ob.ks2 || []).map(a => ({ a, kind: 'КС-2', sum: a.lines.reduce((s, l) => s + Number(l.qty) * Number(l.price), 0) })),
+                ...(ob.ks3 || []).map(a => ({ a, kind: 'КС-3', sum: (ob.ks2 || []).filter(x => a.ks2Ids.includes(x.id)).reduce((s, x) => s + x.lines.reduce((t, l) => t + Number(l.qty) * Number(l.price), 0), 0) }))
+            ].map(({ a, kind, sum }) => ({
+                cells: [ob.name, `${kind} № ${a.number}`, formatDate(a.date), `${formatDate(a.from)} — ${formatDate(a.to)}`, `${Math.round(sum).toLocaleString('ru-RU')} ₽`,
+                    { draft: 'Подготовлен', sent: 'Передан заказчику', remarks: 'Замечания', resent: 'Передан повторно', signed: 'Подписан' }[a.status], formatDate(a.resentAt || a.sentAt), formatDate(a.signedAt)],
+                open: () => go('objects', ob.id)
+            })))
+        },
+        {
             id: 'payments', title: 'Платежи (ДДС)', products: ['office', 'complex'],
             columns: ['Дата', 'Направление', 'Статья', 'Назначение', 'Контрагент', 'Договор', 'План', 'Оплачено', 'Остаток', 'Статус', 'Основание'],
             rows: () => (CF ? [...cashOps()].sort((a, b) => (a.date || '').localeCompare(b.date || '')).map(op => {
