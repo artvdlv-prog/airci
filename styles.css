@@ -5269,3 +5269,76 @@ a.home-registry__num::after {
     white-space: nowrap;
     vertical-align: 1px;
 }
+
+/* Chat: quick professional actions of a specialist */
+.home-chat__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.home-chat__action {
+    padding: 5px 12px;
+    border: 1px solid var(--home-line);
+    border-radius: 14px;
+    background: #ffffff;
+    font: inherit;
+    font-size: 13px;
+    color: var(--home-ink);
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.home-chat__action:hover {
+    border-color: var(--primary-orange);
+    color: var(--primary-orange);
+}
+
+/* Objects: norm references and secondary actions */
+.home-ob__norm {
+    color: var(--home-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--home-line-strong);
+    text-underline-offset: 3px;
+}
+
+.home-ob__norm:hover {
+    color: var(--primary-orange);
+}
+
+.home-cab__reset-link {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: 13px;
+    color: var(--home-muted);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.home-dialog__field select[multiple] {
+    height: auto;
+    padding: 6px;
+}
+
+@media (max-width: 600px) {
+    .home-chat__actions {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+    }
+
+    .home-chat__action {
+        white-space: nowrap;
+    }
+}
+
+
+/* Object card has many tabs: wrap them instead of cutting off */
+[data-ob-tabs] {
+    flex-wrap: wrap;
+    row-gap: 0;
+}

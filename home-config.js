@@ -32,6 +32,7 @@ const HOME_DOCS_CONNECTED = false;
 // icon: optional icon name from SPECIALIST_ICONS in script.js (defaults to the id).
 // tasks: what the specialist helps with, shown on the specialist's own page (specialist.html?id=slug).
 // registry: name of the specialist's register tab in "Штат" (staff.html?id=slug).
+// actions: optional quick requests shown above the chat input for this specialist.
 const HOME_SPECIALISTS = [
     {
         id: 'tender',
@@ -113,6 +114,15 @@ const HOME_SPECIALISTS = [
         title: { ru: 'Инженер ПТО', en: 'Technical documentation engineer' },
         description: { ru: 'Техническая и исполнительная документация', en: 'Technical and as-built documentation' },
         registry: { ru: 'Реестр технической документации', en: 'Technical documentation register' },
+        // Quick professional actions in the chat (Штат): label and the request placed into the input
+        actions: [
+            { label: 'Проверить АОСР', prompt: 'Проверь приложенный акт освидетельствования скрытых работ: заполнение реквизитов, ссылки на РД, документы о качестве материалов, подписи. Перечисли ошибки и что исправить.' },
+            { label: 'Состав ИД по виду работ', prompt: 'Составь перечень исполнительной документации для вида работ: ' },
+            { label: 'Реестр ИД', prompt: 'Подготовь реестр исполнительной документации для передачи заказчику по приложенным документам.' },
+            { label: 'Сверить с РД', prompt: 'Сверь приложенную исполнительную документацию с рабочей документацией (шифр, марка, версия) и укажи расхождения.' },
+            { label: 'Ответ на замечания', prompt: 'Подготовь ответ на замечания строительного контроля по исполнительной документации: ' },
+            { label: 'Документы о качестве', prompt: 'Проверь приложенные паспорта, сертификаты и протоколы испытаний: соответствие материалам, сроки действия, реквизиты.' }
+        ],
         tasks: [
             { title: 'Техническая документация', text: 'Работа с проектной и рабочей документацией.' },
             { title: 'Исполнительная документация', text: 'Подготовка и систематизация исполнительной документации.' },

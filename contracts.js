@@ -326,6 +326,20 @@ document.addEventListener('DOMContentLoaded', () => {
             .filter(Boolean).join(' · ') || 'Заполните сведения о договоре';
         document.title = `${el.title.textContent} — Контракты | AIRCHITECT`;
 
+        // Objects linked to this contract (Объекты): readiness of ИД affects acceptance and payment
+        let linked = [];
+        try {
+            linked = ((JSON.parse(localStorage.getItem('airchitect-objects-v1')) || {}).objects || []).filter(ob => (ob.contractIds || []).includes(contract.id));
+        } catch (e) {
+            linked = [];
+        }
+        if (linked.length) {
+            el.meta.textContent += ' · ' + linked.map(ob => {
+                const signed = ob.id.filter(d => d.status === 'signed').length;
+                return `ИД «${ob.name}»: ${ob.id.length ? Math.round(signed / ob.id.length * 100) : 0}%`;
+            }).join(', ');
+        }
+
         renderExecution(contract);
         renderInfo(contract);
     }

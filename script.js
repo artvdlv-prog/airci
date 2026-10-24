@@ -360,6 +360,28 @@ document.addEventListener('DOMContentLoaded', function() {
             renderHistory();
             renderRegistry();
 
+            // Quick professional actions of the specialist (HOME_SPECIALISTS[].actions)
+            if ((item.actions || []).length) {
+                const bar = document.createElement('div');
+                bar.className = 'home-chat__actions';
+                item.actions.forEach(action => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'home-chat__action';
+                    button.textContent = local(action.label);
+                    button.addEventListener('click', () => {
+                        const prompt = local(action.prompt);
+                        input.value = input.value.trim() ? `${input.value.replace(/Вопрос:\s*$/, '').trimEnd()}\n\n${prompt}` : prompt;
+                        input.style.height = 'auto';
+                        input.style.height = `${Math.min(input.scrollHeight, 200)}px`;
+                        input.focus();
+                        input.setSelectionRange(input.value.length, input.value.length);
+                    });
+                    bar.appendChild(button);
+                });
+                form.prepend(bar);
+            }
+
             // Text passed in the address (?q=…): placed into the input for the user to review and send
             const params = new URLSearchParams(location.search);
             if (params.get('q')) {

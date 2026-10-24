@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.8em' font-size='45' font-family='Arial,sans-serif' font-weight='bold' fill='%23FF6A00'>AI</text></svg>">
+    <meta name="description" content="Сопровождение рабочей и исполнительной документации строительного объекта: реестры, комплектность, сроки, замечания и сдача заказчику.">
+    <title>Объекты — РД и ИД | AIRCHITECT</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="Logo Airchitect.jpg" alt="Airchitect" class="nav-logo">
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html#specialists" class="nav-link" data-translate="nav.specialists">Специалисты</a>
+                <a href="index.html#products" class="nav-link" data-translate="nav.solutions">Решения</a>
+                <a href="index.html#modules" class="nav-link" data-translate="nav.technologies">Технологии</a>
+                <a href="company.html" class="nav-link" data-translate="nav.about">О компании</a>
+                <button class="demo-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0114 0"/></svg><span>Личный кабинет</span></button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="home" data-objects>
+        <section id="intro" class="home-chat">
+            <div class="container">
+                <div class="home-staff__head">
+                    <p class="home-eyebrow">Объекты</p>
+                    <h1 class="home-chat__title">Рабочая и исполнительная документация.</h1>
+                    <p class="home-chat__text">От получения рабочей документации до сдачи исполнительной документации заказчику: реестры, комплектность, сроки и замечания.</p>
+                </div>
+                <div class="home-staff">
+                    <nav class="home-staff__list" aria-label="Объекты">
+                        <!-- Rendered by objects.js -->
+                        <ul data-ob-list></ul>
+                        <button type="button" class="home-btn home-btn--secondary home-ct__add" data-ob-add>Добавить объект</button>
+                        <button type="button" class="home-cab__reset-link" data-ob-demo>Демо-объект</button>
+                    </nav>
+                    <div class="home-staff__work">
+                        <div class="home-staff__panel home-ct__empty" data-ob-empty>
+                            <p class="home-staff__empty">Объектов пока нет. Добавьте объект или откройте демо-объект, чтобы посмотреть, как ведутся РД и ИД.</p>
+                        </div>
+                        <div data-ob-card hidden>
+                            <div class="home-staff__top">
+                                <div>
+                                    <h2 class="home-staff__name" data-ob-title></h2>
+                                    <p class="home-chat__text" data-ob-meta></p>
+                                </div>
+                            </div>
+                            <div class="home-tabs" role="tablist" aria-label="Карточка объекта" data-ob-tabs></div>
+                            <div data-ob-panel></div>
+                        </div>
+                        <p class="home-note">Данные и файлы объектов хранятся только в этом браузере. Типовой состав ИД и проверки носят вспомогательный характер: окончательный состав определяют проект, договор и заказчик.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <dialog class="home-dialog" data-ct-dialog>
+            <form method="dialog" class="home-dialog__form">
+                <div class="home-dialog__head">
+                    <h2 class="home-dialog__title" data-ct-dialog-title></h2>
+                    <button type="button" class="home-window__close" data-ct-dialog-close aria-label="Закрыть">×</button>
+                </div>
+                <div class="home-dialog__body" data-ct-dialog-body></div>
+                <p class="home-dialog__error" data-ct-dialog-error hidden></p>
+                <div class="home-dialog__foot" data-ct-dialog-foot></div>
+            </form>
+        </dialog>
+    </main>
+
+    <script src="translations.js"></script>
+    <script src="home-config.js"></script>
+    <script src="script.js"></script>
+    <script src="objects.js"></script>
+</body>
+</html>
