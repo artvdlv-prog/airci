@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.8em' font-size='45' font-family='Arial,sans-serif' font-weight='bold' fill='%23FF6A00'>AI</text></svg>">
+    <meta name="description" content="Контроль исполнения строительного договора: обязательства, сроки, уведомления и подтверждающие документы.">
+    <title>Контракты — исполнение договоров | AIRCHITECT</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="Logo Airchitect.jpg" alt="Airchitect" class="nav-logo">
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html#specialists" class="nav-link" data-translate="nav.specialists">Специалисты</a>
+                <a href="index.html#products" class="nav-link" data-translate="nav.solutions">Решения</a>
+                <a href="index.html#modules" class="nav-link" data-translate="nav.technologies">Технологии</a>
+                <a href="company.html" class="nav-link" data-translate="nav.about">О компании</a>
+                <button class="demo-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0114 0"/></svg><span>Личный кабинет</span></button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="home" data-contracts>
+        <section id="intro" class="home-chat">
+            <div class="container">
+                <div class="home-staff__head">
+                    <p class="home-eyebrow">Контракты</p>
+                    <h1 class="home-chat__title">Исполнение договоров.</h1>
+                    <p class="home-chat__text">Обязательства сторон, контрольные сроки, уведомления и подтверждающие документы по каждому договору — от подписания до закрытия.</p>
+                </div>
+                <div class="home-staff">
+                    <nav class="home-staff__list" aria-label="Договоры">
+                        <!-- Rendered by contracts.js -->
+                        <ul data-ct-list></ul>
+                        <button type="button" class="home-btn home-btn--secondary home-ct__add" data-ct-add>Добавить договор</button>
+                    </nav>
+                    <div class="home-staff__work">
+                        <div class="home-staff__panel home-ct__empty" data-ct-empty>
+                            <p class="home-staff__empty">Договоров пока нет. Добавьте договор: укажите реквизиты и приложите файл — обязательства можно внести вручную или извлечь из текста договора.</p>
+                        </div>
+                        <div data-ct-card hidden>
+                            <div class="home-staff__top">
+                                <div>
+                                    <h2 class="home-staff__name" data-ct-title></h2>
+                                    <p class="home-chat__text" data-ct-meta></p>
+                                </div>
+                                <div class="home-ct__experts">
+                                    <button type="button" class="home-link" data-ct-expert="contract-specialist"><span>Договорной специалист</span><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></button>
+                                    <button type="button" class="home-link" data-ct-expert="construction-lawyer"><span>Строительный юрист</span><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></button>
+                                </div>
+                            </div>
+                            <div class="home-tabs" role="tablist" aria-label="Карточка договора">
+                                <button type="button" role="tab" class="home-tab" data-ct-tab="exec" aria-selected="true">Исполнение договора</button>
+                                <button type="button" role="tab" class="home-tab" data-ct-tab="info" aria-selected="false">Сведения о договоре</button>
+                            </div>
+
+                            <div data-ct-panel="exec">
+                                <div class="home-ct__alert" data-ct-alert hidden></div>
+                                <ul class="home-ct__stats" data-ct-stats></ul>
+                                <div class="home-ct__actions">
+                                    <button type="button" class="home-btn home-btn--primary" data-ct-action="notice"><span>Подготовить уведомление</span></button>
+                                    <button type="button" class="home-btn home-btn--secondary" data-ct-action="done">Отметить исполнение</button>
+                                    <button type="button" class="home-btn home-btn--secondary" data-ct-action="event">Добавить событие</button>
+                                    <button type="button" class="home-btn home-btn--secondary" data-ct-action="obligation">Добавить обязательство</button>
+                                    <button type="button" class="home-btn home-btn--secondary" data-ct-action="extract">Извлечь из договора</button>
+                                </div>
+
+                                <div class="home-ct__block">
+                                    <div class="home-ct__block-head">
+                                        <h3 class="home-ct__block-title">Реестр обязательств</h3>
+                                        <div class="home-ct__filters">
+                                            <select data-ct-filter-status aria-label="Статус">
+                                                <option value="all">Все статусы</option>
+                                                <option value="review">Требуют подтверждения</option>
+                                                <option value="active">В работе</option>
+                                                <option value="soon">Скоро срок</option>
+                                                <option value="overdue">Просрочено</option>
+                                                <option value="done">Исполнено</option>
+                                            </select>
+                                            <select data-ct-filter-period aria-label="Срок">
+                                                <option value="all">Любой срок</option>
+                                                <option value="7">Ближайшие 7 дней</option>
+                                                <option value="30">Ближайшие 30 дней</option>
+                                                <option value="past">Срок прошёл</option>
+                                                <option value="none">Без даты</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <ul class="home-ct__list" data-ct-obligations></ul>
+                                </div>
+
+                                <div class="home-ct__block">
+                                    <div class="home-ct__block-head">
+                                        <h3 class="home-ct__block-title">Журнал уведомлений</h3>
+                                    </div>
+                                    <ul class="home-ct__list" data-ct-notices></ul>
+                                </div>
+
+                                <div class="home-ct__block">
+                                    <div class="home-ct__block-head">
+                                        <h3 class="home-ct__block-title">События и история действий</h3>
+                                    </div>
+                                    <ul class="home-ct__history" data-ct-history></ul>
+                                </div>
+                            </div>
+
+                            <div data-ct-panel="info" hidden>
+                                <form class="home-ct__form" data-ct-info></form>
+                            </div>
+                        </div>
+                        <p class="home-note">Данные и файлы договоров хранятся только в этом браузере. Проекты уведомлений и извлечённые обязательства носят вспомогательный характер — проверяйте их перед использованием.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <dialog class="home-dialog" data-ct-dialog>
+            <form method="dialog" class="home-dialog__form" data-ct-dialog-form>
+                <div class="home-dialog__head">
+                    <h2 class="home-dialog__title" data-ct-dialog-title></h2>
+                    <button type="button" class="home-window__close" value="cancel" data-ct-dialog-close aria-label="Закрыть">×</button>
+                </div>
+                <div class="home-dialog__body" data-ct-dialog-body></div>
+                <p class="home-dialog__error" data-ct-dialog-error hidden></p>
+                <div class="home-dialog__foot" data-ct-dialog-foot></div>
+            </form>
+        </dialog>
+    </main>
+
+    <script src="translations.js"></script>
+    <script src="home-config.js"></script>
+    <script src="script.js"></script>
+    <script src="contracts.js"></script>
+</body>
+</html>

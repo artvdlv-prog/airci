@@ -10,6 +10,10 @@
 //   data: {"type":"text","text":"..."}            - answer fragment
 //   data: {"type":"done","stop_reason":"end_turn"} - finished (refusal / max_tokens possible)
 //   data: {"type":"error","message":"..."}        - failed
+//
+// Request:  POST /extract   { file: { name, type, data /* base64 PDF or text */ } }
+// Response: JSON { contract: {...}, obligations: [{ party, text, clause, due, condition }] }
+//           Obligations of a construction contract for the "Исполнение договора" tab (contracts.html).
 
 import Anthropic from '@anthropic-ai/sdk';
 import { SPECIALISTS, buildSystemPrompt } from './specialists.js';
@@ -41,7 +45,7 @@ export default {
         }
 
         const url = new URL(request.url);
-        if (request.method !== 'POST' || url.pathname !== '/chat') {
+        if (request.method !== 'POST' || (url.pathname !== '/chat' && url.pathname !== '/extract')) {
             return json({ error: 'not_found' }, 404, cors);
         }
         if (!cors['Access-Control-Allow-Origin']) {
@@ -62,6 +66,10 @@ export default {
             body = await request.json();
         } catch {
             return json({ error: 'invalid_json' }, 400, cors);
+        }
+
+        if (url.pathname === '/extract') {
+            return extractObligations(body, env, cors);
         }
 
         if (!body || !SPECIALISTS[body.specialist]) {
@@ -121,6 +129,86 @@ export default {
         });
     }
 };
+
+// Fields are always present (empty string when the contract does not state them)
+const CONTRACT_FIELDS = ['number', 'date', 'subject', 'customer', 'contractor', 'price', 'start', 'end'];
+const EXTRACT_SCHEMA = {
+    type: 'object',
+    additionalProperties: false,
+    required: ['contract', 'obligations'],
+    properties: {
+        contract: {
+            type: 'object',
+            additionalProperties: false,
+            required: CONTRACT_FIELDS,
+            properties: Object.fromEntries(CONTRACT_FIELDS.map(f => [f, { type: 'string' }]))
+        },
+        obligations: {
+            type: 'array',
+            items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['party', 'text', 'clause', 'due', 'condition'],
+                properties: {
+                    party: { type: 'string', enum: ['customer', 'contractor', 'both'] },
+                    text: { type: 'string' },
+                    clause: { type: 'string' },
+                    due: { type: 'string' },
+                    condition: { type: 'string' }
+                }
+            }
+        }
+    }
+};
+
+const EXTRACT_PROMPT = `Ты — договорной специалист AIRCHITECT. Перед тобой строительный договор (как правило, договор подряда).
+
+Извлеки:
+1. Реквизиты: number (номер), date (дата в формате ГГГГ-ММ-ДД), subject (предмет кратко), customer (заказчик), contractor (подрядчик), price (цена с валютой), start и end (сроки работ в формате ГГГГ-ММ-ДД).
+2. Все обязательства сторон, которые нужно исполнить и проконтролировать: выполнение работ и этапов, оплата и авансы, передача документации и площадки, приёмка, уведомления и сроки их направления, гарантийные обязательства, предоставление обеспечения, страхование и другие.
+
+Для каждого обязательства: party (customer, contractor или both), text (что нужно сделать, кратко и точно), clause (номер пункта договора, например «4.2.1»), due (контрольная дата ГГГГ-ММ-ДД, только если она прямо указана в договоре), condition (условие или порядок исполнения, например «в течение 10 рабочих дней с даты подписания акта КС-2»).
+
+Правила: ничего не придумывай. Если срок задан относительно события, оставь due пустым и опиши срок в condition. Если сведения нет в договоре, оставь поле пустой строкой. Указывай пункт договора для каждого обязательства.`;
+
+async function extractObligations(body, env, cors) {
+    const file = body && body.file;
+    const kind = file && FILE_KINDS[file.type];
+    if (!file || typeof file.data !== 'string' || (kind !== 'pdf' && kind !== 'text')) {
+        return json({ error: 'Приложите договор в формате PDF или текстовым файлом.' }, 400, cors);
+    }
+    if (Math.floor(file.data.length * 3 / 4) > MAX_FILE_BYTES) {
+        return json({ error: 'Файл договора больше 10 МБ.' }, 400, cors);
+    }
+    const title = String(file.name || 'Договор').slice(0, 200);
+    const docBlock = kind === 'pdf'
+        ? { type: 'document', title, source: { type: 'base64', media_type: 'application/pdf', data: file.data } }
+        : { type: 'document', title, source: { type: 'text', media_type: 'text/plain', data: decodeBase64Text(file.data) } };
+
+    const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
+    try {
+        // Streaming keeps a long contract from hitting request timeouts; the result is read at the end
+        const stream = client.beta.messages.stream({
+            model: MODEL,
+            max_tokens: MAX_TOKENS,
+            output_config: { effort: 'medium', format: { type: 'json_schema', schema: EXTRACT_SCHEMA } },
+            betas: ['server-side-fallback-2026-07-01'],
+            fallbacks: 'default',
+            messages: [{ role: 'user', content: [docBlock, { type: 'text', text: EXTRACT_PROMPT }] }]
+        });
+        const message = await stream.finalMessage();
+        if (message.stop_reason === 'refusal') {
+            return json({ error: 'Договор не удалось обработать. Добавьте обязательства вручную.' }, 422, cors);
+        }
+        if (message.stop_reason === 'max_tokens') {
+            return json({ error: 'Договор слишком большой для автоматического разбора. Разделите его на части.' }, 422, cors);
+        }
+        const text = message.content.filter(b => b.type === 'text').map(b => b.text).join('');
+        return json(JSON.parse(text), 200, cors);
+    } catch (err) {
+        return json({ error: describeError(err) }, 502, cors);
+    }
+}
 
 // Converts the site's simple message format into Messages API content blocks
 function toApiMessages(input) {

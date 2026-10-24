@@ -22,6 +22,10 @@ const HOME_ROUTES = {
 // Example: 'https://airchitect-chat.<account>.workers.dev/chat'
 const HOME_ASSISTANT_API = null;
 
+// AIRCHITECT DOCS for contracts: approval and sending of notices through document management.
+// false = the project office works on its own; DOCS actions are shown as unavailable.
+const HOME_DOCS_CONNECTED = false;
+
 // Specialists. The list is open-ended: add, edit or disable entries
 // (enabled: false) and the home page grid rebuilds itself. Do not reference
 // the number of specialists anywhere in texts or layout.

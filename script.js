@@ -356,6 +356,20 @@ document.addEventListener('DOMContentLoaded', function() {
             renderHistory();
             renderRegistry();
 
+            // Text passed in the address (?q=…): placed into the input for the user to review and send
+            const params = new URLSearchParams(location.search);
+            if (params.get('q')) {
+                input.value = params.get('q');
+                params.delete('q');
+                window.history.replaceState(null, '', `${location.pathname}?${params}${location.hash}`);
+                setTimeout(() => {
+                    input.style.height = 'auto';
+                    input.style.height = `${Math.min(input.scrollHeight, 200)}px`;
+                    input.focus();
+                    input.setSelectionRange(input.value.length, input.value.length);
+                }, 0);
+            }
+
             if (!endpoint) {
                 chatRoot.querySelector('[data-chat-offline]').hidden = false;
             }
@@ -662,10 +676,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Specialist's workspace in a window over the page (staff.html in embed mode)
-        function openSpecialistWindow(item, url) {
+        // question: optional text placed into the chat input (e.g. context of a contract), not sent automatically
+        function openSpecialistWindow(item, url, question = '') {
             const opener = document.activeElement;
             const title = local(item.title);
-            const embedUrl = url + (url.includes('?') ? '&' : '?') + 'embed=1';
+            const embedUrl = url + (url.includes('?') ? '&' : '?') + 'embed=1'
+                + (question ? `&q=${encodeURIComponent(question)}` : '');
 
             const win = document.createElement('div');
             win.className = 'home-window';
@@ -702,6 +718,13 @@ document.addEventListener('DOMContentLoaded', function() {
             document.documentElement.classList.add('home-window-open');
             win.querySelector('.home-window__close').focus();
         }
+
+        // Other scripts (contracts.js) open a specialist with context: AirchitectOpenSpecialist('construction-lawyer', 'text')
+        window.AirchitectOpenSpecialist = (slug, question) => {
+            const item = enabledSpecialists().find(s => (s.slug || s.id) === slug);
+            if (!item || !routes.specialist) return;
+            openSpecialistWindow(item, routes.specialist.replace('{slug}', encodeURIComponent(slug)), question);
+        };
 
         // Regulatory registry (aircodex.html): filter rows by number, title or specialist
         function initRegistrySearch() {
