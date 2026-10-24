@@ -1,5 +1,5 @@
 // Shared parts of the specialists' workspaces in Штат (contract-workspace.js, lawyer-workspace.js):
-// DOM helper, toast, rows, small dialog, files in the browser storage of Контракты, navigation to the
+// DOM helper, toast, rows, small dialog, files in the browser storage of Договоры, navigation to the
 // contract card and prepared requests in the specialist's dialog.
 
 (function () {
@@ -26,7 +26,7 @@
         h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-title' }, ...[].concat(title)), ...metas.filter(Boolean).map(m => h('p', { class: 'home-ct__row-meta' }, m))),
         actions && actions.length ? h('div', { class: 'home-record__actions' }, actions.map(([l, fn]) => h('button', { type: 'button', onclick: fn }, l))) : null);
 
-    // Files of contracts live in IndexedDB (the same database as Контракты and Объекты)
+    // Files of contracts live in IndexedDB (the same database as Договоры and Объекты)
     const filesDb = new Promise(resolve => {
         if (!('indexedDB' in window)) return resolve(null);
         const req = indexedDB.open('airchitect-contract-files', 1);
@@ -89,7 +89,7 @@
     const inCabinet = () => document.documentElement.classList.contains('is-cabinet');
     const embedded = () => new URLSearchParams(location.search).get('embed') === '1';
 
-    // Contract card in Контракты; action: notice | claim | amendment | terms (handled by contracts.js)
+    // Contract card in Договоры; action: notice | claim | amendment | terms (handled by contracts.js)
     function openCard(contract, action) {
         const id = `${contract.id}${action ? '~' + action : ''}`;
         if (inCabinet() && window.parent !== window) window.parent.location.hash = `contracts/${encodeURIComponent(id)}`;

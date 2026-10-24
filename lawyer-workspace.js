@@ -1,5 +1,5 @@
 // Workspace of the construction lawyer in Штат (staff.html?id=construction-lawyer): the dialog on top,
-// below — legal questions, contracts of Контракт — Исполнение (one card, contract-core.js), claims and
+// below — legal questions, contracts of Договоры (one card, contract-core.js), claims and
 // disputes, documents, the regulatory base (AirCodex registry) and legal risks.
 // Legally significant steps (sending a claim, filing a suit, signing) are marked only by the user with
 // a confirmation; norms and court practice are checked by the lawyer through official sources.
@@ -54,8 +54,8 @@
                         const c = data.contracts.find(x => x.id === request.id);
                         if (c) {
                             CC.ensure(c);
-                            c.analyses.unshift({ id: Date.now().toString(36), at: Date.now(), text: answerText.trim(), by: 'Строительный юрист' });
-                            c.log.unshift({ at: Date.now(), text: 'Сохранено заключение строительного юриста' });
+                            c.analyses.unshift({ id: Date.now().toString(36), at: Date.now(), text: answerText.trim(), by: 'Юрист' });
+                            c.log.unshift({ at: Date.now(), text: 'Сохранено заключение юриста' });
                             ok = CC.write(data) && ok;
                         }
                     }
@@ -97,7 +97,7 @@
             ['Исполнительная документация', 'Вопрос о составе и оформлении исполнительной документации: '], ['Приёмка работ', 'Вопрос о порядке приёмки работ и мотивированном отказе: ']
         ];
 
-        const root = h('section', { class: 'home-ws', 'aria-label': 'Рабочее пространство строительного юриста' });
+        const root = h('section', { class: 'home-ws', 'aria-label': 'Рабочее пространство юриста' });
         chatPanel.after(root);
 
         const needContract = () => { const c = current(); if (!c) notify('Выберите договор во вкладке «Договоры».'); return c; };
@@ -133,14 +133,14 @@
             ({ questions: renderQuestions, contracts: renderContracts, disputes: renderDisputes, documents: renderDocuments, norms: renderNorms, risks: renderRisks })[tab](panel, c);
             if (c) root.appendChild(h('div', { class: 'home-ws__team' }, h('p', { class: 'home-dialog__label' }, 'Подключить специалиста'), h('div', { class: 'home-ws__actions' },
                 TEAM.map(([l, slug, task]) => h('button', { type: 'button', class: 'home-chat__action', title: task, onclick: () => {
-                    if (typeof window.AirchitectOpenSpecialist === 'function') window.AirchitectOpenSpecialist(slug, `${CC.context(c)}\n\nЗапрос строительного юриста: ${task}\n\nВопрос: `);
+                    if (typeof window.AirchitectOpenSpecialist === 'function') window.AirchitectOpenSpecialist(slug, `${CC.context(c)}\n\nЗапрос юриста: ${task}\n\nВопрос: `);
                 } }, l)))));
-            root.appendChild(h('p', { class: 'home-note' }, 'Юрист работает с карточками раздела «Контракт — Исполнение». Направление претензии, подача иска и подписание документов отмечаются только пользователем с подтверждением. Нормы и судебная практика проверяются по официальным источникам; неподтверждённые ссылки специалист не приводит.'));
+            root.appendChild(h('p', { class: 'home-note' }, 'Юрист работает с карточками раздела «Договоры». Направление претензии, подача иска и подписание документов отмечаются только пользователем с подтверждением. Нормы и судебная практика проверяются по официальным источникам; неподтверждённые ссылки специалист не приводит.'));
         }
 
         function renderQuestions(panel) {
             const own = readLegal().questions;
-            const cardAnswers = data.contracts.flatMap(x => x.analyses.filter(a => a.by === 'Строительный юрист').map(a => ({ ...a, x })));
+            const cardAnswers = data.contracts.flatMap(x => x.analyses.filter(a => a.by === 'Юрист' || a.by === 'Строительный юрист').map(a => ({ ...a, x })));
             panel.appendChild(h('div', { class: 'home-ws__actions' }, TOPICS.map(([l, p]) => h('button', { type: 'button', class: 'home-chat__action', onclick: () => askChat(p) }, l))));
             panel.appendChild(h('ul', { class: 'home-ct__list' }, own.length ? own.map(q => rowEl([badge(new Date(q.at).toLocaleDateString('ru-RU')), q.question || 'Вопрос'], [q.contractId && data.contracts.find(x => x.id === q.contractId) ? CC.name(data.contracts.find(x => x.id === q.contractId)) : 'Без договора', q.answer.slice(0, 500) + (q.answer.length > 500 ? '…' : '')],
                 [['Word', () => exportAnswer(q)], ['Удалить', () => { const d = readLegal(); d.questions = d.questions.filter(x => x.id !== q.id); writeLegal(d); render(); }]])) : h('li', { class: 'home-ct__none' }, 'Сохранённых правовых вопросов нет. Задайте вопрос в диалоге и нажмите «Сохранить в «Правовые вопросы»».')));
@@ -155,7 +155,7 @@
                     [[x.customer && `Заказчик: ${x.customer}`, x.contractor && `Подрядчик: ${x.contractor}`].filter(Boolean).join(' · '),
                         `Претензий: ${x.notices.filter(n => n.type === 'claim').length} · споров: ${x.disputes.filter(d => d.status !== 'closed').length} · протоколов разногласий: ${x.protocols.length} · правовых предупреждений: ${legal.length}`],
                     [['Работать с договором', () => { select(x.id); document.dispatchEvent(new Event('lawyerselect')); render(); }], ['Карточка', () => openCard(x)]]);
-            }) : h('li', { class: 'home-ct__none' }, 'Договоров нет. Договоры ведутся в разделе «Контракт — Исполнение» или через договорного специалиста.')));
+            }) : h('li', { class: 'home-ct__none' }, 'Договоров нет. Договоры ведутся в разделе «Договоры» или через договорного специалиста.')));
             if (c && c.protocols.length) panel.append(h('p', { class: 'home-dialog__label' }, 'Протоколы разногласий'), h('ul', { class: 'home-ct__list' }, c.protocols.map(p => rowEl([badge({ draft: 'Проект', sent: 'Направлен', signed: 'Подписан' }[p.status], p.status === 'signed' ? 'done' : 'soon'), `от ${formatDate(p.date)}: пунктов ${p.items.length}`], [p.items.slice(0, 3).map(i => `п. ${i.clause}`).join(', ')],
                 [['Изменить', () => editProtocol(c, p)], ['Word', () => exportProtocol(c, p)], ...(p.status === 'draft' ? [['Направлен', () => confirmStep(`Протокол разногласий направлен контрагенту?`, 'Способ и подтверждение направления', v => { p.status = 'sent'; p.sentAt = CC.today(); p.sentRef = v; c.log.unshift({ at: Date.now(), text: `Протокол разногласий направлен: ${v}` }); })]] : []),
                     ...(p.status === 'sent' ? [['Подписан', () => confirmStep('Протокол разногласий подписан сторонами?', 'Подтверждение (подписанный экземпляр)', v => { p.status = 'signed'; p.signedAt = CC.today(); p.signRef = v; c.log.unshift({ at: Date.now(), text: `Протокол разногласий подписан: ${v}` }); })]] : [])]))));
@@ -191,7 +191,7 @@
 
         // Regulatory base: the AirCodex registry (aircodex.html), documents tagged for the construction lawyer
         async function renderNorms(panel) {
-            panel.appendChild(h('p', { class: 'home-ct__row-meta' }, 'Документы реестра AirCodex с отметкой «Строительный юрист» — ссылки на официальные источники. Действующую редакцию юрист сверяет при ответе.'));
+            panel.appendChild(h('p', { class: 'home-ct__row-meta' }, 'Документы реестра AirCodex с отметкой «Юрист» — ссылки на официальные источники. Действующую редакцию юрист сверяет при ответе.'));
             const search = h('input', { type: 'search', placeholder: 'Поиск по номеру или названию', class: 'home-ws__search', oninput: () => draw() });
             const list = h('ul', { class: 'home-ct__list' });
             panel.append(search, list);
@@ -206,7 +206,7 @@
                 try {
                     const html = await (await fetch('aircodex.html')).text();
                     const doc = new DOMParser().parseFromString(html, 'text/html');
-                    normsCache = [...doc.querySelectorAll('.home-registry__row')].filter(r => r.textContent.includes('Строительный юрист')).map(r => {
+                    normsCache = [...doc.querySelectorAll('.home-registry__row')].filter(r => r.textContent.includes('Юрист')).map(r => {
                         const a = r.querySelector('.home-registry__num');
                         const name = r.querySelector('.home-registry__name');
                         const src = name.querySelector('.home-registry__src');
@@ -295,7 +295,7 @@
             { text: `Заказчик: ____________ / ____________          Подрядчик: ____________ / ____________` },
             { text: 'Проект подготовлен в AIRCHITECT. Проверьте редакции и обоснования перед направлением контрагенту.', size: 16 }]);
 
-        const exportAnswer = q => docx(`Правовое заключение ${new Date(q.at).toLocaleDateString('ru-RU')}`, [{ text: 'ПРАВОВОЕ ЗАКЛЮЧЕНИЕ', bold: true, center: true, size: 24 }, { text: `Вопрос: ${q.question}` }, ...q.answer.split('\n').filter(Boolean).map(t => ({ text: t.replace(/^#+\s*/, '').replace(/\*\*/g, '') })), { text: 'Заключение подготовлено строительным юристом AIRCHITECT и носит рекомендательный характер.', size: 16 }]);
+        const exportAnswer = q => docx(`Правовое заключение ${new Date(q.at).toLocaleDateString('ru-RU')}`, [{ text: 'ПРАВОВОЕ ЗАКЛЮЧЕНИЕ', bold: true, center: true, size: 24 }, { text: `Вопрос: ${q.question}` }, ...q.answer.split('\n').filter(Boolean).map(t => ({ text: t.replace(/^#+\s*/, '').replace(/\*\*/g, '') })), { text: 'Заключение подготовлено юристом AIRCHITECT и носит рекомендательный характер.', size: 16 }]);
 
         // Statement of claim: the structure of ст. 125 АПК РФ, filled from the card; blanks stay for the lawyer
         function lawsuit(c, d, claim) {

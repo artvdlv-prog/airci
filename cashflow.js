@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => toast.remove(), 4000);
     }
 
-    // ---- Dialog (same markup as Контракты) -------------------------------------------------
+    // ---- Dialog (same markup as Договоры) -------------------------------------------------
 
     const dialog = document.querySelector('[data-ct-dialog]');
     const dialogTitle = dialog.querySelector('[data-ct-dialog-title]');
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- Operations ---------------------------------------------------------------------
 
-    // Payment obligations of the customer found in Контракты: their dates can be used as the plan
+    // Payment obligations of the customer found in Договоры: their dates can be used as the plan
     function paymentObligations() {
         return contracts().flatMap(c => c.obligations
             .filter(o => o.party === 'customer' && /оплат|аванс|платеж|платёж|перечисл/i.test(o.text))
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { name: 'contractId', label: 'Договор', type: 'select', value: op.contractId, options: [['', '— без договора —'], ...contracts().map(c => [c.id, contractName(c)])] },
             { name: 'objectId', label: 'Объект', type: 'select', value: op.objectId, options: [['', '— без объекта —'], ...objects().map(o => [o.key, o.name])] }
         ];
-        if (obligations.length) fields.push({ name: 'obligationId', label: 'Срок оплаты из обязательств договора', type: 'select', value: op.obligationId, options: [['', '— не выбрано —'], ...obligations.map(x => [x.o.id, `${contractName(x.contract)}: ${x.o.text.slice(0, 70)}${x.o.due ? ' (до ' + formatDate(x.o.due) + ')' : ''}`])], hint: 'Дата и договор подставятся из «Контрактов», если не указаны.' });
+        if (obligations.length) fields.push({ name: 'obligationId', label: 'Срок оплаты из обязательств договора', type: 'select', value: op.obligationId, options: [['', '— не выбрано —'], ...obligations.map(x => [x.o.id, `${contractName(x.contract)}: ${x.o.text.slice(0, 70)}${x.o.due ? ' (до ' + formatDate(x.o.due) + ')' : ''}`])], hint: 'Дата и договор подставятся из «Договоров», если не указаны.' });
         fields.push(
             { name: 'date', label: 'Плановая дата', type: 'date', value: op.date },
             { name: 'amount', label: 'Сумма к оплате, ₽', type: 'number', step: '0.01', min: '0', value: op.amount || '', hint: d === 'in' ? 'Для оплаты работ можно указать стоимость по акту, зачёт аванса и удержание — сумма рассчитается.' : '' });
@@ -190,11 +190,11 @@ document.addEventListener('DOMContentLoaded', () => {
         render();
     }
 
-    // Payment reminder to the customer: a draft in the contract's notice journal (Контракты)
+    // Payment reminder to the customer: a draft in the contract's notice journal (Договоры)
     function paymentNotice(op) {
         const store = readStore(CONTRACTS_KEY, { contracts: [] });
         const contract = store.contracts.find(c => c.id === op.contractId);
-        if (!contract) return notify('Привяжите операцию к договору из «Контрактов».');
+        if (!contract) return notify('Привяжите операцию к договору из «Договоров».');
         const rest = C.restOf(op);
         const text = [
             `Кому: ${contract.customer || op.counterparty || '________'}`,
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'Должность ________ / ФИО ________ / подпись'
         ].join('\n');
         contract.notices.unshift({ id: C.uid(), type: 'payment', obligationId: op.obligationId || '', clause: '', addressee: contract.customer || op.counterparty || '', due: '', status: 'draft', created: Date.now(), text });
-        contract.log.unshift({ at: Date.now(), text: `Подготовлен проект: Уведомление о необходимости оплаты (${money(rest)}) — из раздела ДДС` });
+        contract.log.unshift({ at: Date.now(), text: `Подготовлен проект: Уведомление о необходимости оплаты (${money(rest)}) — из раздела «Финансы»` });
         try {
             localStorage.setItem(CONTRACTS_KEY, JSON.stringify(store));
         } catch (e) {
@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
         op.noticeAt = Date.now();
         save();
         render();
-        notify('Проект уведомления добавлен в журнал уведомлений договора в «Контрактах».');
+        notify('Проект уведомления добавлен в журнал уведомлений договора в «Договорах».');
     }
 
     // ---- Scope: company, a contract or an object ------------------------------------------
@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const bal = C.currentBalance(data);
         const scopeName = root.querySelector('[data-cf-scope]').selectedOptions[0].textContent;
         return [
-            `Движение денежных средств. Область: ${scopeName}.`,
+            `Финансы: движение денежных средств. Область: ${scopeName}.`,
             isCompany() ? (bal.hasOpening ? `Остаток на счетах (факт, выписка на ${formatDate(data.settings.openingDate)} с учётом записанных оплат): ${money(bal.balance)}.` : 'Остаток на счетах не указан.') : `Сальдо по записанным оплатам (факт): ${money(f.start.balance)}.`,
             `Минимальный остаток (прогноз): ${money(f.low.balance)} на ${formatDate(f.low.date)}; горизонт до ${formatDate(f.end)}.`,
             f.gaps.length ? 'Кассовые разрывы (прогноз): ' + f.gaps.map(g => `${formatDate(g.start)}–${g.end ? formatDate(g.end) : 'не закрывается'}, до ${money(g.deficit)}; платежи: ${g.payments.map(e => `${e.op.title} ${money(e.amount)}`).join(', ')}`).join('; ') + '.' : 'Кассовых разрывов по прогнозу нет.',
@@ -805,7 +805,7 @@ document.addEventListener('DOMContentLoaded', () => {
             add('Задолженность', 'Дебиторская и кредиторская задолженность (подтверждённая) и риски', ['Вид', 'Состояние', 'Дней просрочки', ...opCols], debtRows, [18, 16, 10, ...opW]);
             add('План-факт', 'План-факт по договорам', PF_COLUMNS, planFactRowsBy('contract').map(pfCells), [36, 16, 16, 16, 14, 16, 16, 16, 14, 14, 16]);
             add('План-факт объекты', 'План-факт по объектам', PF_COLUMNS, planFactRowsBy('object').map(pfCells), [36, 16, 16, 16, 14, 16, 16, 16, 14, 14, 16]);
-            X.writeFile(book, `ДДС — ${scopeName.replace(/[\\/:*?"<>|]/g, ' ')} — ${formatDate(today())}.xlsx`);
+            X.writeFile(book, `Финансы — ${scopeName.replace(/[\\/:*?"<>|]/g, ' ')} — ${formatDate(today())}.xlsx`);
         } catch (e) {
             notify(e.message);
         }

@@ -118,6 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             notify('Не удалось сохранить данные в браузере: хранилище заполнено или недоступно.');
         }
+        // The contract specialist's workspace on this page redraws from the same store
+        document.dispatchEvent(new CustomEvent('contractschange', { detail: { source: 'card' } }));
     };
 
     const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -323,10 +325,14 @@ document.addEventListener('DOMContentLoaded', () => {
         el.card.hidden = !contract;
         if (!contract) return;
 
+        if (CC.selected() !== contract.id) {
+            CC.select(contract.id);
+            document.dispatchEvent(new Event('contractselect'));
+        }
         el.title.textContent = `Договор${contract.number ? ' № ' + contract.number : ''}${contract.date ? ' от ' + formatDate(contract.date) : ''}`;
         el.meta.textContent = [contract.subject, contract.customer && `Заказчик: ${contract.customer}`, contract.contractor && `Подрядчик: ${contract.contractor}`]
             .filter(Boolean).join(' · ') || 'Заполните сведения о договоре';
-        document.title = `${el.title.textContent} — Контракты | AIRCHITECT`;
+        document.title = `${el.title.textContent} — Договоры | AIRCHITECT`;
 
         // Objects linked to this contract (Объекты): readiness of ИД affects acceptance and payment
         let linked = [];
@@ -861,7 +867,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const area = h('textarea', { name: 'text', rows: 16, class: 'home-ct__notice-text', readonly: n.status !== 'draft' });
         area.value = n.text;
         const note = h('p', { class: 'home-dialog__hint' }, n.status === 'draft'
-            ? 'Проект сформирован по шаблону. Проверьте текст и основания перед отправкой; при необходимости обсудите его со строительным юристом.'
+            ? 'Проект сформирован по шаблону. Проверьте текст и основания перед отправкой; при необходимости обсудите его со юристом.'
             : 'Уведомление отправлено: текст зафиксирован и не редактируется.');
         el.dialogTitle.textContent = NOTICE_TYPES[n.type].title;
         el.dialogBody.textContent = '';
@@ -890,7 +896,7 @@ document.addEventListener('DOMContentLoaded', () => {
             id: uid(), title: `${NOTICE_TYPES[n.type].title} — договор${contract.number ? ' № ' + contract.number : ''}`,
             type: 'Уведомление', contractId: contract.id, noticeId: n.id, responsible: '', due: n.due || '',
             text: n.text, files: [], route: [], status: 'draft', created: now,
-            history: [{ at: now, text: 'Создан из раздела «Контракты»' }]
+            history: [{ at: now, text: 'Создан из раздела «Договоры»' }]
         });
         try {
             localStorage.setItem(DOCS_KEY, JSON.stringify(store));
@@ -1034,12 +1040,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     render();
-    const deep = (new URLSearchParams(location.search).get('id') || '').split('~')[1];
-    if (deep && current()) {
+    function runAction(action) {
         const c = current();
-        if (deep === 'notice') prepareNotice(c);
-        if (deep === 'claim') { prepareNotice(c); const sel = el.dialog.querySelector('[name=type]'); if (sel) sel.value = 'claim'; }
-        if (deep === 'amendment') editAmendment(c);
-        if (deep === 'terms') root.querySelector('[data-ct-tab="terms"]') && root.querySelector('[data-ct-tab="terms"]').click();
+        if (!action || !c) return;
+        if (action === 'notice') prepareNotice(c);
+        if (action === 'claim') { prepareNotice(c); const sel = el.dialog.querySelector('[name=type]'); if (sel) sel.value = 'claim'; }
+        if (action === 'amendment') editAmendment(c);
+        if (action === 'terms' && root.querySelector('[data-ct-tab="terms"]')) root.querySelector('[data-ct-tab="terms"]').click();
     }
+    runAction((new URLSearchParams(location.search).get('id') || '').split('~')[1]);
+
+    // The contract specialist's workspace (contract-workspace.js): open a card and its action, reload after its changes
+    document.addEventListener('contractopen', ev => {
+        currentId = ev.detail.id;
+        window.history.replaceState(null, '', withCabinet(`?id=${encodeURIComponent(currentId)}`));
+        render();
+        el.card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        runAction(ev.detail.action);
+    });
+    document.addEventListener('contractschange', ev => {
+        if (!ev.detail || ev.detail.source !== 'workspace') return;
+        data = CC.read();
+        data.contracts.forEach(CC.ensure);
+        if (!data.contracts.some(c => c.id === currentId)) currentId = CC.selected() || (data.contracts[0] && data.contracts[0].id);
+        if (!el.dialog.open) render();
+    });
 });

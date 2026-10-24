@@ -679,7 +679,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('storage', ev => { if (ev.key === C.STORE_KEY) { store = C.read(); if (!dialog.open) render(); } });
 
     render();
-    // ?inn=... from other sections (Контракты, Тендеры, Объекты) opens or creates the card
+    // ?inn=... from other sections (Договоры, Тендеры, Объекты) opens or creates the card
     const innParam = params.get('inn') || ((params.get('id') || '').startsWith('inn:') ? params.get('id').slice(4) : null);
     if (innParam) {
         const ex = store.items.find(x => x.inn === innParam);

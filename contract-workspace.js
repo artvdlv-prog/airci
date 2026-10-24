@@ -1,18 +1,24 @@
-// Workspace of the contract specialist in Штат (staff.html?id=contract-specialist): the dialog on top,
-// below — the contracts of Контракт — Исполнение (one store, contract-core.js), obligations, deadlines,
-// documents, risks and history. Actions change the same cards; the card opens in Контракты.
+// Workspace of the contract specialist in Договоры (contracts.html): above the list of contracts —
+// quick actions, all contracts, obligations, deadlines, documents, risks and history (one store,
+// contract-core.js). Actions change the same cards; requests go to the specialist's chat window.
 
 document.addEventListener('DOMContentLoaded', () => {
-    const page = document.querySelector('[data-chat-page]');
+    const page = document.querySelector('[data-contracts]');
     const CC = window.AirchitectContracts;
-    if (!page || !CC || !window.AirchitectWorkspaceKit || new URLSearchParams(location.search).get('id') !== 'contract-specialist') return;
-    const work = page.querySelector('.home-staff__work');
-    const chatPanel = page.querySelector('[data-tab-panel="chat"]');
-    if (!work || !chatPanel) return;
+    if (!page || !CC || !window.AirchitectWorkspaceKit) return;
+    const layout = page.querySelector('.home-staff');
+    if (!layout) return;
 
     const K = window.AirchitectWorkspaceKit;
-    const { h, notify, badge, rowEl, storeFile, openFile, openCard } = K;
-    const askChat = text => K.askChat(page, text);
+    const { h, notify, badge, rowEl, storeFile, openFile } = K;
+    // The card of Договоры on this page (contracts.js listens): open a contract, optionally with an action
+    const openCard = (c, action) => document.dispatchEvent(new CustomEvent('contractopen', { detail: { id: c.id, action: action || '' } }));
+    // Requests go to the contract specialist's chat window; the selected card is its context
+    const askChat = text => {
+        const c = selectedContract();
+        if (c) CC.select(c.id);
+        if (typeof window.AirchitectOpenSpecialist === 'function') window.AirchitectOpenSpecialist('contract-specialist', text);
+    };
     // Small forms on obligations: the form saves, then the workspace is redrawn
     const ask = (title, fields, onSubmit) => K.ask(title, fields, v => { onSubmit(v); save(); render(); return null; });
     const API = typeof HOME_ASSISTANT_API !== 'undefined' && HOME_ASSISTANT_API ? HOME_ASSISTANT_API.replace(/\/chat$/, '/extract') : null;
@@ -21,7 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let onlyPayments = false;
     let data = CC.read();
     data.contracts.forEach(CC.ensure);
-    const save = () => { if (!CC.write(data)) notify('Не удалось сохранить.'); };
+    const save = () => {
+        if (!CC.write(data)) notify('Не удалось сохранить.');
+        document.dispatchEvent(new CustomEvent('contractschange', { detail: { source: 'workspace' } }));
+    };
     const selectedContract = () => data.contracts.find(c => c.id === CC.selected());
 
     function needContract() {
@@ -30,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return c;
     }
 
-    // New card from the contract file: the same reading as in Контракты (contract-extract.js)
+    // New card from the contract file: the same reading as in Договоры (contract-extract.js)
     async function createFromFile(file) {
         const c = CC.ensure({ id: CC.uid(), number: '', date: '', subject: '', customer: '', contractor: '', price: '', start: '', end: '', file: null, obligations: [], notices: [], events: [], log: [] });
         c.file = await storeFile(file);
@@ -46,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = data.contracts.find(x => x.id === c.id);
             const n = CC.applyExtraction(card, result, API ? 'ai' : 'auto', file.name);
             save();
-            notify(`Карточка создана в «Контракт — Исполнение». Найдено контрольных точек: ${n} — подтвердите их.`);
+            notify(`Карточка создана в «Договоры». Найдено контрольных точек: ${n} — подтвердите их.`);
         } catch (err) {
             notify(`Карточка создана, но договор не прочитан: ${err.message}`);
         }
@@ -58,8 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---- Layout ----------------------------------------------------------------------------------
 
     const fileInput = h('input', { type: 'file', accept: '.pdf,.docx,.txt', hidden: true, onchange: ev => { if (ev.target.files[0]) createFromFile(ev.target.files[0]); ev.target.value = ''; } });
-    const root = h('section', { class: 'home-ws', 'aria-label': 'Рабочее пространство договорного специалиста' });
-    chatPanel.after(root);
+    const root = h('section', { class: 'home-ws home-ws--contracts', 'aria-label': 'Рабочее пространство договорного специалиста' });
+    layout.before(root);
     root.appendChild(fileInput);
 
     const ACTIONS = [
@@ -74,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ['Проверить готовность к закрытию', () => { tab = 'contracts'; render(); setTimeout(() => { const el = root.querySelector('[data-ws-ready]'); if (el) el.scrollIntoView({ block: 'center' }); }, 50); }]
     ];
     const TEAM = [
-        ['Строительный юрист', 'construction-lawyer', 'Правовая экспертиза условий, претензии, ответственность, изменение и расторжение договора.'],
+        ['Юрист', 'construction-lawyer', 'Правовая экспертиза условий, претензии, ответственность, изменение и расторжение договора.'],
         ['Финансист', 'financier', 'Авансы, платежи, удержания, денежный поток и финансовые риски по договору.'],
         ['Инженер ПТО', 'pto-engineer', 'Объёмы работ, техническая и исполнительная документация, приёмка.'],
         ['Специалист по безопасности', 'security-specialist', 'Проверка контрагента и связанных рисков.'],
@@ -89,11 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const c = selectedContract();
         root.textContent = '';
         root.appendChild(fileInput);
-        const select = h('select', { 'aria-label': 'Договор', onchange: ev => { CC.select(ev.target.value); document.dispatchEvent(new Event('contractselect')); render(); } },
+        const select = h('select', { 'aria-label': 'Договор', onchange: ev => { CC.select(ev.target.value); const x = data.contracts.find(y => y.id === ev.target.value); if (x) openCard(x); else render(); } },
             h('option', { value: '' }, data.contracts.length ? '— выберите договор —' : 'Договоров пока нет'), data.contracts.map(x => h('option', { value: x.id, selected: c && x.id === c.id }, `${CC.name(x)}${x.subject ? ' — ' + x.subject : ''}${x.closed ? ' (закрыт)' : ''}`)));
         root.append(
-            h('div', { class: 'home-ws__head' }, h('div', {}, h('p', { class: 'home-eyebrow' }, 'Рабочее пространство'), h('h3', { class: 'home-ws__title' }, 'Договоры раздела «Контракт — Исполнение»')),
-                h('div', { class: 'home-ws__pick' }, select, c ? h('button', { type: 'button', class: 'home-btn home-btn--secondary home-cab__small', onclick: () => openCard(c) }, 'Открыть карточку') : null)),
+            h('div', { class: 'home-ws__head' }, h('div', {}, h('p', { class: 'home-eyebrow' }, 'Договорной специалист'), h('h3', { class: 'home-ws__title' }, 'Сопровождение договоров от подписания до окончательного расчёта')),
+                h('div', { class: 'home-ws__pick' }, select, h('button', { type: 'button', class: 'home-btn home-btn--primary home-cab__small', onclick: () => askChat('') }, 'Диалог со специалистом'))),
             h('div', { class: 'home-ws__actions' }, ACTIONS.map(([l, fn]) => h('button', { type: 'button', class: 'home-chat__action', onclick: fn }, l))),
             h('div', { class: 'home-tabs', role: 'tablist', 'aria-label': 'Рабочие вкладки' }, TABS.map(([k, l]) => h('button', { type: 'button', role: 'tab', class: 'home-tab', 'aria-selected': String(k === tab), onclick: () => { tab = k; if (k !== 'deadlines') onlyPayments = false; render(); } }, l))));
         const panel = h('div', { class: 'home-ws__panel' });
@@ -103,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             TEAM.map(([l, slug, task]) => h('button', { type: 'button', class: 'home-chat__action', title: task, onclick: () => {
                 if (typeof window.AirchitectOpenSpecialist === 'function') window.AirchitectOpenSpecialist(slug, `${CC.context(c)}\n\nЗадача от договорного специалиста: ${task}\n\nВопрос: `);
             } }, l)))));
-        root.appendChild(h('p', { class: 'home-note' }, 'Договорной специалист работает с теми же карточками, что и раздел «Контракт — Исполнение»: изменения видны в обоих местах. Срок без сведений об исполнении отмечается как «Требует подтверждения», а не как нарушение.'));
+        root.appendChild(h('p', { class: 'home-note' }, 'Договорной специалист работает с карточками договоров ниже: изменения сразу видны в карточке. Срок без сведений об исполнении отмечается как «Требует подтверждения», а не как нарушение.'));
     }
 
     function stats(c) {
@@ -117,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const closed = data.contracts.filter(x => x.closed);
         const list = (items, empty) => h('ul', { class: 'home-ct__list' }, items.length ? items.map(x => rowEl([x.id === (c && c.id) ? badge('Выбран', 'done') : null, `${CC.name(x)}${x.subject ? ' · ' + x.subject : ''}`],
             [[x.customer && `Заказчик: ${x.customer}`, x.contractor && `Подрядчик: ${x.contractor}`, x.price && `цена ${x.price}`, x.end && `окончание ${formatDate(x.end)}`].filter(Boolean).join(' · '), stats(x), CC.warnings(x).filter(w => w.level >= 2).length ? `Предупреждений: ${CC.warnings(x).filter(w => w.level >= 2).length}` : ''],
-            [['Работать с договором', () => { CC.select(x.id); document.dispatchEvent(new Event('contractselect')); render(); }], ['Карточка', () => openCard(x)]])) : h('li', { class: 'home-ct__none' }, empty));
+            [['Открыть карточку', () => openCard(x)]])) : h('li', { class: 'home-ct__none' }, empty));
         panel.append(h('p', { class: 'home-dialog__label' }, 'Действующие'), list(active, 'Действующих договоров нет. Нажмите «Создать карточку договора» и загрузите файл.'), h('p', { class: 'home-dialog__label' }, 'Завершённые'), list(closed, 'Завершённых договоров нет.'));
         if (c) {
             const ready = CC.closeReadiness(c);
@@ -165,7 +174,9 @@ document.addEventListener('DOMContentLoaded', () => {
         panel.appendChild(h('ul', { class: 'home-ct__history' }, items.length ? items.map(l => h('li', {}, h('span', { class: 'home-ct__history-date' }, new Date(l.at).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })), h('span', {}, `${c ? '' : CC.name(l.x) + ': '}${l.text}`))) : h('li', {}, 'Истории нет.')));
     }
 
-    // Changes in Контракты (another tab or the cabinet) are shown here
+    // Changes of the card on this page, in another tab or in the cabinet are shown here
     window.addEventListener('storage', ev => { if (ev.key === CC.STORE_KEY || ev.key === 'airchitect-contract-specialist-v1') render(); });
+    document.addEventListener('contractschange', ev => { if (!ev.detail || ev.detail.source !== 'workspace') render(); });
+    document.addEventListener('contractselect', render);
     render();
 });

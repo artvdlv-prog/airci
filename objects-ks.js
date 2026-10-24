@@ -1,6 +1,6 @@
 // Construction forms and acts for Объекты (Инженер ПТО): estimate and volumes (КС-6а), КС-2 and КС-3
 // with the approval route, journals of works, other unified forms (КС-8 … КС-18), checks and
-// recommendations, links to ИД, Контракты and Движение денежных средств, export to Word / Excel / PDF.
+// recommendations, links to ИД, Договоры and Движение денежных средств, export to Word / Excel / PDF.
 // Data lives in the object itself (airchitect-objects-v1): o.estimate, o.volumes, o.ks2, o.ks3,
 // o.journals, o.ksDocs, o.ksSettings. Loaded before objects.js, which calls AirchitectObjectsKs(ctx).
 //
@@ -302,7 +302,7 @@ window.AirchitectObjectsKs = function (ctx) {
         const base = ks3Base(o, k);
         const pay = paymentState(k);
         const actions = [...routeActions(o, k, 'КС-3')];
-        if (k.status === 'signed' && !k.cashflowOpId) actions.push(['Передать в ДДС', () => toCashflow(o, k)]);
+        if (k.status === 'signed' && !k.cashflowOpId) actions.push(['Передать в «Финансы»', () => toCashflow(o, k)]);
         actions.push(['Word', () => exportDocx(o, 'ks3', k)], ['Excel', () => exportKs3Xlsx(o, k)], ['PDF', () => printDoc(o, 'ks3', k)]);
         if (k.status === 'draft') actions.push(['Удалить', () => { o.ks3 = o.ks3.filter(x => x !== k); log(o, `Удалён проект КС-3 № ${k.number}`); save(); render(); }]);
         return row(STATUS[k.status], TONE[k.status], `КС-3 № ${k.number} от ${formatDate(k.date)} · ${money(ks3Total(o, k))} с НДС`,
@@ -462,7 +462,7 @@ window.AirchitectObjectsKs = function (ctx) {
         });
     }
 
-    // ---- Контракты: acceptance and payment deadlines as obligations of the customer ------------------
+    // ---- Договоры: acceptance and payment deadlines as obligations of the customer ------------------
 
     function updateContracts(fn) {
         const store = readStore(CONTRACTS_KEY, { contracts: [] });
@@ -470,7 +470,7 @@ window.AirchitectObjectsKs = function (ctx) {
         try {
             localStorage.setItem(CONTRACTS_KEY, JSON.stringify(store));
         } catch (e) {
-            notify('Не удалось обновить «Контракты».');
+            notify('Не удалось обновить «Договоры».');
         }
         return result;
     }
@@ -501,14 +501,14 @@ window.AirchitectObjectsKs = function (ctx) {
 
     const addDays = (d, n) => new Date(new Date(d + 'T00:00:00Z').getTime() + n * 86400000).toISOString().slice(0, 10);
 
-    // ---- Движение денежных средств: a signed КС-3 becomes one confirmed receipt -------------------
+    // ---- Финансы: a signed КС-3 becomes one confirmed receipt -------------------
 
     function toCashflow(o, k) {
-        if (k.cashflowOpId) return notify('Справка уже передана в ДДС.');
+        if (k.cashflowOpId) return notify('Справка уже передана в «Финансы».');
         const st = o.ksSettings;
         const total = ks3Total(o, k);
         const c = contracts().find(x => x.id === k.contractId);
-        openDialog(`Передать в ДДС: КС-3 № ${k.number}`, [
+        openDialog(`Передать в «Финансы»: КС-3 № ${k.number}`, [
             { name: 'date', label: 'Ожидаемая дата оплаты', type: 'date', value: addDays(k.signedAt || today(), num(st.paymentDays) || 30), required: true, hint: `Срок оплаты по договору: ${st.paymentDays} дн. после подписания` },
             { name: 'offset', label: 'Зачёт аванса, ₽', type: 'number', value: round2(total * num(st.advancePct) / 100) },
             { name: 'retention', label: 'Гарантийное удержание, ₽', type: 'number', value: round2(total * num(st.retentionPct) / 100) }
@@ -518,7 +518,7 @@ window.AirchitectObjectsKs = function (ctx) {
             if (offset + retention >= total) return 'Зачёт аванса и удержание не могут быть больше стоимости справки.';
             const store = readStore(CASHFLOW_KEY, {});
             store.ops = store.ops || [];
-            if (store.ops.some(op => op.ks3Id === k.id)) return 'Эта справка уже есть в ДДС.';
+            if (store.ops.some(op => op.ks3Id === k.id)) return 'Эта справка уже есть в «Финансах».';
             const op = {
                 id: uid(), dir: 'in', category: 'work', title: `Оплата по КС-3 № ${k.number} от ${formatDate(k.date)} — ${o.name}`, counterparty: (c && c.customer) || customerOf(o).org || '',
                 contractId: k.contractId || '', objectId: o.key, obligationId: '', date: v.date, amount: round2(total - offset - retention), gross: total, advanceOffset: offset, retention,
@@ -529,11 +529,11 @@ window.AirchitectObjectsKs = function (ctx) {
             try {
                 localStorage.setItem(CASHFLOW_KEY, JSON.stringify(store));
             } catch (e) {
-                return 'Не удалось сохранить в ДДС.';
+                return 'Не удалось сохранить в «Финансы».';
             }
             k.cashflowOpId = op.id;
-            history(k, `Передана в ДДС: к оплате ${money(op.amount)} до ${formatDate(v.date)}`);
-            log(o, `КС-3 № ${k.number} передана в «Движение денежных средств»`);
+            history(k, `Передана в «Финансы»: к оплате ${money(op.amount)} до ${formatDate(v.date)}`);
+            log(o, `КС-3 № ${k.number} передана в «Финансы»`);
             if (k.contractId) updateContracts(store2 => {
                 const cc = store2.contracts.find(x => x.id === k.contractId);
                 if (cc) cc.obligations.push({ id: uid(), party: 'customer', text: `Оплатить работы по КС-3 № ${k.number} от ${formatDate(k.date)}: ${money(op.amount)}`, clause: '', due: v.date, condition: '', responsible: '', status: 'active', confirmed: false, source: 'auto', files: [] });
@@ -542,15 +542,15 @@ window.AirchitectObjectsKs = function (ctx) {
         });
     }
 
-    // Payment of a КС-3 as recorded in Движение денежных средств
+    // Payment of a КС-3 as recorded in Финансы
     function paymentState(k) {
-        if (!k.cashflowOpId) return k.status === 'signed' ? 'Не передана в ДДС: ожидаемая оплата не контролируется.' : '';
+        if (!k.cashflowOpId) return k.status === 'signed' ? 'Не передана в «Финансы»: ожидаемая оплата не контролируется.' : '';
         const op = (readStore(CASHFLOW_KEY, {}).ops || []).find(x => x.id === k.cashflowOpId);
-        if (!op) return 'Операция в ДДС не найдена (удалена).';
+        if (!op) return 'Операция в «Финансах» не найдена (удалена).';
         const paid = (op.payments || []).reduce((s, p) => s + num(p.amount), 0);
         if (paid >= num(op.amount)) return `Оплачено полностью: ${money(paid)}.`;
         const days = daysUntil(op.date);
-        return `ДДС: к оплате ${money(op.amount - paid)} до ${formatDate(op.date)}${paid ? `, оплачено ${money(paid)}` : ''}${days < 0 ? ` · просрочено ${-days} дн.` : ''}.`;
+        return `Финансы: к оплате ${money(op.amount - paid)} до ${formatDate(op.date)}${paid ? `, оплачено ${money(paid)}` : ''}${days < 0 ? ` · просрочено ${-days} дн.` : ''}.`;
     }
 
     // ---- Journals ----------------------------------------------------------------------------
@@ -753,7 +753,7 @@ window.AirchitectObjectsKs = function (ctx) {
         const list = [];
         const add = (level, area, text, norm) => list.push({ level, area, text, norm });
         const st = o.ksSettings;
-        if ((o.ks2.length || o.estimate.length) && !st.contractId) add('warning', 'Условия актирования', 'Не выбран договор: сроки приёмки и оплаты не контролируются в «Контрактах».', 'l402');
+        if ((o.ks2.length || o.estimate.length) && !st.contractId) add('warning', 'Условия актирования', 'Не выбран договор: сроки приёмки и оплаты не контролируются в «Договорах».', 'l402');
         if (o.ks2.length && !o.participants.some(p => ['Застройщик', 'Технический заказчик'].includes(p.role))) add('error', 'Реквизиты', 'Не указан заказчик (застройщик) в участниках строительства — обязательный реквизит акта.', 'l402');
         if (o.ks2.length && !o.participants.some(p => ['Генеральный подрядчик', 'Подрядчик'].includes(p.role))) add('error', 'Реквизиты', 'Не указан подрядчик в участниках строительства — обязательный реквизит акта.', 'l402');
         o.participants.filter(p => ['Застройщик', 'Технический заказчик', 'Генеральный подрядчик', 'Подрядчик'].includes(p.role) && !p.person).forEach(p => add('warning', 'Подписи', `${p.role}: не указан представитель (должность, ФИО) для подписи актов.`, 'l402'));
@@ -788,7 +788,7 @@ window.AirchitectObjectsKs = function (ctx) {
         o.ks3.forEach(k => {
             const name = `КС-3 № ${k.number}`;
             if (!k.vatPct) add('error', name, 'Не указана ставка НДС.', 'l402');
-            if (k.status === 'signed' && !k.cashflowOpId) add('warning', name, 'Подписана, но не передана в «Движение денежных средств» — ожидаемая оплата не контролируется.', 'l402');
+            if (k.status === 'signed' && !k.cashflowOpId) add('warning', name, 'Подписана, но не передана в «Финансы» — ожидаемая оплата не контролируется.', 'l402');
             const pay = k.cashflowOpId ? (readStore(CASHFLOW_KEY, {}).ops || []).find(x => x.id === k.cashflowOpId) : null;
             if (pay) {
                 const paid = (pay.payments || []).reduce((s, p) => s + num(p.amount), 0);
@@ -824,7 +824,7 @@ window.AirchitectObjectsKs = function (ctx) {
                     [unsigned.length ? `Подпишите ИД: ${unsigned.map(d => d.title).join('; ')}` : 'ИД по видам работ подписана', issues.map(i => i.text).join(' ')],
                     unsigned.length || issues.length ? [] : [['Передать заказчику', () => sendDoc(o, a, 'КС-2', false)]]))),
             block('Риски отказа в приёмке, задержки подписания и оплаты', null, rows(risks, 'Рисков не выявлено.', c => row(c.level === 'error' ? 'Риск' : 'Внимание', c.level === 'error' ? 'overdue' : 'soon', c.text, [c.area]))));
-        panel.appendChild(h('p', { class: 'home-note' }, 'Проверки выполняются по правилам: обязательные реквизиты (ч. 2 ст. 9 402-ФЗ), соответствие объёмов смете и КС-6а, расчёты, связь с ИД, сроки договора. Содержание документов и применимость форм разберёт инженер ПТО, условия договора — строительный юрист.'));
+        panel.appendChild(h('p', { class: 'home-note' }, 'Проверки выполняются по правилам: обязательные реквизиты (ч. 2 ст. 9 402-ФЗ), соответствие объёмов смете и КС-6а, расчёты, связь с ИД, сроки договора. Содержание документов и применимость форм разберёт инженер ПТО, условия договора — юрист.'));
     }
 
     // Short summary for the object overview
@@ -972,7 +972,7 @@ window.AirchitectObjectsKs = function (ctx) {
     const exportRegistryXlsx = o => xlsx(`Реестр КС-2 и КС-3 — ${o.name}`, [
         ['КС-2', [['Документ', 'Номер', 'Дата', 'Период с', 'по', 'Стоимость без НДС', 'Статус', 'Передан', 'Подписан', 'Подтверждение', 'В КС-3'],
             ...o.ks2.map(a => ['КС-2', a.number, formatDate(a.date), formatDate(a.from), formatDate(a.to), ks2Total(a), STATUS[a.status], formatDate(a.sentAt), formatDate(a.signedAt), a.signRef || '', (o.ks3.find(k => k.ks2Ids.includes(a.id)) || {}).number || ''])], [8, 8, 12, 12, 12, 18, 16, 12, 12, 40, 8]],
-        ['КС-3', [['Документ', 'Номер', 'Дата', 'КС-2', 'Без НДС', 'НДС', 'С НДС', 'Статус', 'Подписана', 'В ДДС'],
+        ['КС-3', [['Документ', 'Номер', 'Дата', 'КС-2', 'Без НДС', 'НДС', 'С НДС', 'Статус', 'Подписана', 'В «Финансах»'],
             ...o.ks3.map(k => { const b = ks3Base(o, k); return ['КС-3', k.number, formatDate(k.date), o.ks2.filter(a => k.ks2Ids.includes(a.id)).map(a => a.number).join(', '), b, vatOf(k, b), round2(b + vatOf(k, b)), STATUS[k.status], formatDate(k.signedAt), k.cashflowOpId ? 'да' : 'нет']; })], [8, 8, 12, 14, 18, 14, 18, 16, 12, 8]]]);
 
     // PDF through the browser print dialog

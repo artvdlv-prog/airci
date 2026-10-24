@@ -344,11 +344,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const result = h('div', { class: 'home-ct__actions' });
         if (t.status === 'won') {
             result.append(
-                h('button', { type: 'button', class: 'home-btn home-btn--primary', onclick: () => toContract(t) }, h('span', {}, t.contractId ? 'Договор создан' : 'Создать договор в «Контрактах»')),
+                h('button', { type: 'button', class: 'home-btn home-btn--primary', onclick: () => toContract(t) }, h('span', {}, t.contractId ? 'Договор создан' : 'Создать договор в «Договорах»')),
                 h('button', { type: 'button', class: 'home-btn home-btn--secondary', onclick: () => toObject(t) }, t.objectId ? 'Объект создан' : 'Создать объект'),
-                t.calc ? h('button', { type: 'button', class: 'home-btn home-btn--secondary', onclick: () => toCashflow(t) }, t.cashflowAt ? 'Прогноз в ДДС' : 'Перенести прогноз в ДДС') : null);
+                t.calc ? h('button', { type: 'button', class: 'home-btn home-btn--secondary', onclick: () => toCashflow(t) }, t.cashflowAt ? 'Прогноз в «Финансах»' : 'Перенести прогноз в «Финансы»') : null);
         } else {
-            result.append(h('p', { class: 'home-note' }, 'После победы (статус «Победа» во вкладке «Сведения») закупку можно передать в «Контракты» и «Объекты».'));
+            result.append(h('p', { class: 'home-note' }, 'После победы (статус «Победа» во вкладке «Сведения») закупку можно передать в «Договоры» и «Объекты».'));
         }
         el.panel.appendChild(result);
     }
@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Won tender -> contract in Контракты with the obligations known from the tender
+    // Won tender -> contract in Договоры with the obligations known from the tender
     function toContract(t) {
         if (t.contractId) return openIn('contracts', t.contractId);
         const store = readStore('airchitect-contracts-v1', { contracts: [] });
@@ -460,15 +460,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 t.warrantySecurity ? ob(`Предоставить обеспечение гарантийных обязательств (${t.warrantySecurity})`, 'документация закупки') : null
             ].filter(Boolean),
             notices: [], events: [], log: [{ at: Date.now(), text: `Создан из закупки ${t.number ? '№ ' + t.number : t.title}` }],
-            // Terms of the won procurement go to the contract card (Контракт — Исполнение)
+            // Terms of the won procurement go to the contract card (Договоры)
             tenderId: t.id, terms: { advancePct: calc ? String(calc.input.advancePct || '') : '', paymentTerms: t.payment || '', retentionPct: '', warrantyMonths: '', penalty: '', acceptance: '' }
         });
         localStorage.setItem('airchitect-contracts-v1', JSON.stringify(store));
         t.contractId = id;
-        log(t, 'Создан договор в разделе «Контракты»');
+        log(t, 'Создан договор в разделе «Договоры»');
         save();
         render();
-        notify('Договор создан в «Контрактах». Укажите номер, дату и приложите подписанный договор.');
+        notify('Договор создан в «Договорах». Укажите номер, дату и приложите подписанный договор.');
     }
 
     function toObject(t) {
@@ -484,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
         notify('Объект создан в «Объектах».');
     }
 
-    // Won tender -> monthly forecast of the calculation as unconfirmed plan in Движение денежных средств
+    // Won tender -> monthly forecast of the calculation as unconfirmed plan in Финансы
     function toCashflow(t) {
         if (t.cashflowAt) return openIn('cashflow', '');
         const start = prompt('Дата начала работ (ГГГГ-ММ-ДД): от неё строится помесячный план', today());
@@ -506,10 +506,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         localStorage.setItem('airchitect-cashflow-v1', JSON.stringify(store));
         t.cashflowAt = Date.now();
-        log(t, 'Прогноз расчёта перенесён в «Движение денежных средств» как план');
+        log(t, 'Прогноз расчёта перенесён в «Финансы» как план');
         save();
         render();
-        notify('Прогноз перенесён в ДДС как неподтверждённый план. Уточните суммы и даты по договору.');
+        notify('Прогноз перенесён в «Финансы» как неподтверждённый план. Уточните суммы и даты по договору.');
     }
 
     function openIn(section, id) {

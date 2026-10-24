@@ -1,8 +1,8 @@
 // Personal cabinet (cabinet.html): product-based workspace.
-// OFFICE: Штат (specialists) and Контракты; DOCS: Документы with approval routes;
+// OFFICE: Штат (specialists) and Договоры; DOCS: Документы with approval routes;
 // all products: Обзор (dashboard), Реестры, Настройки.
 // Open access for now: all data is kept in this browser (localStorage + IndexedDB for files).
-// Штат and Контракты are the existing pages, shown inside the cabinet (?cabinet=1).
+// Штат and Договоры are the existing pages, shown inside the cabinet (?cabinet=1).
 
 document.addEventListener('DOMContentLoaded', () => {
     const root = document.querySelector('[data-cabinet]');
@@ -43,12 +43,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const SECTIONS = [
         { id: 'overview', title: 'Обзор', products: ['office', 'docs', 'complex'] },
         { id: 'staff', title: 'Штат', products: ['office', 'complex'], frame: 'staff.html' },
-        { id: 'contracts', title: 'Контракты', products: ['office', 'complex'], frame: 'contracts.html' },
+        { id: 'contracts', title: 'Договоры', products: ['office', 'complex'], frame: 'contracts.html' },
         { id: 'tenders', title: 'Тендеры', products: ['office', 'complex'], frame: 'tenders.html' },
         { id: 'objects', title: 'Объекты', products: ['office', 'complex'], frame: 'objects.html' },
         { id: 'estimates', title: 'Сметы', products: ['office', 'complex'], frame: 'estimates.html' },
         { id: 'counterparties', title: 'Контрагенты', products: ['office', 'complex'], frame: 'counterparties.html' },
-        { id: 'cashflow', title: 'ДДС', products: ['office', 'complex'], frame: 'cashflow.html' },
+        { id: 'cashflow', title: 'Финансы', products: ['office', 'complex'], frame: 'cashflow.html' },
         { id: 'documents', title: 'Документы', products: ['docs', 'complex'] },
         { id: 'registries', title: 'Реестры', products: ['office', 'docs', 'complex'] },
         { id: 'settings', title: 'Настройки', products: ['office', 'docs', 'complex'] }
@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Same rules as contracts.js
-    // Same rules as Контракты (contract-core.js): a passed deadline without a mark needs confirmation
+    // Same rules as Договоры (contract-core.js): a passed deadline without a mark needs confirmation
     const obligationStatus = window.AirchitectContracts.obligationStatus;
     const OBLIGATION_LABEL = window.AirchitectContracts.STATUS_LABEL;
     const PARTIES = { customer: 'Заказчик', contractor: 'Подрядчик', both: 'Обе стороны' };
@@ -470,7 +470,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tone: 'soon', open: () => go('tenders', t.id)
             })) : []),
             ...(office && CF ? cashOps().filter(op => CF.restOf(op) > 0 && op.date && daysUntil(op.date) <= 14).map(op => ({
-                date: op.date, title: `${op.dir === 'in' ? 'Поступление' : 'Платёж'}: ${op.title}`, meta: `ДДС · ${CF.money(CF.restOf(op))}${op.confirmed ? '' : ' · план'}`,
+                date: op.date, title: `${op.dir === 'in' ? 'Поступление' : 'Платёж'}: ${op.title}`, meta: `Финансы · ${CF.money(CF.restOf(op))}${op.confirmed ? '' : ' · план'}`,
                 tone: daysUntil(op.date) < 0 ? 'overdue' : 'soon', open: () => go('cashflow')
             })) : []),
             ...(office ? objects().flatMap(ob => ob.id.filter(d => d.status !== 'signed' && d.due && daysUntil(d.due) <= 14).map(d => ({
@@ -744,7 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         },
         {
-            id: 'payments', title: 'Платежи (ДДС)', products: ['office', 'complex'],
+            id: 'payments', title: 'Платежи (Финансы)', products: ['office', 'complex'],
             columns: ['Дата', 'Направление', 'Статья', 'Назначение', 'Контрагент', 'Договор', 'План', 'Оплачено', 'Остаток', 'Статус', 'Основание'],
             rows: () => (CF ? [...cashOps()].sort((a, b) => (a.date || '').localeCompare(b.date || '')).map(op => {
                 const c = contracts().find(x => x.id === op.contractId);
@@ -912,7 +912,7 @@ document.addEventListener('DOMContentLoaded', () => {
             h('label', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, 'Компания'), company),
             h('label', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, 'Пользователь'), user, h('span', { class: 'home-dialog__hint' }, 'Подставляется ответственным и в историю действий')),
             h('label', { class: 'home-dialog__field home-ct__wide' }, h('span', { class: 'home-dialog__label' }, 'Решение'), product,
-                h('span', { class: 'home-dialog__hint' }, 'OFFICE работает самостоятельно. В COMPLEX проекты уведомлений из «Контрактов» можно передавать на согласование в «Документы».')),
+                h('span', { class: 'home-dialog__hint' }, 'OFFICE работает самостоятельно. В COMPLEX проекты уведомлений из «Договоров» можно передавать на согласование в «Документы».')),
             h('div', { class: 'home-ct__wide home-ct__info-actions' }, h('button', { type: 'submit', class: 'home-btn home-btn--primary' }, 'Сохранить'))),
             block('Данные',
                 h('div', { class: 'home-cab__data' },

@@ -1,7 +1,7 @@
 // Objects (objects.html): construction objects with working documentation (РД)
 // and as-built documentation (ИД): registries, materials and tests, completeness
 // control, remarks, handover to the customer and export to Word / Excel / PDF.
-// Data is kept in this browser (localStorage, files in IndexedDB), like Контракты.
+// Data is kept in this browser (localStorage, files in IndexedDB), like Договоры.
 // Loaded after script.js (uses window.AirchitectOpenSpecialist).
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => URL.revokeObjectURL(link.href), 10000);
     }
 
-    // ---- Dialog (same markup as Контракты) -------------------------------------------------
+    // ---- Dialog (same markup as Договоры) -------------------------------------------------
 
     const dialog = document.querySelector('[data-ct-dialog]');
     const dialogTitle = dialog.querySelector('[data-ct-dialog-title]');
@@ -430,8 +430,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         const contractSelect = h('select', { name: 'contracts', multiple: true, size: 4 },
             contracts().map(c => h('option', { value: c.id, selected: (o.contractIds || []).includes(c.id) }, `№ ${c.number || 'без номера'} ${c.subject || ''}`)));
-        form.appendChild(h('label', { class: 'home-dialog__field home-ct__wide' }, h('span', { class: 'home-dialog__label' }, 'Договоры (из раздела «Контракты»)'),
-            contracts().length ? contractSelect : h('span', { class: 'home-dialog__hint' }, 'Договоров пока нет — добавьте их в разделе «Контракты».')));
+        form.appendChild(h('label', { class: 'home-dialog__field home-ct__wide' }, h('span', { class: 'home-dialog__label' }, 'Договоры (из раздела «Договоры»)'),
+            contracts().length ? contractSelect : h('span', { class: 'home-dialog__hint' }, 'Договоров пока нет — добавьте их в разделе «Договоры».')));
         form.appendChild(h('div', { class: 'home-ct__wide home-ct__info-actions' },
             h('button', { type: 'submit', class: 'home-btn home-btn--primary' }, 'Сохранить'),
             h('button', {

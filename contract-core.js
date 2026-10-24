@@ -1,4 +1,4 @@
-// Contracts (Контракт — Исполнение): one store and the shared rules used by contracts.html,
+// Contracts (Договоры): one store and the shared rules used by contracts.html,
 // the contract specialist's workspace in Штат (contract-workspace.js) and the cabinet.
 // A passed deadline without a mark of execution is «Требует подтверждения исполнения», not a breach:
 // a breach is recorded only by the user («Не исполнено»).
@@ -100,7 +100,7 @@
         const l = linked(c);
         l.ops.filter(op => op.dir === 'in' && paid(op) < Number(op.amount || 0)).forEach(op => {
             const days = daysUntil(op.date);
-            if (days !== null && days <= SOON_DAYS) add('payment', days < 0 ? 2 : 1, days < 0 ? `Оплата заказчика по сроку ${formatDate(op.date)} не поступила: ${op.title} (ДДС).` : `Срок оплаты заказчиком через ${days} дн.: ${op.title} (ДДС).`, op.date);
+            if (days !== null && days <= SOON_DAYS) add('payment', days < 0 ? 2 : 1, days < 0 ? `Оплата заказчика по сроку ${formatDate(op.date)} не поступила: ${op.title} (Финансы).` : `Срок оплаты заказчиком через ${days} дн.: ${op.title} (Финансы).`, op.date);
         });
         const price = parsePrice(c.price);
         const accepted = l.ks3.filter(k => k.status === 'signed').reduce((s, k) => {
@@ -157,7 +157,7 @@
         const ks3Open = l.ks3.filter(k => k.status !== 'signed');
         add(!ks3Open.length, ks3Open.length ? `Не подписаны КС-3: ${ks3Open.map(k => '№ ' + k.number).join(', ')}.` : 'Справки КС-3 подписаны или не требуются.');
         const unpaid = l.ops.filter(op => op.dir === 'in' && paid(op) < Number(op.amount || 0));
-        add(!unpaid.length, unpaid.length ? `Не получены оплаты: ${unpaid.length} на ${Math.round(unpaid.reduce((s, op) => s + Number(op.amount) - paid(op), 0)).toLocaleString('ru-RU')} ₽ (ДДС).` : 'Оплаты по договору получены или не запланированы в ДДС.');
+        add(!unpaid.length, unpaid.length ? `Не получены оплаты: ${unpaid.length} на ${Math.round(unpaid.reduce((s, op) => s + Number(op.amount) - paid(op), 0)).toLocaleString('ru-RU')} ₽ (раздел «Финансы»).` : 'Оплаты по договору получены или не запланированы в «Финансах».');
         const idOpen = l.objects.flatMap(o => o.id || []).filter(d => d.status !== 'signed');
         add(!idOpen.length, idOpen.length ? `Не подписана исполнительная документация: ${idOpen.length} док.` : 'Исполнительная документация подписана или не ведётся.');
         const drafts = c.notices.filter(n => n.status === 'draft');
@@ -222,7 +222,7 @@
         return added.length;
     }
 
-    // Selected contract of the specialist's workspace (shared between Штат and Контракты)
+    // Selected contract of the specialist's workspace (shared between Штат and Договоры)
     const selected = () => readKey(SELECTED_KEY, {}).id || '';
     const select = id => { try { localStorage.setItem(SELECTED_KEY, JSON.stringify({ id })); } catch (e) { /* ignore */ } };
 
@@ -234,15 +234,31 @@
         const draw = () => {
             if (!bar) return;
             const c = current();
-            bar.textContent = c ? `Контекст: ${name(c)}${c.subject ? ' — ' + c.subject : ''}. Специалист получит актуальную карточку.` : 'Договор не выбран: выберите договор в рабочем пространстве ниже, чтобы специалист получил его карточку.';
+            bar.textContent = c ? 'Специалист получит актуальную карточку договора. Рабочее пространство — в разделе «Договоры».' : 'Выберите договор, чтобы специалист получил его карточку. Рабочее пространство — в разделе «Договоры».';
         };
         return {
             attach({ form }) {
+                const box = document.createElement('div');
+                box.className = 'home-ws__context-box';
                 bar = document.createElement('p');
                 bar.className = 'home-ws__context';
-                form.prepend(bar);
+                // Choice of the contract for the dialog; the workspace itself is in Договоры
+                const pick = document.createElement('select');
+                pick.setAttribute('aria-label', 'Договор для диалога');
+                const fill = () => {
+                    pick.textContent = '';
+                    const none = document.createElement('option');
+                    none.value = '';
+                    none.textContent = '— без договора —';
+                    pick.appendChild(none);
+                    read().contracts.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = `${name(c)}${c.subject ? ' — ' + c.subject : ''}`; o.selected = c.id === selected(); pick.appendChild(o); });
+                };
+                pick.addEventListener('change', () => { select(pick.value); draw(); });
+                box.append(pick, bar);
+                form.prepend(box);
+                fill();
                 draw();
-                window.addEventListener('storage', draw);
+                window.addEventListener('storage', () => { fill(); draw(); });
                 document.addEventListener('contractselect', draw);
             },
             payload() {
@@ -266,7 +282,7 @@
                     c.log.unshift({ at: Date.now(), text: 'Сохранено заключение договорного специалиста из чата' });
                     const p = document.createElement('p');
                     p.className = 'home-chat__note';
-                    p.textContent = write(data) ? `Сохранено в «Контракты»: ${name(c)} → «Условия и документы».` : 'Не удалось сохранить.';
+                    p.textContent = write(data) ? `Сохранено в «Договоры»: ${name(c)} → «Условия и документы».` : 'Не удалось сохранить.';
                     message.appendChild(p);
                 });
                 box.appendChild(btn);

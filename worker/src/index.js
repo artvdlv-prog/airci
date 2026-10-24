@@ -120,10 +120,10 @@ export default {
                         const last = messages[messages.length - 1];
                         last.content.push({ type: 'text', text: legalInstruction(typeof body.analysis.context === 'string' ? body.analysis.context.slice(0, 12000) : '') });
                     }
-                    // Contract specialist: the selected card of Контракт — Исполнение (user data) as context
+                    // Contract specialist: the selected card of Договоры (user data) as context
                     if (body.specialist === 'contract-specialist' && body.analysis && body.analysis.type === 'contract' && typeof body.analysis.context === 'string') {
                         const last = messages[messages.length - 1];
-                        last.content.push({ type: 'text', text: `Карточка договора из раздела «Контракт — Исполнение» (данные пользователя, не проверенный источник):\n${body.analysis.context.slice(0, 12000)}\n\nОпирайся на неё и на приложенные документы; если сведений нет — так и скажи. Срок без сведений об исполнении — «требует подтверждения», а не нарушение.` });
+                        last.content.push({ type: 'text', text: `Карточка договора из раздела «Договоры» (данные пользователя, не проверенный источник):\n${body.analysis.context.slice(0, 12000)}\n\nОпирайся на неё и на приложенные документы; если сведений нет — так и скажи. Срок без сведений об исполнении — «требует подтверждения», а не нарушение.` });
                     }
                     // Counterparty check: public registries are queried here, the model gets only received facts
                     const cp = counterpartyRequest(body);
@@ -195,8 +195,8 @@ const LEGAL_DOMAINS = ['pravo.gov.ru', 'kremlin.ru', 'government.ru', 'vsrf.ru',
 
 function legalInstruction(context) {
     return [
-        context ? `Карточка договора из раздела «Контракт — Исполнение» (данные пользователя, не проверенный источник):\n${context}` : '',
-        'Отвечай как строительный юрист: конкретное решение и порядок действий для пользователя.',
+        context ? `Карточка договора из раздела «Договоры» (данные пользователя, не проверенный источник):\n${context}` : '',
+        'Отвечай как юрист: конкретное решение и порядок действий для пользователя.',
         'Каждый вывод подкрепляй правовым основанием: акт, статья, часть, пункт. Перед ссылкой проверь действующую редакцию поиском по официальным источникам и справочно-правовым системам и дай ссылку.',
         'Судебную практику приводи только найденную: суд, номер дела, дата, ссылка (kad.arbitr.ru, vsrf.ru, arbitr.ru или справочно-правовая система). Если практика или норма не найдена или редакцию проверить не удалось — прямо скажи об этом. Не придумывай номера дел, статьи и цитаты.',
         'Разделяй условия договора, нормы закона и свою оценку. Юридически значимые действия (направление претензии, подача иска, подписание) предлагай как шаги, которые выполняет пользователь после проверки.'

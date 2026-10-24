@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         h('thead', {}, h('tr', {}, columns.map(c => h('th', {}, c)))), h('tbody', {}, body)));
     const note = text => h('p', { class: 'home-note' }, text);
 
-    // ---- Dialog (same markup as Контракты) ------------------------------------------------------
+    // ---- Dialog (same markup as Договоры) ------------------------------------------------------
 
     const dialog = document.querySelector('[data-ct-dialog]');
     const dialogTitle = dialog.querySelector('[data-ct-dialog-title]');
@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const contract = contracts().find(x => x.id === e.contractId);
         const field = (name, label, value, hint) => h('label', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, label), h('input', { type: 'number', step: 'any', name, value }), hint ? h('span', { class: 'home-dialog__hint' }, hint) : null);
         const form = h('form', { class: 'home-ct__form' },
-            field('contractPrice', 'Договорная цена, ₽', p.contractPrice, contract ? `Из «Контрактов»: ${contract.price || 'не указана'}` : 'Цена договора или предложения'),
+            field('contractPrice', 'Договорная цена, ₽', p.contractPrice, contract ? `Из «Договоров»: ${contract.price || 'не указана'}` : 'Цена договора или предложения'),
             h('label', { class: 'home-dialog__field home-cf__check' }, h('input', { type: 'checkbox', name: 'contractVatIncluded', checked: p.contractVatIncluded }), h('span', { class: 'home-dialog__label' }, 'Цена включает НДС')),
             field('materialAdjPct', 'Корректировка цен материалов, %', p.materialAdjPct, 'К ценам сметы или привязанным ценам КП'),
             field('transportPct', 'Транспорт и логистика, % от материалов', p.transportPct),
@@ -757,7 +757,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'Цифры рассчитаны программно. Оцени финансовые риски, потребность в финансировании и как защитить прибыль.', '\nВопрос: '].join('\n'));
     }
 
-    // ---- Integrations: Объекты (contract estimate for КС), Движение денежных средств ---------------------
+    // ---- Integrations: Объекты (contract estimate for КС), Финансы ---------------------
 
     // The estimate becomes the contract estimate of the object: Формы КС take positions from it (no second list)
     function toObject(e) {
@@ -802,10 +802,10 @@ document.addEventListener('DOMContentLoaded', () => {
         notify(problems.length ? `Сохранено с исключениями: ${problems.join('; ')}.` : `Позиции переданы в «Объекты» → «Формы КС»: добавлено ${added}, обновлено ${updated}. Цены за единицу без НДС, с накладными расходами и прибылью${round ? `; округление цен за единицу: ${money(round)}` : ''}.`);
     }
 
-    // Forecast expenses of the cost calculation spread by months: unconfirmed plan in Движение денежных средств
+    // Forecast expenses of the cost calculation spread by months: unconfirmed plan in Финансы
     function toCashflow(e) {
         const c = E.calcCost(e, store);
-        openDialog('План расходов в ДДС', [
+        openDialog('План расходов в «Финансы»', [
             { name: 'start', label: 'Начало работ', type: 'date', value: E.today(), required: true },
             { name: 'months', label: 'Продолжительность, мес.', type: 'number', value: 6, required: true }
         ], 'Передать', v => {
@@ -825,10 +825,10 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 localStorage.setItem('airchitect-cashflow-v1', JSON.stringify(cf));
             } catch (err) {
-                return 'Не удалось сохранить в ДДС.';
+                return 'Не удалось сохранить в «Финансы».';
             }
-            log(e, `План расходов передан в ДДС: ${money(c.cost - c.risk - c.otherTax)} на ${months} мес.`);
-            notify('План расходов передан в «Движение денежных средств» как неподтверждённый прогноз. Повторная передача заменяет неоплаченные строки.');
+            log(e, `План расходов передан в «Финансы»: ${money(c.cost - c.risk - c.otherTax)} на ${months} мес.`);
+            notify('План расходов передан в «Финансы» как неподтверждённый прогноз. Повторная передача заменяет неоплаченные строки.');
             return null;
         });
     }
@@ -840,7 +840,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const group = E.calcGroup(same);
         el.panel.appendChild(block('Связь с разделами', null, h('ul', { class: 'home-ct__list' }, [
             ['«Объекты» → «Формы КС»: договорная смета объекта', e.status === 'contract' ? 'Утверждена как договорная' : 'Позиции станут основой КС-6а, КС-2 и КС-3', [[e.status === 'contract' ? 'Обновить позиции' : 'Утвердить как договорную', () => toObject(e)]]],
-            ['«Движение денежных средств»: план расходов', 'Прогнозная себестоимость по месяцам как неподтверждённый план', [['Передать', () => toCashflow(e)]]]
+            ['«Финансы»: план расходов', 'Прогнозная себестоимость по месяцам как неподтверждённый план', [['Передать', () => toCashflow(e)]]]
         ].map(([title, text, acts]) => h('li', { class: 'home-ct__row' }, h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-title' }, title), h('p', { class: 'home-ct__row-meta' }, text)),
             h('div', { class: 'home-record__actions' }, acts.map(([l, fn]) => h('button', { type: 'button', onclick: fn }, l))))))));
         el.panel.appendChild(block('Документы по смете', null, h('ul', { class: 'home-ct__list' }, [
