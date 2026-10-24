@@ -309,6 +309,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     'aria-current': s.id === active ? 'page' : null
                 }, icon(s.id), h('span', {}, s.title), badge(s.id))));
         });
+        // On phones the menu is a horizontal strip: keep the active section in view
+        const current = nav.querySelector('.is-active');
+        if (current && side.scrollWidth > side.clientWidth) {
+            side.scrollLeft = current.offsetLeft - (side.clientWidth - current.offsetWidth) / 2;
+        }
     }
 
     // Counters next to menu items: what needs attention
@@ -456,6 +461,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (office) stats.push(stat('Уведомления к отправке', notices.filter(n => n.status === 'draft').length, '', () => go('registries', 'notices')));
         if (!docsOn) stats.push(stat('Требуют подтверждения', obligations.filter(o => o.s === 'review').length, '', () => go('registries', 'obligations')));
         panel.appendChild(h('div', { class: 'home-cab__stats' }, stats));
+
+        // Sections at a glance: one key figure per section, a click opens it
+        if (office) {
+            const CP = window.AirchitectCounterparties;
+            const ES = window.AirchitectEstimates;
+            const gaps = CF && cashOps().length ? CF.forecast(CF.read()).gaps.length : 0;
+            panel.appendChild(block('Разделы', h('div', { class: 'home-cab__stats home-cab__sections' },
+                stat('Договоры в работе', list.filter(c => !c.closed).length, '', () => go('contracts')),
+                stat('Закупки в работе', tenders().filter(t => ['analysis', 'preparing', 'submitted'].includes(t.status)).length, '', () => go('tenders')),
+                stat('Объекты', objects().length, '', () => go('objects')),
+                stat('Сметы', ES ? ES.read().estimates.length : 0, '', () => go('estimates')),
+                stat('Контрагенты: пора проверить', CP ? CP.read().items.filter(c => !c.demo && CP.due(c)).length : 0, 'soon', () => go('counterparties')),
+                stat('Финансы: кассовые разрывы', gaps, 'overdue', () => go('cashflow')))));
+        }
 
         const columns = h('div', { class: 'home-cab__columns' });
         panel.appendChild(columns);
@@ -867,6 +886,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     h('div', { class: 'home-ct__filters' }, search,
                         h('button', { type: 'button', class: 'home-btn home-btn--secondary home-cab__small', onclick: exportCsv }, 'Выгрузить CSV'))),
                 tableWrap));
+        const tabs = panel.querySelector('.home-tabs');
+        const tab = tabs.querySelector('[aria-selected="true"]');
+        if (tab && tabs.scrollWidth > tabs.clientWidth) tabs.scrollLeft = tab.offsetLeft - tabs.offsetLeft - 16;
         draw();
     }
 

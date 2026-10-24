@@ -4147,6 +4147,10 @@ body {
 
 .home-ct__filters select,
 .home-dialog__field select {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     height: 36px;
     padding: 0 10px;
     border: 1px solid var(--home-line-strong);
@@ -4493,7 +4497,8 @@ body {
         width: auto;
     }
 
-    .home-dialog__field input:not([type="file"]),
+    /* 16px keeps iOS from zooming the page when a field gets focus */
+    .home-dialog__field input:not([type="file"]):not([type="checkbox"]),
     .home-dialog__field textarea,
     .home-dialog__field select {
         font-size: 16px;
@@ -5211,6 +5216,15 @@ body {
 
     .home-cab__account-meta {
         display: none;
+    }
+
+    /* The strip under the header keeps its own height on phones */
+    .home-cab__layout {
+        align-content: start;
+    }
+
+    .home-cab__side {
+        height: auto;
     }
 
     .home-cab__frame-wrap {
@@ -6310,4 +6324,37 @@ a.home-registry__num::after {
     background: var(--home-bg);
     border: 1px solid var(--home-line);
     border-radius: 14px;
+}
+
+.home-cab__sections {
+    margin: 0;
+    padding: 14px 18px;
+}
+
+/* Cabinet on phones: fields declared above keep 16px so iOS does not zoom on focus */
+@media (max-width: 600px) {
+    .home-ws__context-box select,
+    .home-cf__scope {
+        font-size: 16px;
+    }
+
+    /* Tabs and the menu strip: one scrolling row instead of wrapped lines */
+    .home-cab__panel > .home-tabs,
+    .is-cabinet .home-tabs,
+    .home-cab__side {
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+    }
+
+    .home-cab__panel > .home-tabs::-webkit-scrollbar,
+    .is-cabinet .home-tabs::-webkit-scrollbar,
+    .home-cab__side::-webkit-scrollbar {
+        display: none;
+    }
+
+    .home-cab__panel > .home-tabs .home-tab,
+    .is-cabinet .home-tabs .home-tab {
+        flex-shrink: 0;
+        white-space: nowrap;
+    }
 }
