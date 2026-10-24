@@ -255,10 +255,25 @@ document.addEventListener('DOMContentLoaded', () => {
         location.hash = item ? `${section}/${encodeURIComponent(item)}` : section;
     }
 
+    const topbar = document.querySelector('[data-cab-top]');
+
+    function renderTop() {
+        const signed = !!(settings.product && settings.signedIn);
+        topbar.querySelector('[data-cab-account]').hidden = !signed;
+        if (!signed) return;
+        topbar.querySelector('[data-cab-company]').textContent = settings.company || 'Компания';
+        topbar.querySelector('[data-cab-product]').textContent = PRODUCTS[settings.product].code;
+        topbar.querySelector('[data-cab-user]').textContent = settings.user || '';
+    }
+
+    topbar.querySelector('[data-cab-logout]').addEventListener('click', () => {
+        settings.signedIn = false;
+        saveSettings();
+        location.hash = '';
+        renderSection();
+    });
+
     function renderSide() {
-        const product = PRODUCTS[settings.product];
-        root.querySelector('[data-cab-company]').textContent = settings.company || 'Ваша компания';
-        root.querySelector('[data-cab-product]').textContent = product.code;
         nav.textContent = '';
         const active = currentSection();
         sections().forEach(s => {
@@ -283,7 +298,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderSection() {
-        if (!settings.product) return renderOnboarding();
+        renderTop();
+        if (!settings.product || !settings.signedIn) return renderOnboarding();
         side.hidden = false;
         renderSide();
         const id = currentSection();
@@ -308,45 +324,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('hashchange', renderSection);
 
-    // ---- Onboarding: choose a product ----------------------------------------------
+    // ---- Sign-in: company, user and product --------------------------------------------
 
     function renderOnboarding() {
         side.hidden = true;
         frameWrap.hidden = true;
         panel.hidden = false;
         panel.textContent = '';
-        document.title = 'Личный кабинет | AIRCHITECT';
-        let choice = 'complex';
-        const company = h('input', { type: 'text', name: 'company', placeholder: 'Например: ООО «ГлавСтрой»' });
-        const cards = Object.entries(PRODUCTS).map(([key, p]) => h('button', {
-            type: 'button',
-            class: 'home-cab__product' + (key === choice ? ' is-active' : ''),
-            'aria-pressed': String(key === choice),
-            onclick: e => {
-                choice = key;
-                panel.querySelectorAll('.home-cab__product').forEach(b => {
-                    b.classList.toggle('is-active', b === e.currentTarget);
-                    b.setAttribute('aria-pressed', String(b === e.currentTarget));
-                });
-            }
-        }, h('span', { class: 'home-cab__product-code' }, p.code), h('span', { class: 'home-cab__product-title' }, p.title), h('span', { class: 'home-cab__product-text' }, p.text)));
+        document.title = 'Вход — Личный кабинет | AIRCHITECT';
+        let choice = settings.product || 'complex';
 
-        panel.append(
-            h('p', { class: 'home-eyebrow' }, 'Личный кабинет'),
-            h('h1', { class: 'home-cab__title' }, 'С чего начнём?'),
-            h('p', { class: 'home-chat__text' }, 'Выберите решение — от него зависят разделы кабинета. Изменить выбор можно в настройках.'),
-            h('div', { class: 'home-cab__products' }, cards),
-            h('label', { class: 'home-dialog__field home-cab__company' }, h('span', { class: 'home-dialog__label' }, 'Компания'), company),
-            h('div', { class: 'home-actions' },
-                h('button', {
-                    type: 'button', class: 'home-btn home-btn--primary', onclick: () => {
-                        settings = { ...settings, product: choice, company: company.value.trim() };
-                        saveSettings();
-                        go('overview');
-                        renderSection();
-                    }
-                }, h('span', {}, 'Открыть кабинет'))),
-            h('p', { class: 'home-note' }, 'Кабинет работает в открытом доступе: данные хранятся только в этом браузере. Резервную копию можно сохранить в настройках.'));
+        const company = h('input', { type: 'text', required: true, autocomplete: 'organization', placeholder: 'ООО «ГлавСтрой»' });
+        company.value = settings.company || '';
+        const user = h('input', { type: 'text', autocomplete: 'name', placeholder: 'Фамилия И.О.' });
+        user.value = settings.user || '';
+        const pills = h('div', { class: 'home-cab__pills', role: 'radiogroup', 'aria-label': 'Решение' },
+            Object.entries(PRODUCTS).map(([key, p]) => h('button', {
+                type: 'button', role: 'radio', class: 'home-cab__pill' + (key === choice ? ' is-active' : ''),
+                'aria-checked': String(key === choice), title: p.title,
+                onclick: e => {
+                    choice = key;
+                    pills.querySelectorAll('.home-cab__pill').forEach(b => {
+                        b.classList.toggle('is-active', b === e.currentTarget);
+                        b.setAttribute('aria-checked', String(b === e.currentTarget));
+                    });
+                    hint.textContent = PRODUCTS[key].text;
+                }
+            }, p.code.replace('AIRCHITECT ', ''))));
+        const hint = h('p', { class: 'home-dialog__hint' }, PRODUCTS[choice].text);
+
+        const form = h('form', {
+            class: 'home-cab__login', onsubmit: e => {
+                e.preventDefault();
+                if (!company.value.trim()) return company.focus();
+                settings = { ...settings, product: choice, company: company.value.trim(), user: user.value.trim(), signedIn: true };
+                saveSettings();
+                go('overview');
+                renderSection();
+            }
+        },
+        h('h1', { class: 'home-cab__login-title' }, 'Вход в личный кабинет'),
+        h('label', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, 'Компания'), company),
+        h('label', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, 'Ваше имя'), user),
+        h('div', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, 'Решение'), pills, hint),
+        h('button', { type: 'submit', class: 'home-btn home-btn--primary home-cab__login-btn' }, h('span', {}, 'Войти')),
+        h('p', { class: 'home-dialog__hint' }, 'Открытый доступ: данные хранятся только в этом браузере.'));
+        panel.appendChild(h('div', { class: 'home-cab__login-wrap' }, form));
+        setTimeout(() => (company.value ? user : company).focus(), 0);
     }
 
     // ---- Overview (dashboard) -----------------------------------------------------
@@ -369,47 +393,49 @@ document.addEventListener('DOMContentLoaded', () => {
         const obligations = list.flatMap(c => c.obligations.map(o => ({ ...o, contract: c, s: obligationStatus(o) })));
         const notices = list.flatMap(c => c.notices.map(n => ({ ...n, contract: c })));
         const docs = docsStore.docs;
-        const staffData = staff();
-        const dialogs = Object.values(staffData).reduce((n, s) => n + (s.dialogs || []).length, 0);
         const office = hasProduct('office', 'complex');
         const docsOn = hasProduct('docs', 'complex');
 
-        panel.append(
-            h('p', { class: 'home-eyebrow' }, PRODUCTS[settings.product].code),
-            h('h1', { class: 'home-cab__title' }, settings.company ? `Добрый день, ${settings.company}` : 'Обзор'),
-            h('p', { class: 'home-chat__text' }, `Сегодня ${formatDate(today())}.`));
+        panel.append(h('h1', { class: 'home-cab__title' }, 'Обзор'));
+
+        // Nothing yet: first steps instead of empty tables
+        if (!list.length && !docs.length) {
+            const steps = [];
+            if (office) {
+                steps.push(['contracts', 'Добавьте договор', 'Контрольные точки найдутся в файле автоматически.', () => go('contracts')]);
+                steps.push(['staff', 'Задайте вопрос специалисту', 'Юрист, финансист, сметчик и другие.', () => go('staff')]);
+            }
+            if (docsOn) steps.push(['documents', 'Добавьте документ', 'И направьте его на согласование.', () => go('documents')]);
+            panel.appendChild(h('div', { class: 'home-cab__start' }, steps.map(([ic, title, text, fn]) =>
+                h('button', { type: 'button', class: 'home-cab__start-item', onclick: fn },
+                    icon(ic), h('span', { class: 'home-cab__start-title' }, title), h('span', { class: 'home-cab__start-text' }, text)))));
+            return;
+        }
 
         const stats = [];
         if (office) {
             stats.push(
-                stat('Договоров', list.length, '', () => go('contracts')),
-                stat('Просрочено обязательств', obligations.filter(o => o.s === 'overdue').length, 'overdue', () => go('registries', 'obligations')),
-                stat(`Срок в ближайшие ${SOON_DAYS} дней`, obligations.filter(o => o.s === 'soon').length, 'soon', () => go('registries', 'obligations')),
-                stat('Требуют подтверждения', obligations.filter(o => o.s === 'review').length, '', () => go('registries', 'obligations')),
-                stat('Уведомлений без отметки отправки', notices.filter(n => n.status === 'draft').length, '', () => go('registries', 'notices')));
+                stat('Просрочено', obligations.filter(o => o.s === 'overdue').length, 'overdue', () => go('registries', 'obligations')),
+                stat(`Срок в ${SOON_DAYS} дней`, obligations.filter(o => o.s === 'soon').length, 'soon', () => go('registries', 'obligations')));
         }
-        if (docsOn) {
-            stats.push(
-                stat('Документов на согласовании', docs.filter(d => d.status === 'approval').length, 'soon', () => go('documents')),
-                stat('Сроки исполнения документов истекли', docs.filter(d => d.status !== 'done' && d.due && daysUntil(d.due) < 0).length, 'overdue', () => go('documents')));
-        }
-        if (office) stats.push(stat('Диалогов со специалистами', dialogs, '', () => go('staff')));
+        if (docsOn) stats.push(stat('На согласовании', docs.filter(d => d.status === 'approval').length, 'soon', () => go('documents')));
+        if (office) stats.push(stat('Уведомления к отправке', notices.filter(n => n.status === 'draft').length, '', () => go('registries', 'notices')));
+        if (!docsOn) stats.push(stat('Требуют подтверждения', obligations.filter(o => o.s === 'review').length, '', () => go('registries', 'obligations')));
         panel.appendChild(h('div', { class: 'home-cab__stats' }, stats));
 
         const columns = h('div', { class: 'home-cab__columns' });
         panel.appendChild(columns);
 
-        // Deadlines: overdue and the next 14 days, contracts and documents together
         const deadlines = [
             ...(office ? obligations.filter(o => o.s !== 'done' && o.due && daysUntil(o.due) <= 14).map(o => ({
-                date: o.due, title: o.text, meta: `${contractName(o.contract)} · п. ${o.clause || '—'} · ${PARTIES[o.party] || ''}`,
+                date: o.due, title: o.text, meta: `${contractName(o.contract)} · п. ${o.clause || '—'}`,
                 tone: o.s, open: () => go('contracts', o.contract.id)
             })) : []),
             ...(docsOn ? docs.filter(d => d.status !== 'done' && d.due && daysUntil(d.due) <= 14).map(d => ({
-                date: d.due, title: d.title, meta: `${d.type} · ${DOC_STATUS[d.status]}`,
+                date: d.due, title: d.title, meta: d.type,
                 tone: daysUntil(d.due) < 0 ? 'overdue' : 'soon', open: () => showDocument(d)
             })) : [])
-        ].sort((a, b) => a.date.localeCompare(b.date)).slice(0, 12);
+        ].sort((a, b) => a.date.localeCompare(b.date)).slice(0, 8);
 
         columns.appendChild(block('Ближайшие сроки',
             h('ul', { class: 'home-ct__list' }, deadlines.length ? deadlines.map(d => {
@@ -421,16 +447,16 @@ document.addEventListener('DOMContentLoaded', () => {
                                 days < 0 ? `просрочено ${-days} дн.` : days === 0 ? 'сегодня' : `через ${days} дн.`),
                             d.title),
                         h('p', { class: 'home-ct__row-meta' }, `${formatDate(d.date)} · ${d.meta}`)));
-            }) : h('li', { class: 'home-ct__none' }, 'На ближайшие две недели сроков нет.'))));
+            }) : h('li', { class: 'home-ct__none' }, 'На две недели вперёд сроков нет.'))));
 
-        // Attention: what to confirm, approve or send
         const attention = [];
         if (office) {
-            obligations.filter(o => o.s === 'review').slice(0, 4).forEach(o => attention.push(['Подтвердите обязательство', `${contractName(o.contract)} · п. ${o.clause || '—'}: ${o.text}`, () => go('contracts', o.contract.id)]));
-            notices.filter(n => n.status === 'draft').slice(0, 3).forEach(n => attention.push(['Уведомление не отмечено отправленным', `${contractName(n.contract)} · адресат: ${n.addressee || '—'}`, () => go('contracts', n.contract.id)]));
+            const review = obligations.filter(o => o.s === 'review');
+            if (review.length) attention.push([`Подтвердите обязательства: ${review.length}`, 'Найдены в договорах автоматически', () => go('contracts', review[0].contract.id)]);
+            notices.filter(n => n.status === 'draft').slice(0, 3).forEach(n => attention.push(['Уведомление не отправлено', `${contractName(n.contract)} · ${n.addressee || '—'}`, () => go('contracts', n.contract.id)]));
         }
         if (docsOn) {
-            docs.filter(d => d.status === 'approval').slice(0, 4).forEach(d => {
+            docs.filter(d => d.status === 'approval').slice(0, 3).forEach(d => {
                 const step = (d.route || []).find(r => r.decision === 'pending');
                 attention.push(['Ожидает решения', `${d.title}${step ? ' · ' + step.name : ''}`, () => showDocument(d)]);
             });
@@ -440,24 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
             h('ul', { class: 'home-ct__list' }, attention.length ? attention.map(([title, text, open]) =>
                 h('li', { class: 'home-ct__row home-cab__clickable', onclick: open },
                     h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-title' }, title), h('p', { class: 'home-ct__row-meta' }, text)))) :
-                h('li', { class: 'home-ct__none' }, 'Всё в порядке: нет задач, требующих внимания.'))));
-
-        // Specialists: quick access
-        if (office && typeof HOME_SPECIALISTS !== 'undefined') {
-            panel.appendChild(block('Специалисты',
-                h('div', { class: 'home-cab__experts' }, HOME_SPECIALISTS.filter(s => s.enabled !== false).map(s =>
-                    h('a', { href: `#staff/${encodeURIComponent(s.slug || s.id)}`, class: 'home-cab__expert' }, s.title.ru || s.title)))));
-        }
-
-        // Recent actions across contracts and documents
-        const recent = [
-            ...list.flatMap(c => (c.log || []).map(l => ({ at: l.at, text: `${contractName(c)}: ${l.text}` }))),
-            ...docs.flatMap(d => (d.history || []).map(l => ({ at: l.at, text: `${d.title}: ${l.text}` })))
-        ].sort((a, b) => b.at - a.at).slice(0, 10);
-        panel.appendChild(block('Последние действия',
-            h('ul', { class: 'home-ct__history' }, recent.length ? recent.map(r =>
-                h('li', {}, h('span', { class: 'home-ct__history-date' }, formatStamp(r.at)), h('span', {}, r.text))) :
-                h('li', { class: 'home-ct__none' }, office ? 'Добавьте первый договор в разделе «Контракты» или задайте вопрос специалисту.' : 'Добавьте первый документ в разделе «Документы».'))));
+                h('li', { class: 'home-ct__none' }, 'Всё в порядке.'))));
     }
 
     // ---- DOCS: documents with approval routes ------------------------------------------

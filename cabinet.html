@@ -9,36 +9,21 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <a href="index.html">
-                    <img src="Logo Airchitect.jpg" alt="Airchitect" class="nav-logo">
-                </a>
-            </div>
-            <div class="nav-menu">
-                <a href="index.html#specialists" class="nav-link" data-translate="nav.specialists">Специалисты</a>
-                <a href="index.html#products" class="nav-link" data-translate="nav.solutions">Решения</a>
-                <a href="index.html#modules" class="nav-link" data-translate="nav.technologies">Технологии</a>
-                <a href="company.html" class="nav-link" data-translate="nav.about">О компании</a>
-                <button class="demo-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0114 0"/></svg><span>Личный кабинет</span></button>
-            </div>
-            <div class="nav-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+    <header class="home-cab__top" data-cab-top>
+        <a href="index.html" class="home-cab__top-logo"><img src="Logo Airchitect.jpg" alt="Airchitect"></a>
+        <div class="home-cab__account" data-cab-account hidden>
+            <span class="home-cab__account-text">
+                <span class="home-cab__account-company" data-cab-company></span>
+                <span class="home-cab__account-meta"><span data-cab-product></span> <span data-cab-user></span></span>
+            </span>
+            <button type="button" class="home-cab__logout" data-cab-logout>Выйти</button>
         </div>
-    </nav>
+    </header>
 
     <main class="home" data-cabinet>
         <section class="home-cab" id="intro">
             <div class="home-cab__layout">
                 <aside class="home-cab__side" data-cab-side hidden>
-                    <div class="home-cab__org">
-                        <p class="home-cab__company" data-cab-company></p>
-                        <p class="home-cab__product-badge" data-cab-product></p>
-                    </div>
                     <nav aria-label="Разделы кабинета">
                         <ul class="home-cab__nav" data-cab-nav></ul>
                     </nav>

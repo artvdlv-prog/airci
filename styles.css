@@ -4995,3 +4995,242 @@ body {
     }
 }
 
+/* Cabinet: own minimal header, sign-in screen, first steps */
+.home-cab__top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: 64px;
+    padding: 0 24px;
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.home-cab__top-logo img {
+    display: block;
+    height: 32px;
+}
+
+.home-cab__account {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.home-cab__account[hidden] {
+    display: none;
+}
+
+.home-cab__account-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 0;
+}
+
+.home-cab__account-company {
+    font-size: 14px;
+    font-weight: 500;
+    color: #141414;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 260px;
+}
+
+.home-cab__account-meta {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--gray-500);
+    white-space: nowrap;
+}
+
+.home-cab__logout {
+    height: 34px;
+    padding: 0 14px;
+    border: 1px solid var(--border-light);
+    border-radius: 17px;
+    background: #ffffff;
+    font: inherit;
+    font-size: 13px;
+    color: #141414;
+    cursor: pointer;
+}
+
+.home-cab__logout:hover {
+    border-color: #141414;
+}
+
+.home-cab {
+    padding-top: 64px;
+}
+
+.home-cab__layout {
+    min-height: calc(100vh - 64px);
+}
+
+.home-cab__side {
+    top: 64px;
+    height: calc(100vh - 64px);
+}
+
+.home-cab__frame-wrap {
+    height: calc(100vh - 64px);
+}
+
+.home-cab__login-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 6vh 0 40px;
+}
+
+.home-cab__login {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: min(400px, 100%);
+    padding: 28px 28px 24px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: var(--shadow-md);
+}
+
+.home-cab__login-title {
+    font-size: 24px;
+    font-weight: 300;
+    color: #141414;
+}
+
+.home-cab__login input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--home-line-strong);
+    border-radius: 10px;
+    font: inherit;
+    font-size: 16px;
+}
+
+.home-cab__login input:focus {
+    outline: 2px solid #141414;
+    outline-offset: 0;
+    border-color: #141414;
+}
+
+.home-cab__pills {
+    display: flex;
+    gap: 6px;
+}
+
+.home-cab__pill {
+    flex: 1;
+    height: 38px;
+    border: 1px solid var(--home-line-strong);
+    border-radius: 19px;
+    background: #ffffff;
+    font: inherit;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--home-text);
+    cursor: pointer;
+}
+
+.home-cab__pill.is-active {
+    border-color: #141414;
+    background: #141414;
+    color: #ffffff;
+}
+
+.home-cab__login-btn {
+    width: 100%;
+}
+
+.home-cab__start {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+}
+
+.home-cab__start-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 22px;
+    border: none;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: var(--shadow-md);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home-cab__start-item .home-cab__icon {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 8px;
+    color: var(--gray-400);
+}
+
+.home-cab__start-item:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.home-cab__start-item:hover .home-cab__icon {
+    color: var(--primary-orange);
+}
+
+.home-cab__start-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #141414;
+}
+
+.home-cab__start-text {
+    font-size: 14px;
+    color: var(--gray-500);
+}
+
+@media (max-width: 768px) {
+    .home-cab__top {
+        padding: 0 16px;
+    }
+
+    .home-cab__account-company {
+        max-width: 150px;
+    }
+
+    .home-cab__account-meta {
+        display: none;
+    }
+
+    .home-cab__frame-wrap {
+        height: calc(100vh - 64px - 58px);
+        height: calc(100dvh - 64px - 58px);
+    }
+
+    .home-cab__login {
+        padding: 22px 18px 18px;
+        box-shadow: none;
+        background: transparent;
+    }
+
+    .home-cab__login-wrap {
+        padding-top: 2vh;
+    }
+}
+
+
+/* Sign-in screen spans the whole width so the form sits in the centre */
+.home-cab__side[hidden] + .home-cab__main .home-cab__panel {
+    max-width: none;
+}
