@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
         staff: 'airchitect-staff-v1',
         docs: 'airchitect-docs-v1',
         objects: 'airchitect-objects-v1',
-        tenders: 'airchitect-tenders-v1'
+        tenders: 'airchitect-tenders-v1',
+        cashflow: 'airchitect-cashflow-v1'
     };
 
     const PRODUCTS = {
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         documents: '<rect x="8" y="3" width="12" height="15" rx="1"/><path d="M5 6v15h12"/><path d="M11 8h6M11 11h6M11 14h4"/>',
         registries: '<path d="M4 5h16M4 10h16M4 15h16M4 20h10"/>',
         objects: '<path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/><path d="M3 21h18"/>',
+        cashflow: '<path d="M3 17l5-5 4 4 8-8"/><path d="M15 8h5v5"/><path d="M3 21h18"/>',
         tenders: '<path d="M4 4h16v4H4z"/><path d="M6 8v12h12V8"/><path d="M10 12h4"/>',
         settings: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>'
     };
@@ -40,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'contracts', title: 'Контракты', products: ['office', 'complex'], frame: 'contracts.html' },
         { id: 'tenders', title: 'Тендеры', products: ['office', 'complex'], frame: 'tenders.html' },
         { id: 'objects', title: 'Объекты', products: ['office', 'complex'], frame: 'objects.html' },
+        { id: 'cashflow', title: 'ДДС', products: ['office', 'complex'], frame: 'cashflow.html' },
         { id: 'documents', title: 'Документы', products: ['docs', 'complex'] },
         { id: 'registries', title: 'Реестры', products: ['office', 'docs', 'complex'] },
         { id: 'settings', title: 'Настройки', products: ['office', 'docs', 'complex'] }
@@ -73,6 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const contracts = () => read(KEYS.contracts, { contracts: [] }).contracts;
     const objects = () => read(KEYS.objects, { objects: [] }).objects;
     const tenders = () => read(KEYS.tenders, { tenders: [] }).tenders;
+    // Cash flow (cashflow-core.js): operations, statuses and the balance forecast
+    const CF = window.AirchitectCashflow || null;
+    const cashOps = () => (CF ? CF.read().ops : []);
     const TENDER_STATUS = { analysis: 'Анализ', preparing: 'Подготовка заявки', submitted: 'Заявка подана', won: 'Победа', lost: 'Не выиграна', declined: 'Отказ от участия' };
     const tenderOpen = t => ['analysis', 'preparing'].includes(t.status) && t.deadlines && t.deadlines.submission;
     const idOverdue = d => d.status !== 'signed' && d.due && daysUntil(d.due) < 0;
@@ -304,6 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
             count = contracts().reduce((n, c) => n + c.obligations.filter(o => ['overdue', 'soon'].includes(obligationStatus(o))).length, 0);
         } else if (section === 'objects') {
             count = objects().reduce((n, o) => n + o.id.filter(idOverdue).length + o.remarks.filter(r => r.status === 'open').length, 0);
+        } else if (section === 'cashflow') {
+            count = CF ? cashOps().filter(op => CF.statusOf(op) === 'overdue').length : 0;
         } else if (section === 'tenders') {
             count = tenders().filter(t => tenderOpen(t) && daysUntil(t.deadlines.submission) >= 0 && daysUntil(t.deadlines.submission) <= SOON_DAYS).length;
         } else if (section === 'documents') {
@@ -414,7 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
         panel.append(h('h1', { class: 'home-cab__title' }, 'Обзор'));
 
         // Nothing yet: first steps instead of empty tables
-        if (!list.length && !docs.length && !tenders().length) {
+        if (!list.length && !docs.length && !tenders().length && !cashOps().length) {
             const steps = [];
             if (office) {
                 steps.push(['contracts', 'Добавьте договор', 'Контрольные точки найдутся в файле автоматически.', () => go('contracts')]);
@@ -450,6 +458,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 date: t.deadlines.submission, title: `Подача заявки: ${t.title || t.number}`, meta: `Тендер · ${TENDER_STATUS[t.status]}`,
                 tone: 'soon', open: () => go('tenders', t.id)
             })) : []),
+            ...(office && CF ? cashOps().filter(op => CF.restOf(op) > 0 && op.date && daysUntil(op.date) <= 14).map(op => ({
+                date: op.date, title: `${op.dir === 'in' ? 'Поступление' : 'Платёж'}: ${op.title}`, meta: `ДДС · ${CF.money(CF.restOf(op))}${op.confirmed ? '' : ' · план'}`,
+                tone: daysUntil(op.date) < 0 ? 'overdue' : 'soon', open: () => go('cashflow')
+            })) : []),
             ...(office ? objects().flatMap(ob => ob.id.filter(d => d.status !== 'signed' && d.due && daysUntil(d.due) <= 14).map(d => ({
                 date: d.due, title: d.title, meta: `ИД · ${ob.name}`,
                 tone: daysUntil(d.due) < 0 ? 'overdue' : 'soon', open: () => go('objects', ob.id)
@@ -480,6 +492,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const open = ob.remarks.filter(r => r.status === 'open').length;
                 if (open) attention.push([`Замечания по РД и ИД: ${open}`, ob.name, () => go('objects', ob.id)]);
             });
+            if (CF && cashOps().length) {
+                const f = CF.forecast(CF.read());
+                if (f.gaps.length) attention.push([`Кассовый разрыв с ${formatDate(f.gaps[0].start)}`, `Прогноз: не хватает до ${CF.money(f.gaps[0].deficit)}`, () => go('cashflow')]);
+                const overdueIn = cashOps().filter(op => op.dir === 'in' && op.confirmed && CF.statusOf(op) === 'overdue');
+                if (overdueIn.length) attention.push([`Просроченная дебиторская задолженность: ${overdueIn.length}`, CF.money(overdueIn.reduce((n, op) => n + CF.restOf(op), 0)), () => go('cashflow')]);
+            }
             tenders().filter(t => t.status === 'won' && !t.contractId).forEach(t => attention.push(['Победа в закупке: оформите договор', t.title || t.number, () => go('tenders', t.id)]));
             notices.filter(n => n.status === 'draft').slice(0, 3).forEach(n => attention.push(['Уведомление не отправлено', `${contractName(n.contract)} · ${n.addressee || '—'}`, () => go('contracts', n.contract.id)]));
         }
@@ -670,6 +688,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 cells: [contractName(c), c.subject, c.customer, c.contractor, c.price, `${formatDate(c.start) || '—'} — ${formatDate(c.end) || '—'}`, c.obligations.length, c.obligations.filter(o => obligationStatus(o) === 'overdue').length],
                 open: () => go('contracts', c.id)
             }))
+        },
+        {
+            id: 'payments', title: 'Платежи (ДДС)', products: ['office', 'complex'],
+            columns: ['Дата', 'Направление', 'Статья', 'Назначение', 'Контрагент', 'Договор', 'План', 'Оплачено', 'Остаток', 'Статус', 'Основание'],
+            rows: () => (CF ? [...cashOps()].sort((a, b) => (a.date || '').localeCompare(b.date || '')).map(op => {
+                const c = contracts().find(x => x.id === op.contractId);
+                return {
+                    cells: [formatDate(op.date), op.dir === 'in' ? 'Поступление' : 'Платёж', CF.CATEGORIES[op.dir][op.category], op.title, op.counterparty, c ? contractName(c) : '',
+                        CF.money(op.amount), CF.money(CF.paidOf(op)), CF.money(CF.restOf(op)), CF.STATUS[CF.statusOf(op)], op.confirmed ? (op.basis || 'подтверждено') : 'не подтверждено'],
+                    open: () => go('cashflow')
+                };
+            }) : [])
         },
         {
             id: 'tenders', title: 'Тендеры', products: ['office', 'complex'],

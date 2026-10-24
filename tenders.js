@@ -299,7 +299,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (t.status === 'won') {
             result.append(
                 h('button', { type: 'button', class: 'home-btn home-btn--primary', onclick: () => toContract(t) }, h('span', {}, t.contractId ? 'Договор создан' : 'Создать договор в «Контрактах»')),
-                h('button', { type: 'button', class: 'home-btn home-btn--secondary', onclick: () => toObject(t) }, t.objectId ? 'Объект создан' : 'Создать объект'));
+                h('button', { type: 'button', class: 'home-btn home-btn--secondary', onclick: () => toObject(t) }, t.objectId ? 'Объект создан' : 'Создать объект'),
+                t.calc ? h('button', { type: 'button', class: 'home-btn home-btn--secondary', onclick: () => toCashflow(t) }, t.cashflowAt ? 'Прогноз в ДДС' : 'Перенести прогноз в ДДС') : null);
         } else {
             result.append(h('p', { class: 'home-note' }, 'После победы (статус «Победа» во вкладке «Сведения») закупку можно передать в «Контракты» и «Объекты».'));
         }
@@ -435,9 +436,37 @@ document.addEventListener('DOMContentLoaded', () => {
         notify('Объект создан в «Объектах».');
     }
 
+    // Won tender -> monthly forecast of the calculation as unconfirmed plan in Движение денежных средств
+    function toCashflow(t) {
+        if (t.cashflowAt) return openIn('cashflow', '');
+        const start = prompt('Дата начала работ (ГГГГ-ММ-ДД): от неё строится помесячный план', today());
+        if (!start || !/^\d{4}-\d{2}-\d{2}$/.test(start)) return;
+        const store = readStore('airchitect-cashflow-v1', {});
+        store.ops = store.ops || [];
+        const flow = T.calculate(t.calc).forecast.flow;
+        const at = n => { const d = new Date(start + 'T00:00:00Z'); d.setUTCMonth(d.getUTCMonth() + n); return d.toISOString().slice(0, 10); };
+        const op = (dir, f, amount) => ({
+            id: T.uid(), dir, category: dir === 'in' ? (f.month === 0 && t.calc.advancePct ? 'advance' : 'work') : 'other_out',
+            title: `Прогноз тендера «${t.title || t.number}»: ${dir === 'in' ? 'поступления' : 'расходы'}, мес. ${f.month}`,
+            counterparty: dir === 'in' ? t.customer : '', contractId: t.contractId || '', objectId: t.objectId || '', obligationId: '',
+            date: at(f.month), amount: Math.round(amount), gross: 0, advanceOffset: 0, retention: 0, basis: '', confirmed: false, priority: 'normal',
+            payments: [], note: f.items.join(', '), source: 'tender', created: Date.now()
+        });
+        flow.forEach(f => {
+            if (f.inflow > 0) store.ops.push(op('in', f, f.inflow));
+            if (f.outflow > 0) store.ops.push(op('out', f, f.outflow));
+        });
+        localStorage.setItem('airchitect-cashflow-v1', JSON.stringify(store));
+        t.cashflowAt = Date.now();
+        log(t, 'Прогноз расчёта перенесён в «Движение денежных средств» как план');
+        save();
+        render();
+        notify('Прогноз перенесён в ДДС как неподтверждённый план. Уточните суммы и даты по договору.');
+    }
+
     function openIn(section, id) {
-        if (inCabinet && window.parent !== window) window.parent.location.hash = `${section}/${encodeURIComponent(id)}`;
-        else location.href = `${section}.html?id=${encodeURIComponent(id)}`;
+        if (inCabinet && window.parent !== window) window.parent.location.hash = id ? `${section}/${encodeURIComponent(id)}` : section;
+        else location.href = id ? `${section}.html?id=${encodeURIComponent(id)}` : `${section}.html`;
     }
 
     // ---- Wiring ---------------------------------------------------------------------------
