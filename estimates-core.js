@@ -414,10 +414,73 @@
         return { sections: sections.filter(s => s.positions.length || sections.length === 1), grandTotal, skipped };
     }
 
+    // ---- Variants (параметрический пересчёт) -------------------------------------------------------
+    // params: { qtyPct: {all|sectionId: %}, pricePct: {labor, machine, material, equipment, subcontract, work: %}, useLinks }
+    // Returns a new data object; the original estimate is not changed.
+    function applyVariant(e, store, params = {}) {
+        const d = clone(e.data);
+        const prices = params.useLinks ? costPrices(e, store) : {};
+        const qtyPct = params.qtyPct || {};
+        const pricePct = params.pricePct || {};
+        const k = (pct) => 1 + num(pct) / 100;
+        d.sections.forEach(s => s.positions.forEach(p => {
+            const q = qtyPct[s.id] !== undefined && qtyPct[s.id] !== '' ? qtyPct[s.id] : qtyPct.all;
+            if (q !== undefined && q !== '') p.qty = Math.round(num(p.qty) * k(q) * 10000) / 10000;
+            if ((p.resources || []).length) {
+                p.resources.forEach(r => {
+                    const base = prices[r.id] !== undefined ? prices[r.id] : num(r.price);
+                    r.price = Math.round(base * k(pricePct[r.type]) * 100) / 100;
+                });
+            } else {
+                const type = KIND_TYPE[p.kind] || 'work';
+                const base = prices[p.id] !== undefined ? prices[p.id] : num(p.unitPrice);
+                p.unitPrice = Math.round(base * k(pricePct[type]) * 100) / 100;
+            }
+        }));
+        return d;
+    }
+
+    // Chat extension for the estimator (script.js): save an answer to the estimate card
+    function chatExtension() {
+        return {
+            attach() {},
+            payload() { return null; },
+            reset() {},
+            afterAnswer(message, answerText) {
+                const data = read();
+                if (!data.estimates.length) return;
+                const bar = document.createElement('div');
+                bar.className = 'home-tn__answer-actions';
+                const sel = document.createElement('select');
+                sel.setAttribute('aria-label', 'Смета');
+                data.estimates.forEach(e => { const o = document.createElement('option'); o.value = e.id; o.textContent = `${e.number ? '№ ' + e.number + ' · ' : ''}${e.title}`; sel.appendChild(o); });
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = 'Сохранить в карточку сметы';
+                btn.addEventListener('click', () => {
+                    const d = read();
+                    const e = d.estimates.find(x => x.id === sel.value);
+                    if (!e) return;
+                    e.reports = e.reports || [];
+                    e.reports.unshift({ id: uid(), at: Date.now(), text: answerText.replace(/```airchitect-data[\s\S]*?(```|$)/g, '').trim() });
+                    (e.log = e.log || []).unshift({ at: Date.now(), text: 'Сохранён ответ сметчика из чата' });
+                    const p = document.createElement('p');
+                    p.className = 'home-chat__note';
+                    p.textContent = write(d) ? `Сохранено в смету «${e.title}» (вкладка «История»).` : 'Не удалось сохранить.';
+                    message.appendChild(p);
+                });
+                bar.append(sel, btn);
+                message.appendChild(bar);
+            }
+        };
+    }
+    window.AirchitectChatExtensions = window.AirchitectChatExtensions || {};
+    window.AirchitectChatExtensions.estimates = chatExtension;
+
     window.AirchitectEstimates = {
         STORE_KEY, METHODS, NORMATIVE_NOTE, TYPES, KINDS, STATUS, COST_DEFAULTS,
         read, write, uid, today, clone, parseNumber, num, toK, fromK, lineK, pctK, money, qtyText, norm, normUnit,
         blankEstimate, blankData, blankPosition, calcPosition, calcEstimate, calcGroup, calcCost, costPrices, linkPrice,
-        priceLines, candidates, compare, checks, snapshot, diff, detectMapping, parseRows
+        priceLines, candidates, compare, checks, snapshot, diff, detectMapping, parseRows, applyVariant
     };
 })();

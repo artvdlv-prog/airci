@@ -85,6 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+    // Objects saved before o.key existed get one (their o.id is the ИД registry)
+    if (data.objects.some(o => !o.key)) {
+        data.objects.forEach(o => { if (!o.key) o.key = uid(); if (!Array.isArray(o.id)) o.id = []; });
+        save();
+    }
     const today = () => new Date().toISOString().slice(0, 10);
     const inCabinet = document.documentElement.classList.contains('is-cabinet');
     const withCabinet = query => (inCabinet ? `${query}&cabinet=1` : query);
@@ -255,9 +260,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- State ---------------------------------------------------------------------
 
-    let currentId = new URLSearchParams(location.search).get('id') || (data.objects[0] && data.objects[0].id);
+    let currentId = new URLSearchParams(location.search).get('id') || (data.objects[0] && data.objects[0].key);
     let tab = 'overview';
-    const current = () => data.objects.find(o => o.id === currentId);
+    // Object identity is o.key: o.id holds the ИД registry (kept for compatibility)
+    const current = () => data.objects.find(o => o.key === currentId);
 
     const el = {
         list: root.querySelector('[data-ob-list]'),
@@ -322,14 +328,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const s = stats(o);
             el.list.appendChild(h('li', {},
                 h('a', {
-                    href: withCabinet(`objects.html?id=${o.id}`),
-                    class: 'home-staff__item' + (o.id === currentId ? ' is-active' : ''),
-                    'aria-current': o.id === currentId ? 'page' : null,
+                    href: withCabinet(`objects.html?id=${o.key}`),
+                    class: 'home-staff__item' + (o.key === currentId ? ' is-active' : ''),
+                    'aria-current': o.key === currentId ? 'page' : null,
                     onclick: e => {
                         e.preventDefault();
-                        currentId = o.id;
+                        currentId = o.key;
                         tab = 'overview';
-                        window.history.replaceState(null, '', withCabinet(`?id=${o.id}`));
+                        window.history.replaceState(null, '', withCabinet(`?id=${o.key}`));
                         render();
                     }
                 },
@@ -609,10 +615,10 @@ document.addEventListener('DOMContentLoaded', () => {
             { name: 'code', label: 'Шифр объекта' },
             { name: 'address', label: 'Адрес' }
         ], 'Добавить', v => {
-            const o = { id: uid(), ...v, stage: '', participants: [], contractIds: [], works: [], rd: [], id: [], materials: [], remarks: [], handovers: [], log: [] };
+            const o = { key: uid(), ...v, stage: '', participants: [], contractIds: [], works: [], rd: [], id: [], materials: [], remarks: [], handovers: [], log: [] };
             log(o, 'Объект добавлен');
             data.objects.unshift(o);
-            currentId = o.id;
+            currentId = o.key;
             tab = 'info';
         });
     }
@@ -990,7 +996,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const works = [w('geodesy', 'Геодезические работы', 'Смирнов А.В.'), w('foundation', 'Фундаменты корпуса 1', 'Козлов Д.И.'), w('concrete', 'Монолитный каркас', 'Козлов Д.И.'), w('roof', 'Кровля', 'Орлова Е.С.')];
         const day = n => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
         const o = {
-            id: uid(), name: 'Складской комплекс (демо)', code: '24-2026', address: 'Московская обл., г. Подольск, ул. Индустриальная, д. 5', stage: 'Строительство, корпус 1',
+            key: uid(), name: 'Складской комплекс (демо)', code: '24-2026', address: 'Московская обл., г. Подольск, ул. Индустриальная, д. 5', stage: 'Строительство, корпус 1',
             permit: 'RU50-27-1234-2026', start: day(-150), end: day(120),
             participants: [
                 { id: uid(), role: 'Застройщик', org: 'ООО «СтройИнвест»', person: 'Петров П.П., главный инженер проекта', basis: 'приказ № 12 от 10.03.2026' },
@@ -1033,7 +1039,7 @@ document.addEventListener('DOMContentLoaded', () => {
         KS.demo(o, { works, signedIds: [a1.id, a2.id] });
         log(o, 'Создан демонстрационный объект');
         data.objects.unshift(o);
-        currentId = o.id;
+        currentId = o.key;
         tab = 'overview';
         save();
         render();

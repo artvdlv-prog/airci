@@ -15,7 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
         docs: 'airchitect-docs-v1',
         objects: 'airchitect-objects-v1',
         tenders: 'airchitect-tenders-v1',
-        cashflow: 'airchitect-cashflow-v1'
+        cashflow: 'airchitect-cashflow-v1',
+        estimates: 'airchitect-estimates-v1'
     };
 
     const PRODUCTS = {
@@ -31,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         documents: '<rect x="8" y="3" width="12" height="15" rx="1"/><path d="M5 6v15h12"/><path d="M11 8h6M11 11h6M11 14h4"/>',
         registries: '<path d="M4 5h16M4 10h16M4 15h16M4 20h10"/>',
         objects: '<path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/><path d="M3 21h18"/>',
+        estimates: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M12 11h2M8 15h2M12 15h2M16 11v4"/>',
         cashflow: '<path d="M3 17l5-5 4 4 8-8"/><path d="M15 8h5v5"/><path d="M3 21h18"/>',
         tenders: '<path d="M4 4h16v4H4z"/><path d="M6 8v12h12V8"/><path d="M10 12h4"/>',
         settings: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>'
@@ -42,6 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'contracts', title: 'Контракты', products: ['office', 'complex'], frame: 'contracts.html' },
         { id: 'tenders', title: 'Тендеры', products: ['office', 'complex'], frame: 'tenders.html' },
         { id: 'objects', title: 'Объекты', products: ['office', 'complex'], frame: 'objects.html' },
+        { id: 'estimates', title: 'Сметы', products: ['office', 'complex'], frame: 'estimates.html' },
         { id: 'cashflow', title: 'ДДС', products: ['office', 'complex'], frame: 'cashflow.html' },
         { id: 'documents', title: 'Документы', products: ['docs', 'complex'] },
         { id: 'registries', title: 'Реестры', products: ['office', 'docs', 'complex'] },
@@ -74,7 +77,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveSettings = () => write(KEYS.cabinet, settings);
     const saveDocs = () => write(KEYS.docs, docsStore);
     const contracts = () => read(KEYS.contracts, { contracts: [] }).contracts;
-    const objects = () => read(KEYS.objects, { objects: [] }).objects;
+    // Objects saved before o.key existed get one (o.id is their ИД registry), as in objects.js
+    const objects = () => {
+        const st = read(KEYS.objects, { objects: [] });
+        if (st.objects.some(o => !o.key)) {
+            st.objects.forEach(o => { if (!o.key) o.key = uid(); });
+            write(KEYS.objects, st);
+        }
+        return st.objects;
+    };
     const tenders = () => read(KEYS.tenders, { tenders: [] }).tenders;
     // Cash flow (cashflow-core.js): operations, statuses and the balance forecast
     const CF = window.AirchitectCashflow || null;
@@ -464,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })) : []),
             ...(office ? objects().flatMap(ob => ob.id.filter(d => d.status !== 'signed' && d.due && daysUntil(d.due) <= 14).map(d => ({
                 date: d.due, title: d.title, meta: `ИД · ${ob.name}`,
-                tone: daysUntil(d.due) < 0 ? 'overdue' : 'soon', open: () => go('objects', ob.id)
+                tone: daysUntil(d.due) < 0 ? 'overdue' : 'soon', open: () => go('objects', ob.key)
             }))) : []),
             ...(docsOn ? docs.filter(d => d.status !== 'done' && d.due && daysUntil(d.due) <= 14).map(d => ({
                 date: d.due, title: d.title, meta: d.type,
@@ -490,7 +501,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (review.length) attention.push([`Подтвердите обязательства: ${review.length}`, 'Найдены в договорах автоматически', () => go('contracts', review[0].contract.id)]);
             objects().forEach(ob => {
                 const open = ob.remarks.filter(r => r.status === 'open').length;
-                if (open) attention.push([`Замечания по РД и ИД: ${open}`, ob.name, () => go('objects', ob.id)]);
+                if (open) attention.push([`Замечания по РД и ИД: ${open}`, ob.name, () => go('objects', ob.key)]);
             });
             if (CF && cashOps().length) {
                 const f = CF.forecast(CF.read());
@@ -698,8 +709,20 @@ document.addEventListener('DOMContentLoaded', () => {
             ].map(({ a, kind, sum }) => ({
                 cells: [ob.name, `${kind} № ${a.number}`, formatDate(a.date), `${formatDate(a.from)} — ${formatDate(a.to)}`, `${Math.round(sum).toLocaleString('ru-RU')} ₽`,
                     { draft: 'Подготовлен', sent: 'Передан заказчику', remarks: 'Замечания', resent: 'Передан повторно', signed: 'Подписан' }[a.status], formatDate(a.resentAt || a.sentAt), formatDate(a.signedAt)],
-                open: () => go('objects', ob.id)
+                open: () => go('objects', ob.key)
             })))
+        },
+        {
+            id: 'estimates', title: 'Сметы', products: ['office', 'complex'],
+            columns: ['Смета', 'Объект', 'Метод', 'Дата цен', 'Итого с НДС', 'Статус', 'Редакций'],
+            rows: () => {
+                const ES = window.AirchitectEstimates;
+                if (!ES) return [];
+                return ES.read().estimates.map(e => ({
+                    cells: [`${e.number ? '№ ' + e.number + ' · ' : ''}${e.title}`, (objects().find(o => o.key === e.objectId) || {}).name || '', ES.METHODS[e.method].title, formatDate(e.priceDate), ES.money(ES.calcEstimate(e.data).total), ES.STATUS[e.status], (e.versions || []).length],
+                    open: () => go('estimates', e.id)
+                }));
+            }
         },
         {
             id: 'payments', title: 'Платежи (ДДС)', products: ['office', 'complex'],
@@ -742,7 +765,7 @@ document.addEventListener('DOMContentLoaded', () => {
             columns: ['Объект', 'Документ', 'Номер', 'Дата', 'Срок', 'Статус', 'Ответственный'],
             rows: () => objects().flatMap(ob => ob.id.map(d => ({
                 cells: [ob.name, d.title, d.number, formatDate(d.date), formatDate(d.due), { todo: 'Не начат', draft: 'Готовится', review: 'На проверке', signed: 'Подписан' }[d.status] || d.status, d.responsible],
-                open: () => go('objects', ob.id)
+                open: () => go('objects', ob.key)
             })))
         },
         {
@@ -750,7 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
             columns: ['Объект', 'Шифр', 'Марка', 'Наименование', 'Версия', 'Статус'],
             rows: () => objects().flatMap(ob => ob.rd.map(r => ({
                 cells: [ob.name, r.code, r.mark, r.title, r.version, { received: 'Получена', production: 'В производстве работ', replaced: 'Заменена' }[r.status] || r.status],
-                open: () => go('objects', ob.id)
+                open: () => go('objects', ob.key)
             })))
         },
         {
@@ -758,7 +781,7 @@ document.addEventListener('DOMContentLoaded', () => {
             columns: ['Объект', 'Замечание', 'Кто выдал', 'Дата', 'Срок', 'Статус'],
             rows: () => objects().flatMap(ob => ob.remarks.map(r => ({
                 cells: [ob.name, r.text, r.source, formatDate(r.created), formatDate(r.due), { open: 'Открыто', fixed: 'Устранено', closed: 'Снято' }[r.status]],
-                open: () => go('objects', ob.id)
+                open: () => go('objects', ob.key)
             })))
         },
         {

@@ -5969,3 +5969,18 @@ a.home-registry__num::after {
 .home-es__row .home-es__short {
     flex: 0 1 100px;
 }
+
+.home-es__report {
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.home-tn__answer-actions select {
+    padding: 6px 10px;
+    border: 1px solid var(--home-line-strong);
+    border-radius: 999px;
+    font: inherit;
+    font-size: 13px;
+    max-width: 100%;
+}

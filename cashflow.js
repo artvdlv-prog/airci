@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { name: 'category', label: 'Статья', type: 'select', value: op.category, options: Object.entries(CATEGORIES[d]) },
             { name: 'counterparty', label: d === 'in' ? 'Плательщик' : 'Получатель', value: op.counterparty },
             { name: 'contractId', label: 'Договор', type: 'select', value: op.contractId, options: [['', '— без договора —'], ...contracts().map(c => [c.id, contractName(c)])] },
-            { name: 'objectId', label: 'Объект', type: 'select', value: op.objectId, options: [['', '— без объекта —'], ...objects().map(o => [o.id, o.name])] }
+            { name: 'objectId', label: 'Объект', type: 'select', value: op.objectId, options: [['', '— без объекта —'], ...objects().map(o => [o.key, o.name])] }
         ];
         if (obligations.length) fields.push({ name: 'obligationId', label: 'Срок оплаты из обязательств договора', type: 'select', value: op.obligationId, options: [['', '— не выбрано —'], ...obligations.map(x => [x.o.id, `${contractName(x.contract)}: ${x.o.text.slice(0, 70)}${x.o.due ? ' (до ' + formatDate(x.o.due) + ')' : ''}`])], hint: 'Дата и договор подставятся из «Контрактов», если не указаны.' });
         fields.push(
@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderScope() {
         const select = root.querySelector('[data-cf-scope]');
         select.textContent = '';
-        [['all', 'Компания — все операции'], ...contracts().map(c => [`c:${c.id}`, `Договор ${contractName(c)}`]), ...objects().map(o => [`o:${o.id}`, `Объект: ${o.name}`])]
+        [['all', 'Компания — все операции'], ...contracts().map(c => [`c:${c.id}`, `Договор ${contractName(c)}`]), ...objects().map(o => [`o:${o.key}`, `Объект: ${o.name}`])]
             .forEach(([v, l]) => select.appendChild(h('option', { value: v, selected: v === scope }, l)));
         if (select.value !== scope) scope = 'all';
     }
@@ -356,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function opRow(op, extra) {
         const s = C.statusOf(op);
         const contract = contracts().find(c => c.id === op.contractId);
-        const object = objects().find(o => o.id === op.objectId);
+        const object = objects().find(o => o.key === op.objectId);
         const paid = C.paidOf(op);
         const actions = [];
         if (s !== 'paid') actions.push([op.dir === 'in' ? 'Поступила оплата' : 'Оплачено', () => addPayment(op)]);
@@ -452,7 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const keyOf = {
             company: () => 'Компания',
             contract: op => { const c = cs.find(x => x.id === op.contractId); return c ? `Договор ${contractName(c)}` : 'Без договора'; },
-            object: op => { const o = os.find(x => x.id === op.objectId); return o ? o.name : 'Без объекта'; },
+            object: op => { const o = os.find(x => x.key === op.objectId); return o ? o.name : 'Без объекта'; },
             category: op => `${op.dir === 'in' ? 'Поступления' : 'Платежи'}: ${CATEGORIES[op.dir][op.category]}`
         }[grouping];
         return C.planFact(scoped(), keyOf);
@@ -784,7 +784,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 X.utils.book_append_sheet(book, sheet, name);
             };
             const opCells = op => [formatDate(op.date), op.dir === 'in' ? 'Поступление' : 'Платёж', CATEGORIES[op.dir][op.category], op.title, op.counterparty,
-                contractName(cs.find(c => c.id === op.contractId)), (os.find(o => o.id === op.objectId) || {}).name || '',
+                contractName(cs.find(c => c.id === op.contractId)), (os.find(o => o.key === op.objectId) || {}).name || '',
                 num(op.amount), C.paidOf(op), C.restOf(op), STATUS[C.statusOf(op)], op.confirmed ? 'да' : 'нет', op.basis, op.dir === 'out' ? PRIORITIES[op.priority] : ''];
             const opCols = ['Плановая дата', 'Направление', 'Статья', 'Назначение', 'Контрагент', 'Договор', 'Объект', 'План, ₽', 'Оплачено (факт), ₽', 'Остаток, ₽', 'Статус', 'Основание подтверждено', 'Документ-основание', 'Приоритет'];
             const opW = [12, 12, 22, 36, 24, 30, 24, 14, 14, 14, 12, 10, 30, 16];

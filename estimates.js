@@ -132,8 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
         tabs: root.querySelector('[data-es-tabs]'),
         panel: root.querySelector('[data-es-panel]')
     };
-    const TABS = [['estimate', 'Смета'], ['cost', 'Себестоимость'], ['prices', 'Цены и КП'], ['check', 'Проверка'], ['versions', 'Редакции'], ['docs', 'Документы'], ['history', 'История']];
-    const objectName = id => (objects().find(o => o.id === id) || {}).name || '';
+    const TABS = [['estimate', 'Смета'], ['cost', 'Себестоимость'], ['prices', 'Цены и КП'], ['variants', 'Варианты и оптимизация'], ['check', 'Проверка'], ['advice', 'Рекомендации'], ['versions', 'Редакции'], ['docs', 'Документы'], ['history', 'История']];
+    const objectName = id => (objects().find(o => o.key === id) || {}).name || '';
     const contractName = c => (c ? `№ ${c.number || 'без номера'}${c.subject ? ' — ' + c.subject : ''}` : '');
 
     function render() {
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.tabs.textContent = '';
         TABS.forEach(([key, label]) => el.tabs.appendChild(h('button', { type: 'button', role: 'tab', class: 'home-tab', 'aria-selected': String(key === tab), onclick: () => { tab = key; render(); } }, label)));
         el.panel.textContent = '';
-        ({ estimate: renderEstimate, cost: renderCost, prices: renderPrices, check: renderCheck, versions: renderVersions, docs: renderDocs, history: renderHistory })[tab](e, r);
+        ({ estimate: renderEstimate, cost: renderCost, prices: renderPrices, variants: renderVariants, check: renderCheck, advice: renderAdvice, versions: renderVersions, docs: renderDocs, history: renderHistory })[tab](e, r);
     }
 
     function renderList() {
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { name: 'number', label: 'Номер сметы', value: e.number },
             { name: 'title', label: 'Наименование', value: e.title, required: true },
             { name: 'method', label: 'Метод расчёта', type: 'select', value: e.method, options: Object.entries(METHODS).map(([k, m]) => [k, m.available ? m.title : `${m.title} — нужна нормативная база`, !m.available]), hint: E.NORMATIVE_NOTE },
-            { name: 'objectId', label: 'Объект', type: 'select', value: e.objectId, options: [['', '— без объекта —'], ...os.map(o => [o.id, o.name])] },
+            { name: 'objectId', label: 'Объект', type: 'select', value: e.objectId, options: [['', '— без объекта —'], ...os.map(o => [o.key, o.name])] },
             { name: 'contractId', label: 'Договор', type: 'select', value: e.contractId, options: [['', '— без договора —'], ...cs.map(c => [c.id, contractName(c)])] },
             { name: 'region', label: 'Регион', value: e.region },
             { name: 'priceDate', label: 'Дата определения стоимости (уровень цен)', type: 'date', value: e.priceDate, required: true },
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } }];
         if (target === 'offer') fields.push({ name: 'supplier', label: 'Поставщик / субподрядчик', required: true }, { name: 'number', label: 'Номер КП' }, { name: 'date', label: 'Дата КП', type: 'date', value: E.today() }, { name: 'until', label: 'Действительно до', type: 'date' });
-        if (target === 'new') fields.push({ name: 'title', label: 'Наименование сметы', required: true }, { name: 'objectId', label: 'Объект', type: 'select', options: [['', '— без объекта —'], ...objects().map(o => [o.id, o.name])] });
+        if (target === 'new') fields.push({ name: 'title', label: 'Наименование сметы', required: true }, { name: 'objectId', label: 'Объект', type: 'select', options: [['', '— без объекта —'], ...objects().map(o => [o.key, o.name])] });
         const title = { new: 'Импорт сметы из Excel', version: 'Новая редакция из Excel', offer: 'Коммерческое предложение из Excel', book: 'Справочник расценок из Excel' }[target || 'version'];
         openDialog(title, fields, 'Импортировать', v => {
             if (!wb) return 'Выберите файл.';
@@ -582,7 +582,255 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderHistory(e) {
+        if ((e.reports || []).length) el.panel.appendChild(block('Ответы сметчика из чата', null, h('ul', { class: 'home-ct__list' }, e.reports.map(rep => h('li', { class: 'home-ct__row' },
+            h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-meta' }, formatStamp(rep.at)), h('p', { class: 'home-es__report' }, rep.text)))))));
         el.panel.appendChild(block('История', null, h('ul', { class: 'home-ct__history' }, (e.log || []).map(l => h('li', {}, h('span', { class: 'home-ct__history-date' }, formatStamp(l.at)), h('span', {}, l.text))))));
+    }
+
+    // ---- Variants and optimization proposals -------------------------------------------------------
+
+    const PRICE_KEYS = [['material', 'Материалы'], ['equipment', 'Оборудование'], ['labor', 'Оплата труда'], ['machine', 'Машины'], ['subcontract', 'Субподряд'], ['work', 'Работы без разложения']];
+    const TECH = { unchecked: 'Не проверено', confirmed: 'Соответствие подтверждено', rejected: 'Недопустимо' };
+    const PROPOSAL = { proposed: 'Предложено', agreed: 'Согласовано', rejected: 'Отклонено' };
+
+    function variantResult(e, v) {
+        const base = E.calcEstimate(e.data);
+        const data = E.applyVariant(e, store, v.params);
+        const res = E.calcEstimate(data);
+        return { base, data, res, economy: base.total - res.total, diff: E.diff(e.data, data) };
+    }
+
+    function renderVariants(e) {
+        e.variants = e.variants || [];
+        e.proposals = e.proposals || [];
+        el.panel.appendChild(h('div', { class: 'home-ct__actions' }, small('Новый вариант', () => editVariant(e), true), small('Предложение по оптимизации', () => editProposal(e))));
+        el.panel.appendChild(block('Варианты расчёта', null, h('ul', { class: 'home-ct__list' }, e.variants.length ? e.variants.map(v => {
+            const x = variantResult(e, v);
+            return h('li', { class: 'home-ct__row' }, h('div', { class: 'home-ct__row-main' },
+                h('p', { class: 'home-ct__row-title' }, h('span', { class: `home-ct__badge home-ct__badge--${x.economy > 0 ? 'done' : x.economy < 0 ? 'overdue' : 'review'}` }, x.economy >= 0 ? `экономия ${money(x.economy)}` : `удорожание ${money(-x.economy)}`), v.title),
+                h('p', { class: 'home-ct__row-meta' }, `Исходный ${money(x.base.total)} → вариант ${money(x.res.total)} · изменённых позиций: ${x.diff.rows.length}`),
+                h('p', { class: 'home-ct__row-meta' }, variantText(v.params)), v.note ? h('p', { class: 'home-ct__row-meta' }, v.note) : null),
+                h('div', { class: 'home-record__actions' },
+                    h('button', { type: 'button', onclick: () => editProposal(e, null, v) }, 'В предложение'),
+                    h('button', { type: 'button', onclick: () => applyAsVersion(e, v) }, 'Принять как редакцию'),
+                    h('button', { type: 'button', onclick: () => editVariant(e, v) }, 'Изменить'),
+                    h('button', { type: 'button', onclick: () => { e.variants = e.variants.filter(y => y !== v); save(); render(); } }, 'Удалить')));
+        }) : h('li', { class: 'home-ct__none' }, 'Вариантов нет. Измените объёмы, цены по видам затрат или примените цены КП — стоимость пересчитается автоматически.'))));
+        el.panel.appendChild(block('Предложения по оптимизации', [small('Заключение — Word', () => exportOptimization(e))], h('ul', { class: 'home-ct__list' }, e.proposals.length ? e.proposals.map(pr => h('li', { class: 'home-ct__row' },
+            h('div', { class: 'home-ct__row-main' },
+                h('p', { class: 'home-ct__row-title' }, h('span', { class: `home-ct__badge home-ct__badge--${pr.tech === 'confirmed' ? 'done' : pr.tech === 'rejected' ? 'overdue' : 'soon'}` }, TECH[pr.tech]), `${pr.title} · ${money(pr.effect)}`),
+                h('p', { class: 'home-ct__row-meta' }, `Исходные данные: ${pr.source}`),
+                h('p', { class: 'home-ct__row-meta' }, `Технические ограничения: ${pr.limits}`),
+                h('p', { class: 'home-ct__row-meta' }, `Согласования: ${pr.approvals} · Договорные последствия: ${pr.consequences}`),
+                h('p', { class: 'home-ct__row-meta' }, `Статус: ${PROPOSAL[pr.status]}${pr.techBy ? ' · проверил: ' + pr.techBy : ''}`)),
+            h('div', { class: 'home-record__actions' },
+                pr.tech !== 'confirmed' ? h('button', { type: 'button', onclick: () => techCheck(e, pr) }, 'Проверка соответствия') : null,
+                pr.tech === 'confirmed' && pr.status === 'proposed' ? h('button', { type: 'button', onclick: () => { pr.status = 'agreed'; log(e, `Согласовано предложение: ${pr.title}`); save(); render(); } }, 'Согласовано') : null,
+                pr.status === 'proposed' ? h('button', { type: 'button', onclick: () => { pr.status = 'rejected'; save(); render(); } }, 'Отклонить') : null,
+                h('button', { type: 'button', onclick: () => editProposal(e, pr) }, 'Изменить')))) : h('li', { class: 'home-ct__none' }, 'Предложений нет.'))));
+        el.panel.appendChild(note('Замена материалов, оборудования или технических решений не считается допустимой, пока соответствие проекту, нормативным требованиям и договору не подтверждено ответственным специалистом.'));
+    }
+
+    function variantText(pp = {}) {
+        const parts = [];
+        const q = pp.qtyPct || {};
+        if (q.all) parts.push(`объёмы ${q.all > 0 ? '+' : ''}${q.all}%`);
+        Object.entries(q).filter(([k, v]) => k !== 'all' && v !== '' && v !== undefined).forEach(([k, v]) => { const sec = (current().data.sections.find(x => x.id === k) || {}).title; parts.push(`${sec || 'раздел'}: объёмы ${v > 0 ? '+' : ''}${v}%`); });
+        PRICE_KEYS.forEach(([k, l]) => { const v = (pp.pricePct || {})[k]; if (v) parts.push(`${l.toLowerCase()}: цены ${v > 0 ? '+' : ''}${v}%`); });
+        if (pp.useLinks) parts.push('цены справочника и КП по привязкам');
+        return parts.join(' · ') || 'Без изменений';
+    }
+
+    function editVariant(e, v) {
+        const pp = v ? v.params : { qtyPct: {}, pricePct: {}, useLinks: false };
+        openDialog(v ? 'Вариант расчёта' : 'Новый вариант', [
+            { name: 'title', label: 'Наименование варианта', value: v ? v.title : 'Вариант ' + ((e.variants || []).length + 1), required: true },
+            { name: 'qAll', label: 'Изменение объёмов, % (все разделы)', type: 'number', value: pp.qtyPct.all ?? '' },
+            ...e.data.sections.map(s => ({ name: 'q_' + s.id, label: `Объёмы: ${s.title}, %`, type: 'number', value: pp.qtyPct[s.id] ?? '', hint: 'Если указано — заменяет общее изменение для раздела' })),
+            ...PRICE_KEYS.map(([k, l]) => ({ name: 'p_' + k, label: `Цены: ${l.toLowerCase()}, %`, type: 'number', value: pp.pricePct[k] ?? '' })),
+            { name: 'useLinks', label: 'Применить цены справочника и КП по привязкам (замена поставщика)', type: 'checkbox', value: pp.useLinks },
+            { name: 'note', label: 'Техническое решение / комментарий', type: 'textarea', rows: 2, value: v ? v.note : '' }
+        ], 'Рассчитать', val => {
+            const params = { qtyPct: { all: val.qAll === '' ? '' : num(val.qAll) }, pricePct: {}, useLinks: val.useLinks };
+            e.data.sections.forEach(s => { if (val['q_' + s.id] !== '') params.qtyPct[s.id] = num(val['q_' + s.id]); });
+            PRICE_KEYS.forEach(([k]) => { if (val['p_' + k] !== '') params.pricePct[k] = num(val['p_' + k]); });
+            if (v) Object.assign(v, { title: val.title, params, note: val.note });
+            else e.variants.push({ id: E.uid(), title: val.title, params, note: val.note, at: Date.now() });
+            log(e, `Вариант расчёта: ${val.title}`);
+            return null;
+        });
+    }
+
+    function applyAsVersion(e, v) {
+        if (!confirm(`Принять «${v.title}» как новую редакцию сметы? Текущая редакция сохранится.`)) return;
+        E.snapshot(e, `Перед вариантом «${v.title}»`);
+        e.data = E.applyVariant(e, store, v.params);
+        E.snapshot(e, `Вариант «${v.title}»`);
+        e.status = 'draft';
+        log(e, `Принят вариант как редакция: ${v.title}`);
+        save();
+        tab = 'versions';
+        render();
+    }
+
+    // Each proposal must state the effect, source data, technical limits, approvals and contract consequences
+    function editProposal(e, pr, variant) {
+        const x = variant ? variantResult(e, variant) : null;
+        openDialog(pr ? 'Предложение по оптимизации' : 'Новое предложение по оптимизации', [
+            { name: 'title', label: 'Предложение', value: pr ? pr.title : variant ? variant.title : '', required: true },
+            { name: 'effect', label: 'Финансовый эффект, ₽', type: 'number', value: pr ? pr.effect / 100 : x ? x.economy / 100 : '', required: true, hint: x ? 'Рассчитано по варианту' : 'Экономия (положительное число) или удорожание (отрицательное)' },
+            { name: 'source', label: 'Исходные данные', type: 'textarea', rows: 2, required: true, value: pr ? pr.source : variant ? variantText(variant.params) : '' },
+            { name: 'limits', label: 'Технические ограничения', type: 'textarea', rows: 2, required: true, value: pr ? pr.limits : '' },
+            { name: 'approvals', label: 'Необходимые согласования', type: 'textarea', rows: 2, required: true, value: pr ? pr.approvals : '', hint: 'Заказчик, проектировщик, экспертиза, авторский надзор' },
+            { name: 'consequences', label: 'Договорные последствия', type: 'textarea', rows: 2, required: true, value: pr ? pr.consequences : '', hint: 'Изменение цены, дополнительное соглашение, сроки, гарантия' }
+        ], 'Сохранить', v => {
+            const fields = { title: v.title, effect: toK(v.effect), source: v.source, limits: v.limits, approvals: v.approvals, consequences: v.consequences };
+            if (pr) Object.assign(pr, fields, { tech: 'unchecked', techBy: '' });
+            else (e.proposals = e.proposals || []).push({ id: E.uid(), ...fields, variantId: variant ? variant.id : '', tech: 'unchecked', techBy: '', status: 'proposed', at: Date.now() });
+            log(e, `Предложение по оптимизации: ${v.title}`);
+            return null;
+        });
+    }
+
+    function techCheck(e, pr) {
+        openDialog('Проверка соответствия', [
+            { name: 'result', label: 'Результат', type: 'select', options: [['confirmed', 'Соответствие проекту и требованиям подтверждено'], ['rejected', 'Недопустимо']] },
+            { name: 'by', label: 'Кто проверил (должность, ФИО)', required: true },
+            { name: 'basis', label: 'Основание', required: true, hint: 'Письмо проектировщика, заключение, пункт проекта' }
+        ], 'Сохранить', v => {
+            pr.tech = v.result;
+            pr.techBy = `${v.by} (${v.basis})`;
+            if (v.result === 'rejected') pr.status = 'rejected';
+            log(e, `Проверка соответствия «${pr.title}»: ${TECH[v.result]}`);
+            return null;
+        });
+    }
+
+    async function exportOptimization(e) {
+        try {
+            await loadScript(DOCX_URL);
+            const D = window.docx;
+            const p = (text, opts = {}) => new D.Paragraph({ alignment: opts.center ? D.AlignmentType.CENTER : undefined, spacing: { after: 100 }, children: [new D.TextRun({ text, bold: opts.bold, size: opts.size || 22, font: 'Times New Roman' })] });
+            const list = e.proposals || [];
+            const agreed = list.filter(x => x.status !== 'rejected' && x.tech === 'confirmed').reduce((s, x) => s + x.effect, 0);
+            const children = [p('ЗАКЛЮЧЕНИЕ ОБ ОПТИМИЗАЦИИ СТОИМОСТИ', { bold: true, center: true, size: 24 }), p(`${e.number ? 'Смета № ' + e.number + ' — ' : ''}${e.title}. Итог по расчёту: ${money(E.calcEstimate(e.data).total)}.`),
+                p(`Предложений: ${list.length}. Эффект предложений с подтверждённым соответствием: ${money(agreed)}.`),
+                ...list.flatMap((x, i) => [p(`${i + 1}. ${x.title} — ${money(x.effect)}`, { bold: true }), p(`Исходные данные: ${x.source}`), p(`Технические ограничения: ${x.limits}`), p(`Согласования: ${x.approvals}`), p(`Договорные последствия: ${x.consequences}`),
+                    p(`Проверка соответствия: ${TECH[x.tech]}${x.techBy ? ' — ' + x.techBy : ''}. Статус: ${PROPOSAL[x.status]}.`)]),
+                p(COMMERCIAL_NOTE, { size: 16 })];
+            download(await D.Packer.toBlob(new D.Document({ sections: [{ properties: {}, children }] })), `${fileSafe('Заключение об оптимизации — ' + e.title)}.docx`);
+        } catch (err) {
+            notify(err.message || 'Не удалось сформировать документ.');
+        }
+    }
+
+    // ---- Recommendations: correctness, cost optimization, protection of the contractor's profit ----------
+
+    function renderAdvice(e) {
+        const list = E.checks(e, store, checkContext(e));
+        const cmp = E.compare(e, store);
+        const c = E.calcCost(e, store);
+        const item = (title, effect, source, action) => h('li', { class: 'home-ct__row' }, h('div', { class: 'home-ct__row-main' },
+            h('p', { class: 'home-ct__row-title' }, title), h('p', { class: 'home-ct__row-meta' }, [effect ? `Эффект: ${money(effect)}` : '', `Источник: ${source}`, `Действия: ${action}`].filter(Boolean).join(' · '))));
+        const correct = list.filter(x => x.level === 'error').map(x => item(x.text, x.effect, `проверка сметы (${x.area})`, 'исправить позицию и пересчитать'));
+        const optimize = [
+            ...cmp.filter(x => x.economy > 0).sort((a, b) => b.economy - a.economy).slice(0, 10).map(x => item(`«${x.line.name}»: лучшая цена ${x.best.price.toLocaleString('ru-RU')} ₽ вместо ${x.line.price.toLocaleString('ru-RU')} ₽ (${x.best.label})`, x.economy, x.best.label, 'запросить подтверждение цены, проверить соответствие проекту, привязать цену в «Цены и КП»')),
+            ...(e.proposals || []).filter(x => x.status !== 'rejected').map(x => item(`Предложение: ${x.title} (${TECH[x.tech].toLowerCase()})`, x.effect, x.source, x.tech === 'confirmed' ? 'согласовать с заказчиком' : 'подтвердить соответствие проекту'))
+        ];
+        const protect = [];
+        list.filter(x => /ниже рыночной/.test(x.text)).forEach(x => protect.push(item(x.text, -x.effect, x.area, 'проверить расценку: работа может быть недооценена')));
+        if (c.contractNet !== null && c.result < 0) protect.push(item(`Прогнозная себестоимость ${money(c.cost)} выше договорной цены без НДС ${money(c.contractNet)}`, c.result, 'калькуляция себестоимости', 'пересмотреть цену, объёмы и условия договора до подписания; учесть дополнительные работы'));
+        else if (c.margin !== null && c.margin < 5) protect.push(item(`Низкая прогнозная рентабельность: ${c.margin.toFixed(1)}%`, c.result, 'калькуляция себестоимости', 'заложить резерв на риски, проверить цены материалов и график оплаты'));
+        if (c.lines.work) protect.push(item('Часть позиций не разложена на ресурсы — себестоимость по ним не детализирована', c.lines.work, 'смета', 'разложить позиции или подтвердить цены субподряда'));
+        if (!num((e.cost || {}).riskPct)) protect.push(item('В себестоимости нет резерва на риски', 0, 'параметры себестоимости', 'определить резерв по рискам удорожания материалов и сроков'));
+        el.panel.append(
+            block('Корректность расчётов', [small('Сметчик', () => askEstimator(e, list))], h('ul', { class: 'home-ct__list' }, correct.length ? correct : h('li', { class: 'home-ct__none' }, 'Ошибок расчёта не найдено.'))),
+            block('Оптимизация стоимости', null, h('ul', { class: 'home-ct__list' }, optimize.length ? optimize : h('li', { class: 'home-ct__none' }, 'Резервов по ценам справочника и КП не найдено. Загрузите КП поставщиков.'))),
+            block('Защита прибыли подрядчика', [small('Финансист', () => askFinancier(e, c))], h('ul', { class: 'home-ct__list' }, protect.length ? protect : h('li', { class: 'home-ct__none' }, 'Существенных рисков для прибыли не выявлено.'))));
+        el.panel.appendChild(note('Рекомендации рассчитаны программно по данным сметы, справочника, КП и калькуляции. Они не заменяют решение сметчика и согласование с заказчиком.'));
+    }
+
+    function askFinancier(e, c) {
+        if (typeof window.AirchitectOpenSpecialist !== 'function') return;
+        window.AirchitectOpenSpecialist('financier', [`Смета «${e.title}». Сметная стоимость без НДС ${money(c.estimateNet)} (расчёт), договорная цена без НДС ${c.contractNet === null ? 'не указана' : money(c.contractNet)}, прогнозная себестоимость ${money(c.cost)} (прогноз), результат ${c.result === null ? '—' : money(c.result)}${c.margin === null ? '' : ', рентабельность ' + c.margin.toFixed(1) + '%'}.`,
+            `Структура себестоимости: материалы ${money(c.lines.material)}, оплата труда ${money(c.lines.labor)}, техника ${money(c.lines.machine)}, субподряд ${money(c.lines.subcontract)}, накладные ${money(c.overhead)}, резерв ${money(c.risk)}.`,
+            'Цифры рассчитаны программно. Оцени финансовые риски, потребность в финансировании и как защитить прибыль.', '\nВопрос: '].join('\n'));
+    }
+
+    // ---- Integrations: Объекты (contract estimate for КС), Движение денежных средств ---------------------
+
+    // The estimate becomes the contract estimate of the object: Формы КС take positions from it (no second list)
+    function toObject(e) {
+        if (!e.objectId) return notify('Укажите объект в параметрах расчёта.');
+        const st = readKey('airchitect-objects-v1', { objects: [] });
+        const o = st.objects.find(x => x.key === e.objectId);
+        if (!o) return notify('Объект не найден.');
+        const r = E.calcEstimate(e.data);
+        o.estimate = o.estimate || [];
+        const accepted = itemId => (o.ks2 || []).filter(a => a.status === 'signed').reduce((s, a) => s + a.lines.filter(l => l.itemId === itemId).reduce((x, l) => x + num(l.qty), 0), 0);
+        const problems = [];
+        let added = 0;
+        let updated = 0;
+        // Unit prices without VAT: position cost plus its share of overheads and profit (proportional to cost)
+        const factor = r.direct ? r.subtotal / r.direct : 1;
+        e.data.sections.forEach((s, si) => s.positions.forEach((p, pi) => {
+            const unit = num(p.qty) ? Math.round(r.sections[si].positions[pi].total * factor / num(p.qty)) / 100 : 0;
+            const existing = o.estimate.find(i => i.estimatePositionId === p.id);
+            if (existing) {
+                if (num(p.qty) < accepted(existing.id)) { problems.push(`«${p.name}»: объём меньше принятого по КС-2`); return; }
+                Object.assign(existing, { code: p.code, name: p.name, unit: p.unit, qty: num(p.qty), price: unit });
+                updated++;
+            } else {
+                o.estimate.push({ id: E.uid(), estimatePositionId: p.id, estimateId: e.id, code: p.code, name: p.name, unit: p.unit, qty: num(p.qty), price: unit, rate: p.basis || '', workId: '' });
+                added++;
+            }
+        }));
+        o.ksSettings = { ...(o.ksSettings || {}), estimateId: e.id };
+        o.log = o.log || [];
+        o.log.unshift({ at: Date.now(), text: `Договорная смета «${e.title}»: добавлено позиций ${added}, обновлено ${updated}` });
+        try {
+            localStorage.setItem('airchitect-objects-v1', JSON.stringify(st));
+        } catch (err) {
+            return notify('Не удалось сохранить объект.');
+        }
+        e.status = 'contract';
+        log(e, `Утверждена как договорная смета объекта «${o.name}»`);
+        save();
+        render();
+        const ksSum = o.estimate.filter(i => i.estimateId === e.id).reduce((x, i) => x + E.lineK(i.qty, i.price), 0);
+        const round = ksSum - r.subtotal;
+        notify(problems.length ? `Сохранено с исключениями: ${problems.join('; ')}.` : `Позиции переданы в «Объекты» → «Формы КС»: добавлено ${added}, обновлено ${updated}. Цены за единицу без НДС, с накладными расходами и прибылью${round ? `; округление цен за единицу: ${money(round)}` : ''}.`);
+    }
+
+    // Forecast expenses of the cost calculation spread by months: unconfirmed plan in Движение денежных средств
+    function toCashflow(e) {
+        const c = E.calcCost(e, store);
+        openDialog('План расходов в ДДС', [
+            { name: 'start', label: 'Начало работ', type: 'date', value: E.today(), required: true },
+            { name: 'months', label: 'Продолжительность, мес.', type: 'number', value: 6, required: true }
+        ], 'Передать', v => {
+            const months = Math.max(1, Math.round(num(v.months)));
+            const cf = readKey('airchitect-cashflow-v1', {});
+            cf.ops = (cf.ops || []).filter(op => !(op.estimateId === e.id && !(op.payments || []).length));
+            const cats = [['materials', 'Материалы и оборудование', c.lines.material + c.lines.transport], ['payroll', 'Оплата труда и взносы', c.lines.labor + c.lines.payrollTax], ['machinery', 'Техника', c.lines.machine], ['subcontract', 'Субподряд', c.lines.subcontract + c.lines.work], ['overhead', 'Накладные расходы', c.overhead]];
+            const at = n => { const d = new Date(v.start + 'T00:00:00Z'); d.setUTCMonth(d.getUTCMonth() + n); return d.toISOString().slice(0, 10); };
+            cats.filter(x => x[2] > 0).forEach(([cat, title, total]) => {
+                const part = Math.floor(total / months);
+                for (let m = 0; m < months; m++) {
+                    const amountK = m === months - 1 ? total - part * (months - 1) : part;
+                    cf.ops.push({ id: E.uid(), dir: 'out', category: cat, title: `Смета «${e.title}»: ${title.toLowerCase()}, мес. ${m + 1}`, counterparty: '', contractId: e.contractId || '', objectId: e.objectId || '', obligationId: '',
+                        date: at(m), amount: amountK / 100, gross: 0, advanceOffset: 0, retention: 0, basis: '', confirmed: false, priority: cat === 'payroll' ? 'critical' : 'normal', payments: [], note: 'Прогноз по калькуляции себестоимости', source: 'estimate', estimateId: e.id, created: Date.now() });
+                }
+            });
+            try {
+                localStorage.setItem('airchitect-cashflow-v1', JSON.stringify(cf));
+            } catch (err) {
+                return 'Не удалось сохранить в ДДС.';
+            }
+            log(e, `План расходов передан в ДДС: ${money(c.cost - c.risk - c.otherTax)} на ${months} мес.`);
+            notify('План расходов передан в «Движение денежных средств» как неподтверждённый прогноз. Повторная передача заменяет неоплаченные строки.');
+            return null;
+        });
     }
 
     // ---- Documents and export ------------------------------------------------------------------------
@@ -590,6 +838,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderDocs(e) {
         const same = e.objectId ? store.estimates.filter(x => x.objectId === e.objectId) : [e];
         const group = E.calcGroup(same);
+        el.panel.appendChild(block('Связь с разделами', null, h('ul', { class: 'home-ct__list' }, [
+            ['«Объекты» → «Формы КС»: договорная смета объекта', e.status === 'contract' ? 'Утверждена как договорная' : 'Позиции станут основой КС-6а, КС-2 и КС-3', [[e.status === 'contract' ? 'Обновить позиции' : 'Утвердить как договорную', () => toObject(e)]]],
+            ['«Движение денежных средств»: план расходов', 'Прогнозная себестоимость по месяцам как неподтверждённый план', [['Передать', () => toCashflow(e)]]]
+        ].map(([title, text, acts]) => h('li', { class: 'home-ct__row' }, h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-title' }, title), h('p', { class: 'home-ct__row-meta' }, text)),
+            h('div', { class: 'home-record__actions' }, acts.map(([l, fn]) => h('button', { type: 'button', onclick: fn }, l))))))));
         el.panel.appendChild(block('Документы по смете', null, h('ul', { class: 'home-ct__list' }, [
             ['Локальный сметный расчёт (коммерческий)', [['Excel с формулами', () => exportEstimateXlsx(e)], ['Word', () => exportDocx(e, 'estimate')], ['PDF', () => printEstimate(e)]]],
             ['Ведомость объёмов работ', [['Excel', () => exportVolumes(e)], ['Word', () => exportDocx(e, 'volumes')]]],

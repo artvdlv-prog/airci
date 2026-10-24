@@ -261,6 +261,42 @@ document.addEventListener('DOMContentLoaded', () => {
                     h('td', { class: f.balance < 0 ? 'home-tn__neg' : '' }, money(f.balance)), h('td', {}, f.items.join(', ')))))))));
         el.panel.appendChild(h('h3', { class: 'home-tn__form-title' }, 'Исходные данные'));
         el.panel.appendChild(form);
+        estimateCost(t, i);
+    }
+
+    // Cost from the estimator's calculation (Сметы): replaces the manual cost percentage
+    function estimateCost(t, i) {
+        const ES = window.AirchitectEstimates;
+        if (!ES) return;
+        const st = ES.read();
+        if (!st.estimates.length) {
+            el.panel.appendChild(h('p', { class: 'home-note' }, 'Себестоимость можно рассчитать по смете в разделе «Сметы» и применить здесь.'));
+            return;
+        }
+        const price = Number(i.nmck) * (1 - Number(i.dropPct) / 100);
+        const sel = h('select', { 'aria-label': 'Смета' }, st.estimates.map(e => h('option', { value: e.id, selected: (t.calc || {}).estimateId === e.id }, `${e.number ? '№ ' + e.number + ' · ' : ''}${e.title}`)));
+        const info = h('p', { class: 'home-ct__row-meta home-cf__pad' });
+        const show = () => {
+            const e = st.estimates.find(x => x.id === sel.value);
+            const c = ES.calcCost(e, st);
+            const vat = e.data.vatPct === 'none' ? 0 : Number(e.data.vatPct);
+            const priceNet = price / (1 + vat / 100);
+            info.textContent = `Прогнозная себестоимость по смете: ${ES.money(c.cost)} без НДС. Цена контракта после снижения ${ES.money(ES.toK(price))}, без НДС ${ES.money(ES.toK(priceNet))}${priceNet ? ` — себестоимость ${(c.cost / 100 / priceNet * 100).toFixed(1)}% от цены без НДС` : ''}. Цена предложения по калькуляции: ${ES.money(c.offer)} с НДС.`;
+            return { e, c, priceNet };
+        };
+        sel.addEventListener('change', show);
+        show();
+        el.panel.appendChild(h('section', { class: 'home-ct__block' },
+            h('div', { class: 'home-ct__block-head' }, h('h3', { class: 'home-ct__block-title' }, 'Себестоимость из сметы'), h('div', { class: 'home-ct__filters' }, sel,
+                h('button', { type: 'button', class: 'home-btn home-btn--secondary home-cab__small', onclick: () => {
+                    const { e, c, priceNet } = show();
+                    if (!priceNet) return notify('Укажите НМЦК и снижение цены.');
+                    t.calc = { ...i, costPct: Math.round(c.cost / 100 / priceNet * 1000) / 10, estimateId: e.id };
+                    log(t, `Себестоимость взята из сметы «${e.title}»: ${ES.money(c.cost)} без НДС`);
+                    save();
+                    render();
+                } }, 'Применить'))), info,
+            h('p', { class: 'home-tn__group-note home-cf__chart-note' }, 'Процент себестоимости считается к цене без НДС; расчёт обеспечений и денежного потока ниже использует его как долю цены контракта.')));
     }
 
     // ---- Application, deadlines and result --------------------------------------------------
@@ -427,7 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (t.objectId) return openIn('objects', t.objectId);
         const store = readStore('airchitect-objects-v1', { objects: [] });
         const id = T.uid();
-        store.objects.unshift({ id, name: t.title || 'Объект', code: '', address: '', stage: '', participants: t.customer ? [{ id: T.uid(), role: 'Застройщик', org: t.customer, person: '', basis: '' }] : [], contractIds: t.contractId ? [t.contractId] : [], works: [], rd: [], id: [], materials: [], remarks: [], handovers: [], log: [{ at: Date.now(), text: 'Создан из закупки' }] });
+        store.objects.unshift({ key: id, name: t.title || 'Объект', code: '', address: '', stage: '', participants: t.customer ? [{ id: T.uid(), role: 'Застройщик', org: t.customer, person: '', basis: '' }] : [], contractIds: t.contractId ? [t.contractId] : [], works: [], rd: [], id: [], materials: [], remarks: [], handovers: [], log: [{ at: Date.now(), text: 'Создан из закупки' }] });
         localStorage.setItem('airchitect-objects-v1', JSON.stringify(store));
         t.objectId = id;
         log(t, 'Создан объект в разделе «Объекты»');

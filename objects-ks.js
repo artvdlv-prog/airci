@@ -138,7 +138,8 @@ window.AirchitectObjectsKs = function (ctx) {
                         h('td', { class: v.done > num(i.qty) ? 'home-tn__neg' : '' }, qtyText(v.done)),
                         h('td', { class: v.presented > v.done ? 'home-tn__neg' : '' }, qtyText(v.presented)),
                         h('td', {}, qtyText(v.accepted)), h('td', {}, qtyText(v.remaining)),
-                        h('td', { class: 'home-ks__cell-actions' }, linkBtn('Объём', () => editVolume(o, null, i)), linkBtn('Изменить', () => editItem(o, i))));
+                        h('td', { class: 'home-ks__cell-actions' }, linkBtn('Объём', () => editVolume(o, null, i)),
+                            i.estimateId ? linkBtn('В смете', () => { location.href = `estimates.html?id=${encodeURIComponent(i.estimateId)}${document.documentElement.classList.contains('is-cabinet') ? '&cabinet=1' : ''}`; }) : linkBtn('Изменить', () => editItem(o, i))));
                 })) : h('p', { class: 'home-staff__empty home-cf__pad' }, 'Позиций сметы нет. Добавьте позиции договорной сметы или вставьте их из Excel: номер, наименование, единица, количество, цена.')));
 
         const recs = [...o.volumes].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
@@ -151,6 +152,7 @@ window.AirchitectObjectsKs = function (ctx) {
                     unsigned.length ? `Не подписано документов ИД: ${unsigned.length}` : '', v.note, v.author ? `Записал: ${v.author}` : ''],
                 [['Изменить', () => editVolume(o, v)], ['Удалить', () => { o.volumes = o.volumes.filter(x => x !== v); log(o, 'Удалена запись КС-6а'); save(); render(); }]]);
         })));
+        if (o.estimate.some(i => i.estimateId)) panel.appendChild(h('p', { class: 'home-note' }, 'Позиции договорной сметы приходят из раздела «Сметы»: объёмы и цены меняются там, затем «Обновить позиции». Цены — без НДС за единицу.'));
         panel.appendChild(h('p', { class: 'home-note' }, 'Выполненный объём фиксируется в КС-6а с привязкой к исполнительной документации. Предъявленный — включён в КС-2, переданный заказчику. Принятый — в КС-2, подписанном заказчиком.'));
     }
 
@@ -518,7 +520,7 @@ window.AirchitectObjectsKs = function (ctx) {
             if (store.ops.some(op => op.ks3Id === k.id)) return 'Эта справка уже есть в ДДС.';
             const op = {
                 id: uid(), dir: 'in', category: 'work', title: `Оплата по КС-3 № ${k.number} от ${formatDate(k.date)} — ${o.name}`, counterparty: (c && c.customer) || customerOf(o).org || '',
-                contractId: k.contractId || '', objectId: o.id, obligationId: '', date: v.date, amount: round2(total - offset - retention), gross: total, advanceOffset: offset, retention,
+                contractId: k.contractId || '', objectId: o.key, obligationId: '', date: v.date, amount: round2(total - offset - retention), gross: total, advanceOffset: offset, retention,
                 basis: `КС-3 № ${k.number} от ${formatDate(k.date)}, КС-2 № ${o.ks2.filter(a => k.ks2Ids.includes(a.id)).map(a => a.number).join(', ')}; подписано ${formatDate(k.signedAt)}`,
                 confirmed: true, priority: 'normal', payments: [], note: 'Передано из «Объектов» (формы КС)', source: 'ks3', ks3Id: k.id, created: Date.now()
             };
