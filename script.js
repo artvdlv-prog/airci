@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const title = local(item.title);
             document.title = `${title} — AIRCHITECT`;
             pageRoot.querySelectorAll('[data-sp-title]').forEach(el => { el.textContent = title; });
-            pageRoot.querySelectorAll('[data-sp-description]').forEach(el => { el.textContent = [local(item.lead), local(item.about || item.description)].filter(Boolean).join('. '); });
+            pageRoot.querySelectorAll('[data-sp-description]').forEach(el => { el.textContent = local(item.description); });
 
             pageRoot.querySelectorAll('[data-sp-icon]').forEach(el => { el.innerHTML = specialistIcon(item); });
 

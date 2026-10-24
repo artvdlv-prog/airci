@@ -62,9 +62,7 @@ const HOME_SPECIALISTS = [
         id: 'lawyer',
         slug: 'construction-lawyer',
         title: { ru: 'Юрист', en: 'Construction lawyer' },
-        lead: { ru: 'Юридическое сопровождение строительных компаний: заказчиков, генподрядчиков и субподрядчиков', en: 'Legal support of construction companies' },
-        description: { ru: 'Правовая экспертиза договоров, претензии и споры, оценка юридических рисков', en: 'Contract review, claims and disputes, legal risks' },
-        about: { ru: 'Проводит правовую экспертизу договоров и готовит протоколы разногласий, претензии, уведомления, дополнительные соглашения и исковые заявления. Сопровождает споры по оплате, срокам, объёмам и качеству работ, консультирует по строительному законодательству, 44-ФЗ, 223-ФЗ, СРО, исполнительной документации и приёмке — с конкретными правовыми основаниями.', en: 'Contract review, claims, disputes and legal advice on construction law.' },
+        description: { ru: 'Правовые вопросы и споры', en: 'Legal questions and disputes' },
         // Workspace in Штат (lawyer-workspace.js); norms and practice are checked on official sources (worker)
         analysis: 'legal',
         registry: { ru: 'Реестр правовых документов', en: 'Legal documents register' },
@@ -85,9 +83,7 @@ const HOME_SPECIALISTS = [
         title: { ru: 'Договорной специалист', en: 'Contract specialist' },
         // Main digital employee of a construction contract: works with Договоры (contract-workspace.js)
         featured: true,
-        lead: { ru: 'Сопровождение строительных договоров от подписания до окончательного расчёта', en: 'Construction contracts from signing to final settlement' },
         description: { ru: 'Договоры, сроки, обязательства', en: 'Contracts, deadlines, obligations' },
-        about: { ru: 'Проверяет договоры, выделяет обязательства, контролирует сроки, отслеживает изменения условий, помогает оформлять дополнительные соглашения, уведомления и претензии. Сопровождает исполнение договора и взаимодействует с другими цифровыми специалистами.', en: 'Reviews contracts, tracks obligations and deadlines, prepares amendments, notices and claims.' },
         analysis: 'contract',
         registry: { ru: 'Реестр договоров', en: 'Contracts register' },
         tasks: [
