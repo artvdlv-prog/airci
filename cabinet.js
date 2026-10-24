@@ -188,15 +188,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Same rules as contracts.js
-    function obligationStatus(o) {
-        if (o.status === 'done') return 'done';
-        if (!o.confirmed) return 'review';
-        const days = daysUntil(o.due);
-        if (days !== null && days < 0) return 'overdue';
-        if (days !== null && days <= SOON_DAYS) return 'soon';
-        return 'active';
-    }
-    const OBLIGATION_LABEL = { review: 'Требует подтверждения', active: 'В работе', soon: 'Скоро срок', overdue: 'Просрочено', done: 'Исполнено' };
+    // Same rules as Контракты (contract-core.js): a passed deadline without a mark needs confirmation
+    const obligationStatus = window.AirchitectContracts.obligationStatus;
+    const OBLIGATION_LABEL = window.AirchitectContracts.STATUS_LABEL;
     const PARTIES = { customer: 'Заказчик', contractor: 'Подрядчик', both: 'Обе стороны' };
     const NOTICE_LABEL = { draft: 'Проект', sent: 'Отправлено', received: 'Получено адресатом' };
 
@@ -321,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function badge(section) {
         let count = 0;
         if (section === 'contracts') {
-            count = contracts().reduce((n, c) => n + c.obligations.filter(o => ['overdue', 'soon'].includes(obligationStatus(o))).length, 0);
+            count = contracts().reduce((n, c) => n + c.obligations.filter(o => ['overdue', 'pastdue', 'soon'].includes(obligationStatus(o))).length, 0);
         } else if (section === 'objects') {
             count = objects().reduce((n, o) => n + o.id.filter(idOverdue).length + o.remarks.filter(r => r.status === 'open').length, 0);
         } else if (section === 'counterparties') {
@@ -454,7 +448,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const stats = [];
         if (office) {
             stats.push(
-                stat('Просрочено', obligations.filter(o => o.s === 'overdue').length, 'overdue', () => go('registries', 'obligations')),
+                stat('Не исполнено', obligations.filter(o => o.s === 'overdue').length, 'overdue', () => go('registries', 'obligations')),
+                stat('Срок прошёл — подтвердить', obligations.filter(o => o.s === 'pastdue').length, 'soon', () => go('registries', 'obligations')),
                 stat(`Срок в ${SOON_DAYS} дней`, obligations.filter(o => o.s === 'soon').length, 'soon', () => go('registries', 'obligations')));
         }
         if (docsOn) stats.push(stat('На согласовании', docs.filter(d => d.status === 'approval').length, 'soon', () => go('documents')));
@@ -504,6 +499,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (office) {
             const review = obligations.filter(o => o.s === 'review');
             if (review.length) attention.push([`Подтвердите обязательства: ${review.length}`, 'Найдены в договорах автоматически', () => go('contracts', review[0].contract.id)]);
+            const pastdue = obligations.filter(o => o.s === 'pastdue');
+            if (pastdue.length) attention.push([`Срок прошёл, нет сведений об исполнении: ${pastdue.length}`, 'Подтвердите исполнение или отметьте неисполнение', () => go('contracts', pastdue[0].contract.id)]);
             objects().forEach(ob => {
                 const open = ob.remarks.filter(r => r.status === 'open').length;
                 if (open) attention.push([`Замечания по РД и ИД: ${open}`, ob.name, () => go('objects', ob.key)]);

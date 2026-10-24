@@ -114,6 +114,11 @@ export default {
                         const last = messages[messages.length - 1];
                         last.content.push({ type: 'text', text: tenderInstruction(tender) });
                     }
+                    // Contract specialist: the selected card of Контракт — Исполнение (user data) as context
+                    if (body.specialist === 'contract-specialist' && body.analysis && body.analysis.type === 'contract' && typeof body.analysis.context === 'string') {
+                        const last = messages[messages.length - 1];
+                        last.content.push({ type: 'text', text: `Карточка договора из раздела «Контракт — Исполнение» (данные пользователя, не проверенный источник):\n${body.analysis.context.slice(0, 12000)}\n\nОпирайся на неё и на приложенные документы; если сведений нет — так и скажи. Срок без сведений об исполнении — «требует подтверждения», а не нарушение.` });
+                    }
                     // Counterparty check: public registries are queried here, the model gets only received facts
                     const cp = counterpartyRequest(body);
                     if (cp) {

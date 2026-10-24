@@ -167,5 +167,26 @@
         return { text, contract, obligations: points };
     }
 
-    window.AirchitectContractExtract = { extract, readText };
+    // Server (Claude) when the chat proxy is connected, otherwise the local rule-based reading above
+    function toBase64(blob) {
+        return new Promise(resolve => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result).split(',')[1] || '');
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    async function run(blob, fileMeta, api) {
+        if (!api) return extract(blob, fileMeta.name);
+        const isPdf = (fileMeta.type || '').includes('pdf') || /\.pdf$/i.test(fileMeta.name);
+        const payload = isPdf
+            ? { name: fileMeta.name, type: 'application/pdf', data: await toBase64(blob) }
+            : { name: fileMeta.name, type: 'text/plain', data: await toBase64(new Blob([await readText(blob, fileMeta.name)], { type: 'text/plain' })) };
+        const response = await fetch(api, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ file: payload }) });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Сервер не смог обработать договор.');
+        return result;
+    }
+
+    window.AirchitectContractExtract = { extract, readText, run, toBase64 };
 })();

@@ -62,6 +62,7 @@
                             </div>
                             <div class="home-tabs" role="tablist" aria-label="Карточка договора">
                                 <button type="button" role="tab" class="home-tab" data-ct-tab="exec" aria-selected="true">Исполнение договора</button>
+                                <button type="button" role="tab" class="home-tab" data-ct-tab="terms" aria-selected="false">Условия и документы</button>
                                 <button type="button" role="tab" class="home-tab" data-ct-tab="info" aria-selected="false">Сведения о договоре</button>
                             </div>
 
@@ -82,10 +83,11 @@
                                         <div class="home-ct__filters">
                                             <select data-ct-filter-status aria-label="Статус">
                                                 <option value="all">Все статусы</option>
-                                                <option value="review">Требуют подтверждения</option>
+                                                <option value="review">Не подтверждены</option>
                                                 <option value="active">В работе</option>
                                                 <option value="soon">Скоро срок</option>
-                                                <option value="overdue">Просрочено</option>
+                                                <option value="pastdue">Срок прошёл — требуют подтверждения</option>
+                                                <option value="overdue">Не исполнено</option>
                                                 <option value="done">Исполнено</option>
                                             </select>
                                             <select data-ct-filter-period aria-label="Срок">
@@ -115,6 +117,9 @@
                                 </div>
                             </div>
 
+                            <div data-ct-panel="terms" hidden>
+                                <div data-ct-terms></div>
+                            </div>
                             <div data-ct-panel="info" hidden>
                                 <form class="home-ct__form" data-ct-info></form>
                             </div>
@@ -140,6 +145,7 @@
     <script src="translations.js"></script>
     <script src="home-config.js"></script>
     <script src="script.js"></script>
+    <script src="contract-core.js"></script>
     <script src="contract-extract.js"></script>
     <script src="contracts.js"></script>
 </body>

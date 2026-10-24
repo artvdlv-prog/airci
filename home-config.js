@@ -77,16 +77,23 @@ const HOME_SPECIALISTS = [
         id: 'contracts',
         slug: 'contract-specialist',
         title: { ru: 'Договорной специалист', en: 'Contract specialist' },
-        description: { ru: 'Существенные условия и обязательства', en: 'Essential terms and obligations' },
+        // Main digital employee of a construction contract: works with Контракт — Исполнение (contract-workspace.js)
+        featured: true,
+        lead: { ru: 'Сопровождение строительных договоров от подписания до окончательного расчёта', en: 'Construction contracts from signing to final settlement' },
+        description: { ru: 'Ведёт строительные договоры, контролирует обязательства, сроки и документы. Помогает предупреждать риски на всех этапах исполнения контракта.', en: 'Keeps construction contracts, obligations, deadlines and documents under control.' },
+        about: { ru: 'Проверяет договоры, выделяет обязательства, контролирует сроки, отслеживает изменения условий, помогает оформлять дополнительные соглашения, уведомления и претензии. Сопровождает исполнение договора и взаимодействует с другими цифровыми специалистами.', en: 'Reviews contracts, tracks obligations and deadlines, prepares amendments, notices and claims.' },
+        analysis: 'contract',
         registry: { ru: 'Реестр договоров', en: 'Contracts register' },
         tasks: [
             { title: 'Существенные условия', text: 'Выделение ключевых условий договора.' },
             { title: 'Обязательства сторон', text: 'Структурирование обязательств и сроков.' },
             { title: 'Паспорт договора', text: 'Сводка условий, сроков и обязательств.' },
-            { title: 'Контрольные события', text: 'Работа с контрольными событиями и документами.' }
+            { title: 'Контрольные события', text: 'Работа с контрольными событиями и документами.' },
+            { title: 'Изменения и претензии', text: 'Дополнительные соглашения, уведомления и претензии по договору.' },
+            { title: 'Закрытие договора', text: 'Проверка готовности к окончательному расчёту и закрытию.' }
         ],
         enabled: true,
-        order: 30
+        order: 5
     },
     {
         id: 'finance',

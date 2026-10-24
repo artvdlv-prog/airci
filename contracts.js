@@ -71,6 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
             body: 'сообщаем, что оплата по договору, указанная ниже, не поступила в установленный срок',
             request: 'произвести оплату либо сообщить о причинах задержки'
         },
+        claim: {
+            title: 'Претензия',
+            body: 'в порядке досудебного урегулирования направляем претензию в связи с неисполнением (ненадлежащим исполнением) обязательств по договору, указанных ниже',
+            request: 'исполнить обязательства (уплатить задолженность, неустойку) либо дать мотивированный ответ'
+        },
         other: {
             title: 'Уведомление по договору',
             body: 'сообщаем следующее',
@@ -91,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         notices: root.querySelector('[data-ct-notices]'),
         history: root.querySelector('[data-ct-history]'),
         info: root.querySelector('[data-ct-info]'),
+        terms: root.querySelector('[data-ct-terms]'),
         filterStatus: root.querySelector('[data-ct-filter-status]'),
         filterPeriod: root.querySelector('[data-ct-filter-period]'),
         dialog: document.querySelector('[data-ct-dialog]'),
@@ -102,12 +108,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- Storage ----------------------------------------------------------
 
-    let data = { contracts: [] };
-    try {
-        data = JSON.parse(localStorage.getItem(STORE_KEY)) || data;
-    } catch (e) {
-        data = { contracts: [] };
-    }
+    // Shared rules of contracts (contract-core.js): statuses, warnings, readiness to close
+    const CC = window.AirchitectContracts;
+    let data = CC.read();
+    data.contracts.forEach(CC.ensure);
     const save = () => {
         try {
             localStorage.setItem(STORE_KEY, JSON.stringify(data));
@@ -174,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ---- State ------------------------------------------------------------
 
-    let currentId = new URLSearchParams(location.search).get('id') || (data.contracts[0] && data.contracts[0].id);
+    let currentId = (new URLSearchParams(location.search).get('id') || '').split('~')[0] || (data.contracts[0] && data.contracts[0].id);
     const current = () => data.contracts.find(c => c.id === currentId);
 
     function log(contract, text) {
@@ -190,16 +194,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.round(ms / 86400000);
     }
 
-    function obligationStatus(o) {
-        if (o.status === 'done') return 'done';
-        if (!o.confirmed) return 'review';
-        const days = daysUntil(o.due);
-        if (days !== null && days < 0) return 'overdue';
-        if (days !== null && days <= SOON_DAYS) return 'soon';
-        return 'active';
-    }
-
-    const STATUS_LABEL = { review: 'Требует подтверждения', active: 'В работе', soon: 'Скоро срок', overdue: 'Просрочено', done: 'Исполнено' };
+    // A passed deadline without a mark of execution needs confirmation; a breach is recorded by the user
+    const obligationStatus = CC.obligationStatus;
+    const STATUS_LABEL = CC.STATUS_LABEL;
 
     function formatDate(date) {
         if (!date) return '';
@@ -216,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const days = daysUntil(o.due);
         const when = formatDate(o.due);
         if (o.status === 'done') return `Срок: ${when}`;
-        if (days < 0) return `Срок: ${when} · просрочено на ${-days} дн.`;
+        if (days < 0) return o.status === 'breached' ? `Срок: ${when} · не исполнено (${formatDate(o.breachAt)})` : `Срок: ${when} · прошёл ${-days} дн. назад, нет сведений об исполнении`;
         if (days === 0) return `Срок: сегодня, ${when}`;
         return `Срок: ${when} · через ${days} дн.`;
     }
@@ -353,6 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderExecution(contract);
         renderInfo(contract);
+        renderTerms(contract);
     }
 
     function renderList() {
@@ -384,22 +382,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const count = s => statuses.filter(x => x === s).length;
         const waitingProof = contract.notices.filter(n => n.status === 'draft').length;
 
-        // Deadline control: overdue and upcoming obligations are shown at the top of the card
+        // Deadline control: breaches, passed deadlines awaiting confirmation and upcoming obligations
         const overdue = count('overdue');
+        const pastdue = count('pastdue');
         const soon = count('soon');
-        el.alert.hidden = !(overdue || soon);
+        el.alert.hidden = !(overdue || pastdue || soon);
         el.alert.className = 'home-ct__alert' + (overdue ? ' home-ct__alert--overdue' : '');
         el.alert.textContent = [
-            overdue ? `Просрочено обязательств: ${overdue}. Проверьте необходимость уведомления контрагента.` : '',
+            overdue ? `Не исполнено обязательств: ${overdue}. Проверьте необходимость уведомления или претензии.` : '',
+            pastdue ? `Срок прошёл, сведений об исполнении нет: ${pastdue} — подтвердите исполнение или отметьте неисполнение.` : '',
             soon ? `Срок в ближайшие ${SOON_DAYS} дней: ${soon}.` : ''
         ].filter(Boolean).join(' ');
 
         el.stats.textContent = '';
         [
             ['Обязательств', contract.obligations.length],
-            ['Требуют подтверждения', count('review')],
+            ['Не подтверждены', count('review')],
             ['Скоро срок', soon],
-            ['Просрочено', overdue],
+            ['Срок прошёл, требуют подтверждения', pastdue],
+            ['Не исполнено', overdue],
             ['Исполнено', count('done')],
             ['Уведомлений в проекте', waitingProof]
         ].forEach(([label, value]) => el.stats.appendChild(h('li', {}, h('span', { class: 'home-ct__stat-value' }, String(value)), h('span', { class: 'home-ct__stat-label' }, label))));
@@ -434,6 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const actions = [];
             if (!o.confirmed) actions.push(['Подтвердить', () => confirmObligation(contract, o)]);
             if (o.status !== 'done') actions.push(['Отметить исполнение', () => markDone(contract, o)]);
+            if (o.status !== 'done' && o.status !== 'breached' && o.confirmed) actions.push(['Не исполнено', () => markBreached(contract, o)]);
             actions.push(['Уведомление', () => prepareNotice(contract, o)]);
             actions.push(['Изменить', () => editObligation(contract, o)]);
             actions.push(['Юрист', () => askExpert('construction-lawyer', contract, o)]);
@@ -632,6 +634,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Breach is recorded only on confirmed facts, with the basis
+    function markBreached(contract, o) {
+        openDialog('Обязательство не исполнено', [
+            { name: 'date', label: 'Дата фиксации', type: 'date', value: today(), required: true },
+            { name: 'basis', label: 'Чем подтверждается неисполнение', type: 'textarea', rows: 2, required: true, hint: 'Письмо, акт, переписка, отсутствие документа на дату' },
+            { name: 'files', label: 'Подтверждающие документы', type: 'file' }
+        ], 'Отметить', async v => {
+            o.status = 'breached';
+            o.breachAt = v.date;
+            o.breachBasis = v.basis;
+            o.files = [...(o.files || []), ...(await storeFiles(v.files))];
+            log(contract, `Отмечено неисполнение (п. ${o.clause || '—'}): ${o.text.slice(0, 80)} — ${v.basis}`);
+            save();
+        });
+    }
+
     function markDone(contract, o) {
         const fields = [
             ...(o ? [] : [{ name: 'obligation', label: 'Обязательство', type: 'select', required: true, options: obligationOptions(contract, false).filter(([id]) => contract.obligations.find(x => x.id === id).status !== 'done') }]),
@@ -699,6 +717,118 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!/^\d{10}$|^\d{12}$/.test(inn)) return notify('ИНН должен содержать 10 или 12 цифр.');
         if (document.documentElement.classList.contains('is-cabinet') && window.parent !== window) window.parent.location.hash = `counterparties/inn:${inn}`;
         else location.href = `counterparties.html?inn=${inn}`;
+    }
+
+    // ---- Условия и документы: financial terms, supplementary agreements, risks, documents, closing -----------
+
+    const tblock = (title, tools, ...content) => h('section', { class: 'home-ct__block' },
+        h('div', { class: 'home-ct__block-head' }, h('h3', { class: 'home-ct__block-title' }, title), tools ? h('div', { class: 'home-ct__filters' }, tools) : null), ...content);
+    const tbtn = (label, fn, primary) => h('button', { type: 'button', class: `home-btn home-btn--${primary ? 'primary' : 'secondary'} home-cab__small`, onclick: fn }, label);
+    const LEVELS = { high: 'Высокий', medium: 'Средний', low: 'Низкий' };
+
+    function renderTerms(contract) {
+        if (!el.terms) return;
+        CC.ensure(contract);
+        el.terms.textContent = '';
+        const t = contract.terms;
+        const field = (name, label, value, hint) => h('label', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, label), h('input', { name, value: value || '' }), hint ? h('span', { class: 'home-dialog__hint' }, hint) : null);
+        const form = h('form', { class: 'home-ct__form' },
+            field('advancePct', 'Аванс, %', t.advancePct), field('retentionPct', 'Гарантийное удержание, %', t.retentionPct),
+            field('paymentTerms', 'Порядок и сроки оплаты', t.paymentTerms, 'Например: в течение 10 рабочих дней после подписания КС-2 и КС-3'),
+            field('acceptance', 'Порядок приёмки работ', t.acceptance), field('warrantyMonths', 'Гарантийный срок, мес.', t.warrantyMonths), field('penalty', 'Ответственность сторон (неустойка)', t.penalty),
+            h('div', { class: 'home-ct__wide' }, h('button', { type: 'submit', class: 'home-btn home-btn--primary' }, 'Сохранить')));
+        form.addEventListener('submit', ev => {
+            ev.preventDefault();
+            Object.keys(contract.terms).forEach(k => { if (form.elements[k]) contract.terms[k] = form.elements[k].value.trim(); });
+            log(contract, 'Изменены финансовые условия');
+            save();
+            render();
+            notify('Сохранено.');
+        });
+        el.terms.appendChild(tblock(`Финансовые условия · цена ${contract.price || 'не указана'}`, null, h('div', { class: 'home-cf__pad' }, form)));
+
+        // Supplementary agreements: signed ones change the essential terms of the card
+        el.terms.appendChild(tblock('Дополнительные соглашения', [tbtn('Подготовить', () => editAmendment(contract), true)], h('ul', { class: 'home-ct__list' }, contract.amendments.length ? contract.amendments.map(a => h('li', { class: 'home-ct__row' },
+            h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-title' }, h('span', { class: `home-ct__badge home-ct__badge--${a.status === 'signed' ? 'done' : 'soon'}` }, CC.AMENDMENT_STATUS[a.status]), `№ ${a.number || '—'} от ${formatDate(a.date)} · ${a.subject}`),
+                h('p', { class: 'home-ct__row-meta' }, [a.changes.price ? `цена: ${a.changes.price}` : '', a.changes.end ? `окончание работ: ${formatDate(a.changes.end)}` : '', a.changes.start ? `начало работ: ${formatDate(a.changes.start)}` : '', a.reason ? `основание: ${a.reason}` : ''].filter(Boolean).join(' · ') || 'без изменения цены и сроков'),
+                a.signedAt ? h('p', { class: 'home-ct__row-meta' }, `Подписано ${formatDate(a.signedAt)}`) : null, fileLinks(a.files)),
+            h('div', { class: 'home-record__actions' }, ...(a.status !== 'signed' ? [h('button', { type: 'button', onclick: () => editAmendment(contract, a) }, 'Изменить'), h('button', { type: 'button', onclick: () => signAmendment(contract, a) }, 'Подписано'), h('button', { type: 'button', onclick: () => { a.status = 'approval'; log(contract, `ДС № ${a.number}: на согласовании`); save(); render(); } }, 'На согласовании')] : []),
+                h('button', { type: 'button', onclick: () => askExpert('construction-lawyer', contract, null, { type: 'other', text: `Проект дополнительного соглашения № ${a.number}: ${a.subject}. ${a.text || ''}` }) }, 'Юрист')))) : h('li', { class: 'home-ct__none' }, 'Дополнительных соглашений нет.'))));
+
+        const w = CC.warnings(contract);
+        el.terms.appendChild(tblock('Риски и предупреждения', [tbtn('Добавить риск', () => editRisk(contract)), tbtn('Договорной специалист', () => askExpert('contract-specialist', contract))], h('ul', { class: 'home-ct__list' },
+            ...w.map(x => h('li', { class: 'home-ct__row' }, h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-title' }, h('span', { class: `home-ct__badge home-ct__badge--${x.level >= 3 ? 'overdue' : x.level === 2 ? 'soon' : 'review'}` }, x.level >= 3 ? 'Нарушение' : x.level === 2 ? 'Внимание' : 'Контроль'), x.text), h('p', { class: 'home-ct__row-meta' }, 'Предупреждение системы по данным карточки')))),
+            ...contract.risks.map(x => h('li', { class: 'home-ct__row' }, h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-title' }, h('span', { class: `home-ct__badge home-ct__badge--${x.level === 'high' ? 'overdue' : x.level === 'medium' ? 'soon' : 'review'}` }, LEVELS[x.level]), x.text),
+                h('p', { class: 'home-ct__row-meta' }, [x.kind, x.measure ? `мера: ${x.measure}` : '', x.source].filter(Boolean).join(' · '))), h('div', { class: 'home-record__actions' }, h('button', { type: 'button', onclick: () => { contract.risks = contract.risks.filter(y => y !== x); save(); render(); } }, 'Снят')))),
+            !w.length && !contract.risks.length ? h('li', { class: 'home-ct__none' }, 'Рисков и предупреждений нет.') : null)));
+        if (contract.analyses.length) el.terms.appendChild(tblock('Заключения договорного специалиста', null, h('ul', { class: 'home-ct__list' }, contract.analyses.map(x => h('li', { class: 'home-ct__row' }, h('div', { class: 'home-ct__row-main' },
+            h('p', { class: 'home-ct__row-meta' }, `${new Date(x.at).toLocaleString('ru-RU')} · ${x.by}`), h('p', { class: 'home-es__report' }, x.text)))))));
+
+        el.terms.appendChild(tblock('Документы по договору', null, h('ul', { class: 'home-ct__list' }, ...documentsOf(contract).map(d => h('li', { class: 'home-ct__row' }, h('div', { class: 'home-ct__row-main' },
+            h('p', { class: 'home-ct__row-title' }, h('span', { class: 'home-ct__badge home-ct__badge--review' }, d.kind), d.file ? h('button', { type: 'button', class: 'home-ct__file', onclick: () => openFile(d.file) }, d.title) : d.title), d.meta ? h('p', { class: 'home-ct__row-meta' }, d.meta) : null))), documentsOf(contract).length ? null : h('li', { class: 'home-ct__none' }, 'Документов нет.'))));
+
+        const ready = CC.closeReadiness(contract);
+        el.terms.appendChild(tblock(contract.closed ? `Договор закрыт ${formatDate(contract.closed.date)}` : 'Готовность к закрытию договора', contract.closed ? null : [tbtn('Закрыть договор', () => closeContract(contract, ready))],
+            h('ul', { class: 'home-ct__list' }, ready.items.map(i => h('li', { class: 'home-ct__row' }, h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-title' }, h('span', { class: `home-ct__badge home-ct__badge--${i.ok ? 'done' : 'soon'}` }, i.ok ? 'Готово' : 'Не готово'), i.text)))))));
+    }
+
+    const documentsOf = CC.documents;
+
+    function editAmendment(contract, a) {
+        openDialog(a ? 'Дополнительное соглашение' : 'Новое дополнительное соглашение', [
+            { name: 'number', label: 'Номер', value: a ? a.number : String(contract.amendments.length + 1), required: true },
+            { name: 'date', label: 'Дата', type: 'date', value: a ? a.date : today(), required: true },
+            { name: 'subject', label: 'Предмет', value: a && a.subject, required: true, hint: 'Изменение цены, сроков, объёмов, дополнительные работы' },
+            { name: 'price', label: 'Новая цена договора', value: a ? a.changes.price : '', hint: `Сейчас: ${contract.price || 'не указана'}` },
+            { name: 'start', label: 'Новая дата начала работ', type: 'date', value: a ? a.changes.start : '' },
+            { name: 'end', label: 'Новая дата окончания работ', type: 'date', value: a ? a.changes.end : '', hint: contract.end ? `Сейчас: ${formatDate(contract.end)}` : '' },
+            { name: 'reason', label: 'Основание (пункт договора, письмо, акт)', value: a && a.reason },
+            { name: 'text', label: 'Текст изменений', type: 'textarea', rows: 4, value: a && a.text }
+        ], 'Сохранить', v => {
+            const fields = { number: v.number, date: v.date, subject: v.subject, reason: v.reason, text: v.text, changes: { price: v.price, start: v.start, end: v.end } };
+            if (a) Object.assign(a, fields); else contract.amendments.push({ id: uid(), status: 'draft', files: [], ...fields });
+            log(contract, `${a ? 'Изменён' : 'Подготовлен'} проект ДС № ${v.number}: ${v.subject}`);
+            save();
+        });
+    }
+
+    function signAmendment(contract, a) {
+        openDialog(`Подписано ДС № ${a.number}`, [
+            { name: 'date', label: 'Дата подписания', type: 'date', value: today(), required: true },
+            { name: 'files', label: 'Подписанное соглашение', type: 'file' }
+        ], 'Отметить', async v => {
+            a.status = 'signed';
+            a.signedAt = v.date;
+            a.files = [...(a.files || []), ...(await storeFiles(v.files))];
+            ['price', 'start', 'end'].forEach(k => { if (a.changes[k]) contract[k] = a.changes[k]; });
+            log(contract, `Подписано ДС № ${a.number}: ${a.subject}${a.changes.price ? '; цена ' + a.changes.price : ''}${a.changes.end ? '; окончание ' + formatDate(a.changes.end) : ''}`);
+            save();
+        });
+    }
+
+    function editRisk(contract) {
+        openDialog('Риск по договору', [
+            { name: 'text', label: 'Риск', type: 'textarea', rows: 2, required: true },
+            { name: 'kind', label: 'Вид', type: 'select', options: [['Договорной', 'Договорной'], ['Финансовый', 'Финансовый'], ['Организационный', 'Организационный'], ['Технический', 'Технический']] },
+            { name: 'level', label: 'Уровень', type: 'select', value: 'medium', options: Object.entries(LEVELS) },
+            { name: 'measure', label: 'Мера снижения' },
+            { name: 'source', label: 'Источник', hint: 'Пункт договора, заключение специалиста, письмо' }
+        ], 'Добавить', v => {
+            contract.risks.push({ id: uid(), at: Date.now(), ...v });
+            log(contract, `Добавлен риск: ${v.text.slice(0, 80)}`);
+            save();
+        });
+    }
+
+    function closeContract(contract, ready) {
+        openDialog('Закрыть договор', [
+            { name: 'date', label: 'Дата закрытия', type: 'date', value: today(), required: true },
+            { name: 'note', label: 'Основание', type: 'textarea', rows: 2, required: true, hint: ready.ready ? 'Все пункты готовности выполнены' : 'Не все пункты готовности выполнены — укажите основание закрытия' }
+        ], 'Закрыть', v => {
+            contract.closed = { date: v.date, note: v.note };
+            log(contract, `Договор закрыт ${formatDate(v.date)}: ${v.note}`);
+            save();
+        });
     }
 
     function prepareNotice(contract, o) {
@@ -831,6 +961,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function askExpert(slug, contract, o, notice) {
         if (typeof window.AirchitectOpenSpecialist !== 'function') return;
+        // The contract specialist works with this card: it becomes the selected contract of the workspace
+        if (slug === 'contract-specialist' && contract) CC.select(contract.id);
         window.AirchitectOpenSpecialist(slug, contextText(contract, o, notice));
     }
 
@@ -849,56 +981,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const extractor = window.AirchitectContractExtract;
         notify(EXTRACT_API ? 'Специалист читает договор. Это может занять минуту-две.' : 'Читаю договор и ищу контрольные точки…');
         try {
-            let result;
-            if (EXTRACT_API) {
-                // Server: Claude reads the document; DOCX is converted to text in the browser first
-                const isPdf = (contract.file.type || '').includes('pdf') || /\.pdf$/i.test(contract.file.name);
-                const payload = isPdf
-                    ? { name: contract.file.name, type: 'application/pdf', data: await toBase64(blob) }
-                    : { name: contract.file.name, type: 'text/plain', data: await toBase64(new Blob([await extractor.readText(blob, contract.file.name)], { type: 'text/plain' })) };
-                const response = await fetch(EXTRACT_API, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ file: payload })
-                });
-                result = await response.json();
-                if (!response.ok) throw new Error(result.error || 'Сервер не смог обработать договор.');
-            } else {
-                result = await extractor.extract(blob, contract.file.name);
-            }
-
-            ['number', 'date', 'subject', 'customer', 'contractor', 'price', 'start', 'end'].forEach(key => {
-                if (!contract[key] && result.contract && result.contract[key]) contract[key] = result.contract[key];
-            });
-            // Skip control points already in the registry (same clause and beginning of the text)
-            const known = new Set(contract.obligations.map(o => `${o.clause}|${(o.text || '').slice(0, 60)}`));
-            const added = (result.obligations || [])
-                .filter(o => !known.has(`${o.clause}|${(o.text || '').slice(0, 60)}`))
-                .map(o => ({
-                    id: uid(), party: o.party || 'both', text: o.text, clause: o.clause,
-                    due: /^\d{4}-\d{2}-\d{2}$/.test(o.due) ? o.due : '', condition: o.condition || '',
-                    responsible: '', status: 'active', confirmed: false, source: EXTRACT_API ? 'ai' : 'auto', files: []
-                }));
-            contract.obligations.push(...added);
-            log(contract, `Из договора «${contract.file.name}» найдено контрольных точек: ${added.length} (требуют подтверждения)`);
+            const result = await extractor.run(blob, contract.file, EXTRACT_API);
+            const added = CC.applyExtraction(contract, result, EXTRACT_API ? 'ai' : 'auto', contract.file.name);
             save();
-            el.filterStatus.value = added.length ? 'review' : 'all';
+            el.filterStatus.value = added ? 'review' : 'all';
             render();
-            notify(added.length
-                ? `Найдено контрольных точек: ${added.length}. Проверьте и подтвердите каждую.`
+            notify(added
+                ? `Найдено контрольных точек: ${added}. Проверьте и подтвердите каждую.`
                 : 'Новых контрольных точек не найдено. Добавьте обязательства вручную.');
         } catch (err) {
             notify(err.message || 'Не удалось прочитать договор.');
             if (!auto) console.error(err);
         }
-    }
-
-    function toBase64(blob) {
-        return new Promise(resolve => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(String(reader.result).split(',')[1] || '');
-            reader.readAsDataURL(blob);
-        });
     }
 
     // ---- Wiring -------------------------------------------------------------
@@ -932,14 +1026,19 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('storage', e => {
         if (e.key !== STORE_KEY && e.key !== DOCS_KEY) return;
         if (e.key === STORE_KEY) {
-            try {
-                data = JSON.parse(localStorage.getItem(STORE_KEY)) || { contracts: [] };
-            } catch (err) {
-                data = { contracts: [] };
-            }
+            data = CC.read();
+            data.contracts.forEach(CC.ensure);
         }
         if (!el.dialog.open) render();
     });
 
     render();
+    const deep = (new URLSearchParams(location.search).get('id') || '').split('~')[1];
+    if (deep && current()) {
+        const c = current();
+        if (deep === 'notice') prepareNotice(c);
+        if (deep === 'claim') { prepareNotice(c); const sel = el.dialog.querySelector('[name=type]'); if (sel) sel.value = 'claim'; }
+        if (deep === 'amendment') editAmendment(c);
+        if (deep === 'terms') root.querySelector('[data-ct-tab="terms"]') && root.querySelector('[data-ct-tab="terms"]').click();
+    }
 });

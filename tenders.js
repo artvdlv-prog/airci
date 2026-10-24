@@ -459,7 +459,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 t.contractSecurity || calc ? ob(`Предоставить обеспечение исполнения договора${calc ? ' ' + money(calc.security.performance) : ''}${t.contractSecurity ? ' (' + t.contractSecurity + ')' : ''}`, 'документация закупки') : null,
                 t.warrantySecurity ? ob(`Предоставить обеспечение гарантийных обязательств (${t.warrantySecurity})`, 'документация закупки') : null
             ].filter(Boolean),
-            notices: [], events: [], log: [{ at: Date.now(), text: `Создан из закупки ${t.number ? '№ ' + t.number : t.title}` }]
+            notices: [], events: [], log: [{ at: Date.now(), text: `Создан из закупки ${t.number ? '№ ' + t.number : t.title}` }],
+            // Terms of the won procurement go to the contract card (Контракт — Исполнение)
+            tenderId: t.id, terms: { advancePct: calc ? String(calc.input.advancePct || '') : '', paymentTerms: t.payment || '', retentionPct: '', warrantyMonths: '', penalty: '', acceptance: '' }
         });
         localStorage.setItem('airchitect-contracts-v1', JSON.stringify(store));
         t.contractId = id;

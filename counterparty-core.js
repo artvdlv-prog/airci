@@ -69,7 +69,7 @@
     function financeYears(c) {
         const ch = lastCheck(c);
         const byYear = {};
-        ((ch && ch.data && ch.data.finance) || []).forEach(y => { byYear[y.year] = { year: y.year, lines: y.lines, source: 'ФНС: ГИР БО', url: 'https://bo.nalog.gov.ru/', date: ch.data.fetchedAt.slice(0, 10) }; });
+        ((ch && ch.data && ch.data.finance) || []).forEach(y => { byYear[y.year] = { year: y.year, lines: y.lines, source: ch.data.demo ? 'демо-данные' : 'ФНС: ГИР БО', url: ch.data.demo ? '' : 'https://bo.nalog.gov.ru/', date: ch.data.fetchedAt.slice(0, 10) }; });
         (c.finance || []).forEach(y => { if (!byYear[y.year]) byYear[y.year] = { year: y.year, lines: y.lines, source: y.source, url: y.url || '', date: y.date, manual: true }; });
         return Object.values(byYear).sort((a, b) => a.year - b.year);
     }
@@ -113,7 +113,7 @@
         const h = headName(c);
         store.items.forEach(o => {
             if (o === c) return;
-            if (h && headName(o) === h) out.push({ with: o, type: 'Совпадает руководитель (по ФИО в ЕГРЮЛ)', confirmed: false, source: 'ФНС: ЕГРЮЛ' });
+            if (h && headName(o) === h) out.push({ with: o, type: 'Совпадает руководитель (по ФИО в ЕГРЮЛ)', confirmed: false, source: lastCheck(c).data.demo ? 'демо-данные' : 'ФНС: ЕГРЮЛ' });
         });
         // Links recorded in other cards that point to this counterparty
         store.items.forEach(o => (o.facts || []).filter(f => f.kind === 'relation' && f.withInn === c.inn && o !== c).forEach(f => out.push({ with: o, type: f.text, confirmed: !!f.confirmed, source: f.source, conflict: !!f.conflict })));
@@ -263,6 +263,8 @@
             const list = factors.filter(f => f.cat === k);
             perCat[k] = { level: list.length ? Math.max(...list.map(f => f.level)) : null, factors: list, nodata: nodata[k] || (k === 'enforcement' ? nodata.enforcementPart : '') };
         });
+        // Demo cards: sources are named as demo data, not as registries
+        if (d && d.demo) factors.forEach(f => { f.source = /^(ФНС|НОСТРОЙ|внесено|отметк|карточка)/.test(String(f.source || '')) ? String(f.source).replace(/ФНС[^,]*|НОСТРОЙ|внесено по [^,;]*|отметки? пользовател[^,;]*|карточка контрагента/g, 'демо-данные') : f.source; });
         const levels = factors.map(f => f.level);
         const overall = levels.length ? Math.max(...levels) : null;
         let decision;
@@ -391,5 +393,39 @@
     window.AirchitectChatExtensions = window.AirchitectChatExtensions || {};
     window.AirchitectChatExtensions.counterparty = chatExtension;
 
-    window.AirchitectCounterparties = { STORE_KEY, LEVELS, CATEGORIES, ROLES, FACT_KINDS, COURT_TYPES, COURT_STATUS, DECISIONS, MANUAL, read, write, uid, today, validInn, blank, lastCheck, financeYears, ratios, levelLimit, relations, assess, changes, due, fmtR, fmtK };
+    function demoCards() {
+        const at = new Date().toISOString();
+        const sources = [{ id: 'demo', title: 'Демонстрационные данные — не проверка по реестрам', url: '', status: 'ok', fetchedAt: at }];
+        const year = new Date().getFullYear();
+        const fin = (y, v) => ({ year: y, lines: v });
+        const a = blank({ inn: '0000000000', name: 'ООО «Демо-Подряд» (пример)', roles: ['subcontractor'], demo: true,
+            deal: { amount: 180000000, advancePct: 30, workType: 'Монолитные работы', needSro: true, needExperience: true } });
+        a.checks = [{ id: uid(), at: Date.now(), data: { inn: a.inn, demo: true, fetchedAt: at, sources, links: [],
+            egrul: { kind: 'ul', name: 'ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ «ДЕМО-ПОДРЯД»', shortName: 'ООО «Демо-Подряд» (пример)', inn: a.inn, ogrn: '0000000000000', kpp: '000000000', registered: '15.03.2019', liquidated: '', head: 'ГЕНЕРАЛЬНЫЙ ДИРЕКТОР: Демидов Пётр Сергеевич', region: 'Пример', token: '' },
+            pb: { name: 'ООО «Демо-Подряд»', status: 'Действующая организация', statusCode: '10', liquidation: false, unreliable: false, registered: '15.03.2019', okved: '41.20', okvedName: 'Строительство жилых и нежилых зданий', region: 'Пример', reportYear: String(year - 1) },
+            finance: [
+                fin(year - 3, { '2110': 98000, '2200': 7400, '2400': 4100, '1600': 61000, '1300': 18000, '1200': 47000, '1250': 3900, '1400': 6000, '1500': 37000 }),
+                fin(year - 2, { '2110': 121000, '2200': 6900, '2400': 3300, '1600': 72000, '1300': 21300, '1200': 55000, '1250': 2700, '1400': 9000, '1500': 41700 }),
+                fin(year - 1, { '2110': 142000, '2200': 3100, '2400': -2600, '1600': 88000, '1300': 18700, '1200': 61000, '1250': 1900, '1400': 12000, '1500': 57300 })],
+            sro: [{ memberId: 0, status: 'Является членом', name: 'ООО «Демо-Подряд»', inn: a.inn, registryNumber: 'демо', sro: 'СРО «Пример строителей» (демо)', sroNumber: 'СРО-С-000-00000000', since: '01.06.2019', updated: '', right: 'Действует', rightBasis: '',
+                levelOdo: 'Второй уровень ответственности', levelOdoCost: 'не превышает пятьсот миллионов рублей', fundOdo: '', levelVv: 'Второй уровень ответственности', levelVvCost: 'не превышает пятьсот миллионов рублей', fundVv: '', accordance: '', totalLiability: '', liabilityDate: '' }]
+        } }];
+        a.facts = [
+            { id: uid(), kind: 'court', caseNo: 'А00-0000/2026 (демо)', role: 'defendant', claimType: 'advance', amount: 6400000, status: 'pending', text: 'Взыскание неотработанного аванса по договору субподряда (пример)', source: 'демо-данные', url: '', date: at.slice(0, 10) },
+            { id: uid(), kind: 'court', caseNo: 'А00-0001/2025 (демо)', role: 'defendant', claimType: 'penalty', amount: 1200000, status: 'partial', text: 'Неустойка за просрочку (пример)', source: 'демо-данные', url: '', date: at.slice(0, 10) },
+            { id: uid(), kind: 'checked', area: 'enforcement', text: 'Сведений не выявлено', source: 'демо-данные', date: at.slice(0, 10) },
+            { id: uid(), kind: 'checked', area: 'bankruptcy', text: 'Сведений не выявлено', source: 'демо-данные', date: at.slice(0, 10) },
+            { id: uid(), kind: 'checked', area: 'rnp', text: 'Сведений не выявлено', source: 'демо-данные', date: at.slice(0, 10) },
+            { id: uid(), kind: 'checked', area: 'reputation', text: 'Сведений не выявлено', source: 'демо-данные', date: at.slice(0, 10) },
+            { id: uid(), kind: 'relation', withInn: '000000000000', withName: 'ИП Демидова А. С. (пример)', text: 'Учредитель — родственник руководителя (пример)', confirmed: false, conflict: false, source: 'демо-данные', date: at.slice(0, 10) }
+        ];
+        const b = blank({ inn: '000000000000', name: 'ИП Демидова А. С. (пример)', roles: ['supplier'], demo: true, deal: { amount: 4500000, advancePct: 50, workType: 'Поставка арматуры', needSro: false } });
+        b.checks = [{ id: uid(), at: Date.now(), data: { inn: b.inn, demo: true, fetchedAt: at, sources, links: [], finance: [], sro: [],
+            egrul: { kind: 'ip', name: 'ИНДИВИДУАЛЬНЫЙ ПРЕДПРИНИМАТЕЛЬ ДЕМИДОВА АННА СЕРГЕЕВНА (ПРИМЕР)', shortName: 'ИП Демидова А. С. (пример)', inn: b.inn, ogrn: '000000000000000', kpp: '', registered: new Date(Date.now() - 200 * 86400000).toLocaleDateString('ru-RU'), liquidated: '', head: '', region: 'Пример', token: '' },
+            pb: { name: 'ИП Демидова А. С.', status: 'Действующий ИП', statusCode: '10', liquidation: false, unreliable: false, registered: '', okved: '46.73', okvedName: 'Торговля оптовая лесоматериалами, строительными материалами', region: 'Пример', reportYear: '' } } }];
+        [a, b].forEach(c => c.log.unshift({ at: Date.now(), text: 'Создан демо-пример: вымышленная организация, данные не получены из реестров' }));
+        return [a, b];
+    }
+
+    window.AirchitectCounterparties = { STORE_KEY, LEVELS, CATEGORIES, ROLES, FACT_KINDS, COURT_TYPES, COURT_STATUS, DECISIONS, MANUAL, read, write, uid, today, validInn, blank, demoCards, lastCheck, financeYears, ratios, levelLimit, relations, assess, changes, due, fmtR, fmtK };
 })();

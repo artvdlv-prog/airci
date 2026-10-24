@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const title = local(item.title);
             document.title = `${title} — AIRCHITECT`;
             pageRoot.querySelectorAll('[data-sp-title]').forEach(el => { el.textContent = title; });
-            pageRoot.querySelectorAll('[data-sp-description]').forEach(el => { el.textContent = local(item.description); });
+            pageRoot.querySelectorAll('[data-sp-description]').forEach(el => { el.textContent = [local(item.lead), local(item.about || item.description)].filter(Boolean).join('. '); });
 
             pageRoot.querySelectorAll('[data-sp-icon]').forEach(el => { el.innerHTML = specialistIcon(item); });
 
@@ -1004,6 +1004,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 more.className = 'home-specialist__more';
                 more.setAttribute('aria-hidden', 'true');
                 more.innerHTML = '<svg class="home-btn__arrow" viewBox="0 0 16 16"><path d="M2 8h11M9 4l4 4-4 4"/></svg>';
+                // Priority specialist (e.g. the contract specialist): visual accent and an explicit call to action
+                if (item.featured) {
+                    card.classList.add('home-specialist--featured');
+                    more.removeAttribute('aria-hidden');
+                    more.insertAdjacentText('afterbegin', 'Открыть специалиста ');
+                }
                 body.appendChild(more);
 
                 card.append(icon, body);

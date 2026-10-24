@@ -137,6 +137,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ---- Registry check (server) ----------------------------------------------------------------------
 
     async function runCheck(c, silent) {
+        if (c.demo) {
+            if (!silent) notify('Демо-пример: вымышленная организация, проверка по реестрам не выполняется.');
+            return false;
+        }
         if (API === null) {
             if (!silent) notify('Сервер проверки по реестрам не подключён. Загрузите выписку ЕГРЮЛ и отчётность в «Документы» и внесите сведения вручную.');
             return false;
@@ -205,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.tabs.textContent = '';
         TABS.forEach(([key, label]) => el.tabs.appendChild(h('button', { type: 'button', role: 'tab', class: 'home-tab', 'aria-selected': String(key === tab), onclick: () => { tab = key; render(); } }, label)));
         el.panel.textContent = '';
+        if (c.demo) el.panel.appendChild(h('div', { class: 'home-ct__alert' }, 'Демо-пример: вымышленная организация и вымышленные сведения для знакомства с разделом. Это не результат проверки по реестрам.'));
         ({ summary: renderSummary, registry: renderRegistry, finance: renderFinance, courts: renderCourts, construction: renderConstruction, links: renderLinks, docs: renderDocs, monitoring: renderMonitoring, history: renderHistory })[tab](c, a);
     }
 
@@ -283,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ['Руководитель', d.egrul.head], ['Регион', d.egrul.region], d.egrul.liquidated ? ['Прекращение деятельности', d.egrul.liquidated] : null,
                 d.pb ? ['Статус («Прозрачный бизнес»)', d.pb.status] : null, d.pb ? ['Недостоверность сведений', d.pb.unreliable ? 'есть отметка' : 'отметок нет'] : null,
                 d.pb ? ['Основной вид деятельности', `${d.pb.okved} ${d.pb.okvedName}`] : null
-            ].filter(Boolean).map(([k, v]) => h('tr', {}, h('td', {}, k), h('td', {}, v || '—')))), h('p', { class: 'home-tn__group-note home-cf__chart-note' }, `Источник: ФНС России, ${formatDate(d.fetchedAt)}. Учредители и история изменений — в официальной выписке.`)));
+            ].filter(Boolean).map(([k, v]) => h('tr', {}, h('td', {}, k), h('td', {}, v || '—')))), h('p', { class: 'home-tn__group-note home-cf__chart-note' }, d.demo ? 'Демонстрационные данные вымышленной организации — не сведения ФНС.' : `Источник: ФНС России, ${formatDate(d.fetchedAt)}. Учредители и история изменений — в официальной выписке.`)));
         }
         el.panel.appendChild(block('Ручная проверка по официальным источникам', null, h('ul', { class: 'home-ct__list' }, (ch ? ch.data.links : linksFor(c.inn)).map(l => h('li', { class: 'home-ct__row' },
             h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-title' }, h('a', { href: l.url, target: '_blank', rel: 'noopener', class: 'home-ob__norm' }, l.title)), h('p', { class: 'home-ct__row-meta' }, l.note)))))));
@@ -661,6 +666,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     root.querySelector('[data-cp-add]').addEventListener('click', () => addCounterparty());
+    root.querySelector('[data-cp-demo]').addEventListener('click', () => {
+        if (store.items.some(x => x.demo)) { currentId = store.items.find(x => x.demo).id; tab = 'summary'; render(); return; }
+        const cards = C.demoCards();
+        store.items.unshift(...cards);
+        currentId = cards[0].id;
+        tab = 'summary';
+        save();
+        render();
+    });
     root.querySelector('[data-cp-compare]').addEventListener('click', () => { if (store.items.length < 2) return notify('Для сравнения добавьте хотя бы два контрагента.'); renderCompare(); });
     window.addEventListener('storage', ev => { if (ev.key === C.STORE_KEY) { store = C.read(); if (!dialog.open) render(); } });
 
@@ -672,5 +686,5 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ex) { currentId = ex.id; render(); } else addCounterparty(innParam);
     }
     // Scheduled re-checks that are due: run when the section is opened (no background monitoring)
-    store.items.filter(C.due).slice(0, 3).forEach(c => runCheck(c, true).then(ok => { if (ok) render(); }));
+    store.items.filter(x => C.due(x) && !x.demo).slice(0, 3).forEach(c => runCheck(c, true).then(ok => { if (ok) render(); }));
 });
