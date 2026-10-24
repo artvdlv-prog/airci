@@ -382,10 +382,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.prepend(bar);
             }
 
+            // Specialist-specific chat extension (e.g. tender links: tender-core.js)
+            const extension = item.analysis && window.AirchitectChatExtensions && window.AirchitectChatExtensions[item.analysis]
+                ? window.AirchitectChatExtensions[item.analysis]() : null;
+            if (extension) extension.attach({ form, input });
+
             // Text passed in the address (?q=…): placed into the input for the user to review and send
             const params = new URLSearchParams(location.search);
             if (params.get('q')) {
                 input.value = params.get('q');
+                input.dispatchEvent(new Event('input'));
                 params.delete('q');
                 window.history.replaceState(null, '', `${location.pathname}?${params}${location.hash}`);
                 setTimeout(() => {
@@ -454,6 +460,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 busy = true;
                 sendButton.disabled = true;
                 const files = await Promise.all(pendingFiles.map(readFile));
+                const analysis = extension ? extension.payload() : null;
+                if (extension) extension.reset();
                 const userMessage = { role: 'user', text, files };
                 history.push(userMessage);
                 addMessage('user', text, files.map(f => f.name));
@@ -471,7 +479,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const response = await fetch(endpoint, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ specialist: slug, messages: history })
+                        body: JSON.stringify({ specialist: slug, messages: history, analysis })
                     });
                     if (!response.ok || !response.body) {
                         const problem = await response.json().catch(() => ({}));
@@ -484,6 +492,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             answerText += event.text;
                             answer.classList.remove('is-typing');
                             setMessageText(answer, answerText);
+                        } else if (event.type === 'status' && !answerText) {
+                            // server tools at work (e.g. opening a tender page)
+                            answer.querySelector('.home-chat__body').textContent = event.text;
                         } else if (event.type === 'done') {
                             stopReason = event.stop_reason;
                         } else if (event.type === 'error') {
@@ -498,6 +509,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     if (!answerText) throw new Error('Ответ не получен. Попробуйте ещё раз.');
                     history.push({ role: 'assistant', text: answerText });
+                    if (extension) extension.afterAnswer(answer, answerText, analysis);
                     saveTurn(userMessage, answerText);
                 } catch (err) {
                     // Failed turn is removed so the conversation stays valid; the text returns to the input
@@ -846,7 +858,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (plain) {
                 body.textContent = text;
             } else {
-                body.innerHTML = renderMarkdown(text);
+                // the machine-readable block at the end of an answer is not shown
+                body.innerHTML = renderMarkdown(text.replace(/```airchitect-data[\s\S]*?(```|$)/g, '').trim());
             }
             const log = message.parentElement;
             if (log) log.scrollTop = log.scrollHeight;
@@ -908,7 +921,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (list) html.push(`</${list}>`);
                 list = null;
             };
+            let table = null;
+            const closeTable = () => {
+                if (!table) return;
+                const [head, ...body] = table;
+                html.push(`<div class="home-chat__table"><table><thead><tr>${head.map(c => `<th>${inline(c)}</th>`).join('')}</tr></thead><tbody>${body.map(r => `<tr>${r.map(c => `<td>${inline(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`);
+                table = null;
+            };
             text.split('\n').forEach(line => {
+                // Tables: | a | b |, the |---| separator row is skipped
+                if (/^\s*\|.*\|\s*$/.test(line)) {
+                    flushParagraph(); closeList();
+                    if (/^\s*\|[\s:|-]+\|\s*$/.test(line)) return;
+                    table = table || [];
+                    table.push(line.trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim()));
+                    return;
+                }
+                closeTable();
                 const heading = line.match(/^#{1,6}\s+(.*)/);
                 const bullet = line.match(/^\s*[-*•]\s+(.*)/);
                 const numbered = line.match(/^\s*\d+[.)]\s+(.*)/);
@@ -927,7 +956,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     paragraph.push(line);
                 }
             });
-            flushParagraph(); closeList();
+            closeTable(); flushParagraph(); closeList();
             return html.join('');
         }
 

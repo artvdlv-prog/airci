@@ -91,27 +91,43 @@ export default {
             async start(controller) {
                 const send = event => controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
                 try {
-                    const answer = client.beta.messages.stream({
-                        model: MODEL,
-                        max_tokens: MAX_TOKENS,
-                        // Chat answers: medium effort keeps latency and cost reasonable
-                        output_config: { effort: 'medium' },
-                        // On a safety decline the API continues on Anthropic's recommended fallback model
-                        betas: ['server-side-fallback-2026-07-01'],
-                        fallbacks: 'default',
-                        // The role and earlier turns (including uploaded documents) are reused from cache
-                        cache_control: { type: 'ephemeral' },
-                        system: buildSystemPrompt(body.specialist),
-                        messages
-                    });
-
-                    for await (const event of answer) {
-                        if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-                            send({ type: 'text', text: event.delta.text });
-                        }
+                    // Tender analysis: the links are opened on Anthropic's servers with the web fetch tool
+                    const tender = tenderRequest(body);
+                    if (tender) {
+                        const last = messages[messages.length - 1];
+                        last.content.push({ type: 'text', text: tenderInstruction(tender) });
                     }
+                    let conversation = messages;
+                    let final;
+                    // A long server-tool turn can pause: resend the paused turn to continue (bounded)
+                    for (let round = 0; round < 4; round++) {
+                        const answer = client.beta.messages.stream({
+                            model: MODEL,
+                            max_tokens: tender ? TENDER_MAX_TOKENS : MAX_TOKENS,
+                            // Chat answers: medium effort; tender reports need more care
+                            output_config: { effort: tender ? 'high' : 'medium' },
+                            // On a safety decline the API continues on Anthropic's recommended fallback model
+                            betas: ['server-side-fallback-2026-07-01'],
+                            fallbacks: 'default',
+                            // The role and earlier turns (including uploaded documents) are reused from cache
+                            cache_control: { type: 'ephemeral' },
+                            system: buildSystemPrompt(body.specialist),
+                            ...(tender ? { tools: [{ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: tender.urls.length * 3 + 2 }] } : {}),
+                            messages: conversation
+                        });
 
-                    const final = await answer.finalMessage();
+                        for await (const event of answer) {
+                            if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+                                send({ type: 'text', text: event.delta.text });
+                            } else if (event.type === 'content_block_start' && event.content_block.type === 'server_tool_use') {
+                                send({ type: 'status', text: 'Открываю страницу закупки…' });
+                            }
+                        }
+
+                        final = await answer.finalMessage();
+                        if (final.stop_reason !== 'pause_turn') break;
+                        conversation = [...conversation, { role: 'assistant', content: final.content }];
+                    }
                     send({ type: 'done', stop_reason: final.stop_reason });
                 } catch (err) {
                     send({ type: 'error', message: describeError(err) });
@@ -129,6 +145,45 @@ export default {
         });
     }
 };
+
+// ---- Tender analysis (tender specialist) ------------------------------------------
+
+const TENDER_MAX_TOKENS = 32000;
+const MAX_TENDER_URLS = 6;
+
+function tenderRequest(body) {
+    const a = body && body.analysis;
+    if (!a || a.type !== 'tenders' || body.specialist !== 'tender-specialist' || !Array.isArray(a.urls)) return null;
+    const urls = a.urls.filter(u => typeof u === 'string' && /^https?:\/\//.test(u)).slice(0, MAX_TENDER_URLS);
+    return urls.length ? { urls, mode: a.mode === 'compare' && urls.length > 1 ? 'compare' : 'each' } : null;
+}
+
+function tenderInstruction({ urls, mode }) {
+    return `Задача: аналитическая справка по закупкам${mode === 'compare' ? ' со сводным сравнением' : ' — отдельно по каждой'}.
+
+Ссылки:
+${urls.map((u, i) => `${i + 1}. ${u}`).join('\n')}
+
+Порядок работы:
+1. Открой каждую ссылку инструментом web_fetch. Используй только то, что действительно получено со страницы или из приложенных документов. Если страница не открылась, требует входа или документация (извещение, ТЗ, проект договора) недоступна, прямо напиши это и попроси пользователя загрузить документы в чат. Ничего не додумывай: недоступные сведения помечай «нет данных».
+2. Для каждой закупки укажи источники (ссылку и какие документы прочитаны).
+
+Структура справки:
+## Сведения о закупке — заказчик, номер, закон (44-ФЗ / 223-ФЗ / коммерческая), предмет, НМЦК, сроки подачи и подведения итогов, место и сроки выполнения.
+## Требования — к участникам (в том числе дополнительные), к опыту, допускам и членству в СРО, ключевые требования ТЗ.
+## Обеспечения и расходы — строго разделяй три группы: (а) суммы обеспечения заявки, исполнения и гарантийных обязательств — блокируются или обеспечиваются банковской гарантией, это не расход; (б) фактические расходы — комиссии по банковским гарантиям, проценты, сборы площадки (если ставка не известна — укажи допущение); (в) прогнозы. Покажи формулы и исходные проценты.
+## Условия оплаты — аванс, порядок и сроки оплаты, удержания, график платежей; оцени потребность в оборотных средствах и риск кассовых разрывов.
+## Договорные и финансовые риски — неустойки, односторонний отказ, приёмка, изменение цены, антидемпинговые меры и т. п. со ссылками на пункты документации.
+## Прогноз рентабельности — только с явными допущениями (себестоимость, снижение цены), отдельно от фактов.
+## Заключение и рекомендации — целесообразность участия с обоснованием; оптимальный способ обеспечения и потребность в финансировании; как повысить конкурентоспособность заявки; как снизить договорные и финансовые риски; конкретный план действий до подачи заявки с датами.
+${mode === 'compare' ? '## Сравнение — таблица по закупкам: НМЦК, обеспечения, расходы, требования, риски, рентабельность, итоговая оценка.' : ''}
+Где нужна оценка финансиста, юриста или специалиста по безопасности (проверка заказчика и контрагентов), отметь это.
+
+В самом конце ответа добавь блок с данными для реестра строго в формате (null для неизвестных значений):
+\`\`\`airchitect-data
+{"tenders":[{"url":"","number":null,"law":null,"title":null,"customer":null,"nmck":null,"submission_deadline":"ГГГГ-ММ-ДД или null","results_date":null,"bid_security":null,"contract_security":null,"warranty_security":null,"advance":null,"payment_terms":null,"requirements":null,"contract_terms":null,"recommendation":null}]}
+\`\`\``;
+}
 
 // Fields are always present (empty string when the contract does not state them)
 const CONTRACT_FIELDS = ['number', 'date', 'subject', 'customer', 'contractor', 'price', 'start', 'end'];

@@ -5342,3 +5342,200 @@ a.home-registry__num::after {
     flex-wrap: wrap;
     row-gap: 0;
 }
+
+/* ==========================================================================
+   Tenders (tenders.html) and the tender specialist's chat
+   ========================================================================== */
+
+[data-tn-tabs] {
+    flex-wrap: wrap;
+    row-gap: 0;
+}
+
+/* Links found in the chat message: what to analyse and how */
+.home-tn__panel {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 10px;
+    padding: 12px 14px;
+    background: var(--home-bg-alt);
+    border: 1px solid var(--home-line);
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+.home-tn__panel-title {
+    color: var(--home-ink);
+    font-weight: 500;
+}
+
+.home-tn__url {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+    cursor: pointer;
+}
+
+.home-tn__url span {
+    overflow-wrap: anywhere;
+}
+
+.home-tn__modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    padding-top: 4px;
+}
+
+.home-tn__answer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.home-tn__answer-actions button {
+    padding: 6px 12px;
+    background: var(--home-bg);
+    border: 1px solid var(--home-line-strong);
+    border-radius: 999px;
+    color: var(--home-ink);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.home-tn__answer-actions button:hover,
+.home-tn__answer-actions button:focus-visible {
+    border-color: var(--primary-orange);
+    color: var(--primary-orange);
+}
+
+.home-chat__note {
+    margin-top: 8px;
+    color: var(--home-muted);
+    font-size: 13px;
+}
+
+/* Markdown tables in chat answers and saved reports */
+.home-chat__table {
+    max-width: 100%;
+    margin: 8px 0;
+    overflow-x: auto;
+}
+
+.home-chat__table table {
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.home-chat__table th,
+.home-chat__table td {
+    padding: 6px 10px;
+    border: 1px solid var(--home-line);
+    text-align: left;
+    vertical-align: top;
+}
+
+.home-chat__table th {
+    background: var(--home-bg-alt);
+    color: var(--home-ink);
+    font-weight: 500;
+}
+
+/* Calculation: security / actual costs / forecast kept apart */
+.home-tn__calc {
+    margin-bottom: 20px;
+}
+
+.home-tn__group-note {
+    padding: 10px 18px 0;
+    color: var(--home-muted);
+    font-size: 13px;
+}
+
+.home-tn__sums {
+    list-style: none;
+    padding: 6px 18px 12px;
+}
+
+.home-tn__sums li {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--home-line);
+    font-size: 14px;
+}
+
+.home-tn__sums li:last-child {
+    border-bottom: 0;
+}
+
+.home-tn__sums li span:last-child {
+    color: var(--home-ink);
+    white-space: nowrap;
+}
+
+.home-tn__sums li.is-total span {
+    color: var(--home-ink);
+    font-weight: 600;
+}
+
+.home-tn__neg {
+    color: #b42318;
+}
+
+.home-tn__check {
+    list-style: none;
+    padding: 8px 18px 12px;
+}
+
+.home-tn__check li {
+    padding: 6px 0;
+    font-size: 14px;
+}
+
+.home-tn__check label {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.home-tn__report-wrap {
+    padding: 14px 18px;
+}
+
+.home-tn__report h4 {
+    margin: 12px 0 6px;
+    color: var(--home-ink);
+    font-size: 15px;
+}
+
+.home-tn__report ul {
+    padding-left: 18px;
+}
+
+@media (max-width: 600px) {
+    .home-tn__group-note,
+    .home-tn__sums,
+    .home-tn__check,
+    .home-tn__report-wrap {
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .home-tn__sums li {
+        font-size: 13px;
+    }
+}
+
+.home-tn__form-title {
+    margin: 4px 0 12px;
+    color: var(--home-ink);
+    font-size: 17px;
+    font-weight: 500;
+}

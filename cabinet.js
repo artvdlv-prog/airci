@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
         contracts: 'airchitect-contracts-v1',
         staff: 'airchitect-staff-v1',
         docs: 'airchitect-docs-v1',
-        objects: 'airchitect-objects-v1'
+        objects: 'airchitect-objects-v1',
+        tenders: 'airchitect-tenders-v1'
     };
 
     const PRODUCTS = {
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         documents: '<rect x="8" y="3" width="12" height="15" rx="1"/><path d="M5 6v15h12"/><path d="M11 8h6M11 11h6M11 14h4"/>',
         registries: '<path d="M4 5h16M4 10h16M4 15h16M4 20h10"/>',
         objects: '<path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/><path d="M3 21h18"/>',
+        tenders: '<path d="M4 4h16v4H4z"/><path d="M6 8v12h12V8"/><path d="M10 12h4"/>',
         settings: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>'
     };
 
@@ -36,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'overview', title: 'Обзор', products: ['office', 'docs', 'complex'] },
         { id: 'staff', title: 'Штат', products: ['office', 'complex'], frame: 'staff.html' },
         { id: 'contracts', title: 'Контракты', products: ['office', 'complex'], frame: 'contracts.html' },
+        { id: 'tenders', title: 'Тендеры', products: ['office', 'complex'], frame: 'tenders.html' },
         { id: 'objects', title: 'Объекты', products: ['office', 'complex'], frame: 'objects.html' },
         { id: 'documents', title: 'Документы', products: ['docs', 'complex'] },
         { id: 'registries', title: 'Реестры', products: ['office', 'docs', 'complex'] },
@@ -69,6 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveDocs = () => write(KEYS.docs, docsStore);
     const contracts = () => read(KEYS.contracts, { contracts: [] }).contracts;
     const objects = () => read(KEYS.objects, { objects: [] }).objects;
+    const tenders = () => read(KEYS.tenders, { tenders: [] }).tenders;
+    const TENDER_STATUS = { analysis: 'Анализ', preparing: 'Подготовка заявки', submitted: 'Заявка подана', won: 'Победа', lost: 'Не выиграна', declined: 'Отказ от участия' };
+    const tenderOpen = t => ['analysis', 'preparing'].includes(t.status) && t.deadlines && t.deadlines.submission;
     const idOverdue = d => d.status !== 'signed' && d.due && daysUntil(d.due) < 0;
     const staff = () => read(KEYS.staff, {});
 
@@ -298,6 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
             count = contracts().reduce((n, c) => n + c.obligations.filter(o => ['overdue', 'soon'].includes(obligationStatus(o))).length, 0);
         } else if (section === 'objects') {
             count = objects().reduce((n, o) => n + o.id.filter(idOverdue).length + o.remarks.filter(r => r.status === 'open').length, 0);
+        } else if (section === 'tenders') {
+            count = tenders().filter(t => tenderOpen(t) && daysUntil(t.deadlines.submission) >= 0 && daysUntil(t.deadlines.submission) <= SOON_DAYS).length;
         } else if (section === 'documents') {
             count = docsStore.docs.filter(d => d.status === 'approval').length;
         }
@@ -406,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
         panel.append(h('h1', { class: 'home-cab__title' }, 'Обзор'));
 
         // Nothing yet: first steps instead of empty tables
-        if (!list.length && !docs.length) {
+        if (!list.length && !docs.length && !tenders().length) {
             const steps = [];
             if (office) {
                 steps.push(['contracts', 'Добавьте договор', 'Контрольные точки найдутся в файле автоматически.', () => go('contracts')]);
@@ -438,6 +446,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 date: o.due, title: o.text, meta: `${contractName(o.contract)} · п. ${o.clause || '—'}`,
                 tone: o.s, open: () => go('contracts', o.contract.id)
             })) : []),
+            ...(office ? tenders().filter(t => tenderOpen(t) && daysUntil(t.deadlines.submission) >= 0 && daysUntil(t.deadlines.submission) <= 14).map(t => ({
+                date: t.deadlines.submission, title: `Подача заявки: ${t.title || t.number}`, meta: `Тендер · ${TENDER_STATUS[t.status]}`,
+                tone: 'soon', open: () => go('tenders', t.id)
+            })) : []),
             ...(office ? objects().flatMap(ob => ob.id.filter(d => d.status !== 'signed' && d.due && daysUntil(d.due) <= 14).map(d => ({
                 date: d.due, title: d.title, meta: `ИД · ${ob.name}`,
                 tone: daysUntil(d.due) < 0 ? 'overdue' : 'soon', open: () => go('objects', ob.id)
@@ -468,6 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const open = ob.remarks.filter(r => r.status === 'open').length;
                 if (open) attention.push([`Замечания по РД и ИД: ${open}`, ob.name, () => go('objects', ob.id)]);
             });
+            tenders().filter(t => t.status === 'won' && !t.contractId).forEach(t => attention.push(['Победа в закупке: оформите договор', t.title || t.number, () => go('tenders', t.id)]));
             notices.filter(n => n.status === 'draft').slice(0, 3).forEach(n => attention.push(['Уведомление не отправлено', `${contractName(n.contract)} · ${n.addressee || '—'}`, () => go('contracts', n.contract.id)]));
         }
         if (docsOn) {
@@ -656,6 +669,14 @@ document.addEventListener('DOMContentLoaded', () => {
             rows: () => contracts().map(c => ({
                 cells: [contractName(c), c.subject, c.customer, c.contractor, c.price, `${formatDate(c.start) || '—'} — ${formatDate(c.end) || '—'}`, c.obligations.length, c.obligations.filter(o => obligationStatus(o) === 'overdue').length],
                 open: () => go('contracts', c.id)
+            }))
+        },
+        {
+            id: 'tenders', title: 'Тендеры', products: ['office', 'complex'],
+            columns: ['Закупка', 'Закон', 'Номер', 'Заказчик', 'НМЦК', 'Подача заявок', 'Статус', 'Справок'],
+            rows: () => tenders().map(t => ({
+                cells: [t.title, { '44': '44-ФЗ', '223': '223-ФЗ', commercial: 'Коммерческая' }[t.law], t.number, t.customer, t.nmck ? Number(t.nmck).toLocaleString('ru-RU') + ' ₽' : '', formatDate(t.deadlines && t.deadlines.submission), TENDER_STATUS[t.status], t.reports.length],
+                open: () => go('tenders', t.id)
             }))
         },
         {

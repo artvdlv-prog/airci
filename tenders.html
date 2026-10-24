@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.8em' font-size='45' font-family='Arial,sans-serif' font-weight='bold' fill='%23FF6A00'>AI</text></svg>">
+    <meta name="description" content="Реестр закупок по 44-ФЗ, 223-ФЗ и коммерческих: анализ документации, расчёт обеспечений, рентабельности и кассовых разрывов, контроль сроков и заявки.">
+    <title>Тендеры и закупки | AIRCHITECT</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="Logo Airchitect.jpg" alt="Airchitect" class="nav-logo">
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html#specialists" class="nav-link" data-translate="nav.specialists">Специалисты</a>
+                <a href="index.html#products" class="nav-link" data-translate="nav.solutions">Решения</a>
+                <a href="index.html#modules" class="nav-link" data-translate="nav.technologies">Технологии</a>
+                <a href="company.html" class="nav-link" data-translate="nav.about">О компании</a>
+                <button class="demo-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0114 0"/></svg><span>Личный кабинет</span></button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="home">
+        <section id="intro" class="home-chat">
+            <div class="container">
+                <div class="home-staff__head">
+                    <p class="home-eyebrow">Тендеры и закупки</p>
+                    <h1 class="home-chat__title">Закупки по 44-ФЗ, 223-ФЗ и коммерческие.</h1>
+                    <p class="home-chat__text">Реестр закупок, анализ документации тендерным специалистом, расчёт обеспечений и финансовой нагрузки, контроль сроков и комплектности заявки.</p>
+                </div>
+                <div class="home-staff" data-tenders>
+                    <nav class="home-staff__list" aria-label="Закупки">
+                        <!-- Rendered by tenders.js -->
+                        <ul data-tn-list></ul>
+                        <button type="button" class="home-btn home-btn--secondary home-ct__add" data-tn-add>Добавить закупку</button>
+                        <button type="button" class="home-cab__reset-link" data-tn-demo>Демо-закупка</button>
+                    </nav>
+                    <div class="home-staff__work">
+                        <div class="home-staff__panel home-ct__empty" data-tn-empty>
+                            <p class="home-staff__empty">Закупок пока нет. Добавьте закупку со ссылкой на площадку или откройте демо-закупку, чтобы посмотреть расчёт.</p>
+                        </div>
+                        <div data-tn-card hidden>
+                            <div class="home-staff__top">
+                                <div>
+                                    <h2 class="home-staff__name" data-tn-title></h2>
+                                    <p class="home-chat__text" data-tn-meta></p>
+                                </div>
+                            </div>
+                            <div class="home-tabs" role="tablist" aria-label="Карточка закупки" data-tn-tabs></div>
+                            <div data-tn-panel></div>
+                        </div>
+                        <p class="home-note">Данные хранятся только в этом браузере. Сведения по ссылкам открывает тендерный специалист на сервере; если документация недоступна, он попросит загрузить файлы. Расчёт — прогноз по введённым допущениям, проценты обеспечений берутся из документации закупки.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="translations.js"></script>
+    <script src="home-config.js"></script>
+    <script src="tender-core.js"></script>
+    <script src="script.js"></script>
+    <script src="tenders.js"></script>
+</body>
+</html>
