@@ -6223,3 +6223,13 @@ a.home-registry__num::after {
         width: 100%;
     }
 }
+
+.home-ws__search {
+    width: 100%;
+    margin: 6px 0 10px;
+    padding: 9px 12px;
+    border: 1px solid var(--home-line-strong);
+    border-radius: 10px;
+    font: inherit;
+    font-size: 14px;
+}

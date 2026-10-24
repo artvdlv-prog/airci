@@ -736,6 +736,7 @@ document.addEventListener('DOMContentLoaded', () => {
             field('advancePct', 'Аванс, %', t.advancePct), field('retentionPct', 'Гарантийное удержание, %', t.retentionPct),
             field('paymentTerms', 'Порядок и сроки оплаты', t.paymentTerms, 'Например: в течение 10 рабочих дней после подписания КС-2 и КС-3'),
             field('acceptance', 'Порядок приёмки работ', t.acceptance), field('warrantyMonths', 'Гарантийный срок, мес.', t.warrantyMonths), field('penalty', 'Ответственность сторон (неустойка)', t.penalty),
+            field('claimDays', 'Срок ответа на претензию, дней', t.claimDays, 'Если договор не устанавливает иной срок — 30 календарных дней (ч. 5 ст. 4 АПК РФ)'),
             h('div', { class: 'home-ct__wide' }, h('button', { type: 'submit', class: 'home-btn home-btn--primary' }, 'Сохранить')));
         form.addEventListener('submit', ev => {
             ev.preventDefault();

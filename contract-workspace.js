@@ -5,14 +5,17 @@
 document.addEventListener('DOMContentLoaded', () => {
     const page = document.querySelector('[data-chat-page]');
     const CC = window.AirchitectContracts;
-    if (!page || !CC || new URLSearchParams(location.search).get('id') !== 'contract-specialist') return;
+    if (!page || !CC || !window.AirchitectWorkspaceKit || new URLSearchParams(location.search).get('id') !== 'contract-specialist') return;
     const work = page.querySelector('.home-staff__work');
     const chatPanel = page.querySelector('[data-tab-panel="chat"]');
     if (!work || !chatPanel) return;
 
+    const K = window.AirchitectWorkspaceKit;
+    const { h, notify, badge, rowEl, storeFile, openFile, openCard } = K;
+    const askChat = text => K.askChat(page, text);
+    // Small forms on obligations: the form saves, then the workspace is redrawn
+    const ask = (title, fields, onSubmit) => K.ask(title, fields, v => { onSubmit(v); save(); render(); return null; });
     const API = typeof HOME_ASSISTANT_API !== 'undefined' && HOME_ASSISTANT_API ? HOME_ASSISTANT_API.replace(/\/chat$/, '/extract') : null;
-    const inCabinet = document.documentElement.classList.contains('is-cabinet');
-    const embedded = new URLSearchParams(location.search).get('embed') === '1';
     const { formatDate, STATUS_LABEL, STATUS_TONE, PARTIES } = CC;
     let tab = 'contracts';
     let onlyPayments = false;
@@ -20,88 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
     data.contracts.forEach(CC.ensure);
     const save = () => { if (!CC.write(data)) notify('Не удалось сохранить.'); };
     const selectedContract = () => data.contracts.find(c => c.id === CC.selected());
-
-    function h(tag, attrs = {}, ...children) {
-        const node = document.createElement(tag);
-        Object.entries(attrs).forEach(([k, v]) => {
-            if (v === undefined || v === null || v === false) return;
-            if (k === 'class') node.className = v;
-            else if (k.startsWith('on')) node.addEventListener(k.slice(2), v);
-            else node.setAttribute(k, v === true ? '' : v);
-        });
-        children.flat().forEach(ch => { if (ch !== null && ch !== undefined && ch !== false) node.append(ch instanceof Node ? ch : document.createTextNode(ch)); });
-        return node;
-    }
-    function notify(text) {
-        const t = h('div', { class: 'home-ct__toast', role: 'status' }, text);
-        document.body.appendChild(t);
-        setTimeout(() => t.remove(), 4500);
-    }
-    const badge = (text, tone) => h('span', { class: `home-ct__badge home-ct__badge--${tone || 'review'}` }, text);
-    const rowEl = (title, metas, actions) => h('li', { class: 'home-ct__row' }, h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-title' }, ...[].concat(title)), ...metas.filter(Boolean).map(m => h('p', { class: 'home-ct__row-meta' }, m))),
-        actions && actions.length ? h('div', { class: 'home-record__actions' }, actions.map(([l, fn]) => h('button', { type: 'button', onclick: fn }, l))) : null);
-
-    // ---- Files: same browser storage as Контракты ---------------------------------------------
-
-    const filesDb = new Promise(resolve => {
-        if (!('indexedDB' in window)) return resolve(null);
-        const req = indexedDB.open('airchitect-contract-files', 1);
-        req.onupgradeneeded = () => req.result.createObjectStore('files', { keyPath: 'id' });
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => resolve(null);
-    });
-    async function storeFile(file) {
-        const db = await filesDb;
-        const meta = { id: CC.uid(), name: file.name, type: file.type, size: file.size };
-        if (db) await new Promise((resolve, reject) => { const tx = db.transaction('files', 'readwrite'); tx.objectStore('files').put({ ...meta, blob: file }); tx.oncomplete = resolve; tx.onerror = () => reject(tx.error); }).catch(() => notify('Файл не сохранён: недостаточно места.'));
-        return meta;
-    }
-    async function openFile(meta) {
-        const db = await filesDb;
-        if (!db) return;
-        const req = db.transaction('files', 'readonly').objectStore('files').get(meta.id);
-        req.onsuccess = () => {
-            if (!req.result) return notify('Файл не найден в браузере.');
-            const a = h('a', { href: URL.createObjectURL(req.result.blob), download: meta.name });
-            a.click();
-            setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-        };
-    }
-
-    // ---- Small dialog for actions on obligations -----------------------------------------------
-
-    const dlg = h('dialog', { class: 'home-dialog' });
-    document.body.appendChild(dlg);
-    function ask(title, fields, onSubmit) {
-        dlg.textContent = '';
-        const form = h('form', { class: 'home-dialog__form', method: 'dialog' });
-        const body = h('div', { class: 'home-dialog__body' }, fields.map(f => h('label', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, f.label + (f.required ? ' *' : '')),
-            f.type === 'textarea' ? h('textarea', { name: f.name, rows: 3, required: f.required }) : h('input', { name: f.name, type: f.type || 'text', value: f.value || '', required: f.required }))));
-        form.append(h('div', { class: 'home-dialog__head' }, h('h2', { class: 'home-dialog__title' }, title), h('button', { type: 'button', class: 'home-window__close', 'aria-label': 'Закрыть', onclick: () => dlg.close() }, '×')), body,
-            h('div', { class: 'home-dialog__foot' }, h('button', { type: 'button', class: 'home-btn home-btn--secondary', onclick: () => dlg.close() }, 'Отмена'),
-                h('button', { type: 'submit', class: 'home-btn home-btn--primary', onclick: ev => { ev.preventDefault(); if (!form.reportValidity()) return; const v = {}; fields.forEach(f => { v[f.name] = form.elements.namedItem(f.name).value.trim(); }); onSubmit(v); dlg.close(); save(); render(); } }, 'Сохранить')));
-        dlg.appendChild(form);
-        dlg.showModal();
-    }
-
-    // ---- Navigation to the card in Контракты ---------------------------------------------------
-
-    function openCard(c, action) {
-        const id = `${c.id}${action ? '~' + action : ''}`;
-        if (inCabinet && window.parent !== window) window.parent.location.hash = `contracts/${encodeURIComponent(id)}`;
-        else (embedded && window.top !== window ? window.top : window).location.href = `contracts.html?id=${encodeURIComponent(id)}`;
-    }
-
-    // The dialog gets a prepared request; the selected card goes to the specialist as context (chat extension)
-    function askChat(text) {
-        const input = page.querySelector('[data-chat-input]');
-        if (!input) return;
-        input.value = text;
-        input.dispatchEvent(new Event('input'));
-        input.focus();
-        page.querySelector('[data-tab="chat"]') && page.querySelector('[data-tab="chat"]').click();
-        input.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }
 
     function needContract() {
         const c = selectedContract();

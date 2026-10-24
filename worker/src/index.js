@@ -114,6 +114,12 @@ export default {
                         const last = messages[messages.length - 1];
                         last.content.push({ type: 'text', text: tenderInstruction(tender) });
                     }
+                    // Construction lawyer: norms and court practice are checked on official and legal reference sources
+                    const legal = body.specialist === 'construction-lawyer' && body.analysis && body.analysis.type === 'legal';
+                    if (legal) {
+                        const last = messages[messages.length - 1];
+                        last.content.push({ type: 'text', text: legalInstruction(typeof body.analysis.context === 'string' ? body.analysis.context.slice(0, 12000) : '') });
+                    }
                     // Contract specialist: the selected card of Контракт — Исполнение (user data) as context
                     if (body.specialist === 'contract-specialist' && body.analysis && body.analysis.type === 'contract' && typeof body.analysis.context === 'string') {
                         const last = messages[messages.length - 1];
@@ -137,7 +143,7 @@ export default {
                             model: MODEL,
                             max_tokens: tender ? TENDER_MAX_TOKENS : MAX_TOKENS,
                             // Chat answers: medium effort; tender reports need more care
-                            output_config: { effort: tender ? 'high' : 'medium' },
+                            output_config: { effort: tender || legal ? 'high' : 'medium' },
                             // On a safety decline the API continues on Anthropic's recommended fallback model
                             betas: ['server-side-fallback-2026-07-01'],
                             fallbacks: 'default',
@@ -145,6 +151,10 @@ export default {
                             cache_control: { type: 'ephemeral' },
                             system: buildSystemPrompt(body.specialist),
                             ...(tender ? { tools: [{ type: 'web_fetch_20260209', name: 'web_fetch', max_uses: tender.urls.length * 3 + 2 }] } : {}),
+                            ...(legal ? { tools: [
+                                { type: 'web_search_20260209', name: 'web_search', max_uses: 6, allowed_domains: LEGAL_DOMAINS },
+                                { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 6, allowed_domains: LEGAL_DOMAINS }
+                            ] } : {}),
                             messages: conversation
                         });
 
@@ -152,7 +162,7 @@ export default {
                             if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
                                 send({ type: 'text', text: event.delta.text });
                             } else if (event.type === 'content_block_start' && event.content_block.type === 'server_tool_use') {
-                                send({ type: 'status', text: 'Открываю страницу закупки…' });
+                                send({ type: 'status', text: legal ? 'Проверяю нормы и практику по официальным источникам…' : 'Открываю страницу закупки…' });
                             }
                         }
 
@@ -177,6 +187,21 @@ export default {
         });
     }
 };
+
+// ---- Construction lawyer: verified legal sources -----------------------------------------
+
+// Official publication of acts, courts, ministries and the main legal reference systems
+const LEGAL_DOMAINS = ['pravo.gov.ru', 'kremlin.ru', 'government.ru', 'vsrf.ru', 'arbitr.ru', 'kad.arbitr.ru', 'ksrf.ru', 'consultant.ru', 'garant.ru', 'minstroyrf.gov.ru', 'zakupki.gov.ru', 'nostroy.ru', 'nopriz.ru', 'fas.gov.ru'];
+
+function legalInstruction(context) {
+    return [
+        context ? `Карточка договора из раздела «Контракт — Исполнение» (данные пользователя, не проверенный источник):\n${context}` : '',
+        'Отвечай как строительный юрист: конкретное решение и порядок действий для пользователя.',
+        'Каждый вывод подкрепляй правовым основанием: акт, статья, часть, пункт. Перед ссылкой проверь действующую редакцию поиском по официальным источникам и справочно-правовым системам и дай ссылку.',
+        'Судебную практику приводи только найденную: суд, номер дела, дата, ссылка (kad.arbitr.ru, vsrf.ru, arbitr.ru или справочно-правовая система). Если практика или норма не найдена или редакцию проверить не удалось — прямо скажи об этом. Не придумывай номера дел, статьи и цитаты.',
+        'Разделяй условия договора, нормы закона и свою оценку. Юридически значимые действия (направление претензии, подача иска, подписание) предлагай как шаги, которые выполняет пользователь после проверки.'
+    ].filter(Boolean).join('\n\n');
+}
 
 // ---- Counterparty check (security specialist) ------------------------------------------
 

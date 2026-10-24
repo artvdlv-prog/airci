@@ -66,7 +66,9 @@
         c.amendments = c.amendments || [];
         c.risks = c.risks || [];
         c.analyses = c.analyses || [];
-        c.terms = { advancePct: '', paymentTerms: '', retentionPct: '', warrantyMonths: '', penalty: '', acceptance: '', ...(c.terms || {}) };
+        c.disputes = c.disputes || [];
+        c.protocols = c.protocols || [];
+        c.terms = { advancePct: '', paymentTerms: '', retentionPct: '', warrantyMonths: '', penalty: '', acceptance: '', claimDays: '', ...(c.terms || {}) };
         // Essential terms at signing: changes are tracked against them
         if (!c.baseline) c.baseline = { price: c.price || '', start: c.start || '', end: c.end || '' };
         return c;
@@ -119,6 +121,26 @@
             if (was && now && was !== now && !covered) add('terms', 2, `Изменено существенное условие «${{ price: 'цена', end: 'срок окончания', start: 'срок начала' }[k]}»: было «${k === 'price' ? was : formatDate(was)}», стало «${k === 'price' ? now : formatDate(now)}» — нет подписанного дополнительного соглашения.`);
         });
         c.amendments.filter(a => a.status !== 'signed').forEach(a => add('amendment', 1, `Дополнительное соглашение № ${a.number || '—'} не подписано: ${a.subject}.`, a.date));
+        // Legal deadlines: claim procedure (ч. 5 ст. 4 АПК РФ) and the general limitation period (ст. 196 ГК РФ)
+        c.notices.filter(n => n.type === 'claim' && n.sentAt && !n.answeredAt).forEach(n => {
+            const passed = -daysUntil(n.sentAt);
+            const term = Number(c.terms.claimDays) || 30;
+            if (passed >= term) add('claim', 2, `Претензия от ${formatDate(n.sentAt)} (${n.addressee}): прошло ${passed} дн., претензионный срок ${term} дн. истёк — спор может быть передан в арбитражный суд (ч. 5 ст. 4 АПК РФ), если ответа нет.`, n.sentAt);
+            else add('claim', 1, `Претензия от ${formatDate(n.sentAt)} (${n.addressee}): до истечения претензионного срока ${term - passed} дн.`, n.sentAt);
+        });
+        c.obligations.filter(o => o.status === 'breached').forEach(o => {
+            const noticed = c.notices.some(n => n.obligationId === o.id && ['claim', 'breach'].includes(n.type));
+            if (!noticed) add('claim', 2, `Неисполнение зафиксировано (${o.text.slice(0, 70)}), претензия или уведомление о нарушении не подготовлены.`, o.breachAt, o);
+            if (o.breachAt) {
+                const end = new Date(new Date(o.breachAt + 'T00:00:00').getTime() + 3 * 365.25 * 86400000).toISOString().slice(0, 10);
+                const left = daysUntil(end);
+                if (left <= 180) add('limitation', left <= 30 ? 3 : 2, `До окончания общего срока исковой давности (3 года, ст. 196 ГК РФ) по «${o.text.slice(0, 60)}» около ${Math.max(0, left)} дн. (ориентировочно ${formatDate(end)}; начало течения — ст. 200 ГК РФ).`, end, o);
+            }
+        });
+        (c.disputes || []).filter(d => d.status !== 'closed' && d.next).forEach(d => {
+            const left = daysUntil(d.next);
+            if (left !== null && left <= 14) add('dispute', left < 0 ? 2 : 1, `Спор «${d.subject}»${d.caseNo ? ' (дело ' + d.caseNo + ')' : ''}: ${d.nextTitle || 'ближайшее процессуальное действие'} ${left < 0 ? 'было ' + formatDate(d.next) + ' — обновите сведения' : 'через ' + left + ' дн.'}.`, d.next);
+        });
         return out.sort((a, b) => b.level - a.level || (a.date || '9').localeCompare(b.date || '9'));
     }
 
@@ -158,7 +180,8 @@
             c.amendments.length ? 'Дополнительные соглашения: ' + c.amendments.map(a => `№ ${a.number || '—'} от ${formatDate(a.date)} (${AMENDMENT_STATUS[a.status]}): ${a.subject}`).join('; ') + '.' : 'Дополнительных соглашений нет.',
             c.notices.length ? 'Уведомления: ' + c.notices.map(n => `${n.type} → ${n.addressee} (${n.status})`).join('; ') + '.' : '',
             w.length ? 'Предупреждения системы: ' + w.slice(0, 12).map(x => x.text).join(' ') : 'Предупреждений нет.',
-            c.risks.length ? 'Риски в карточке: ' + c.risks.map(r => `${r.text} (${r.level})`).join('; ') + '.' : ''
+            c.risks.length ? 'Риски в карточке: ' + c.risks.map(r => `${r.text} (${r.level})`).join('; ') + '.' : '',
+            c.disputes.length ? 'Претензии и споры: ' + c.disputes.map(d => `${d.subject} — ${d.stage}${d.amount ? ', ' + d.amount + ' ₽' : ''}${d.caseNo ? ', дело ' + d.caseNo : ''}`).join('; ') + '.' : ''
         ].filter(Boolean).join('\n');
     }
 
@@ -174,6 +197,8 @@
         c.events.forEach(e => (e.files || []).forEach(f => out.push({ kind: 'Событие', title: f.name, file: f, meta: `${formatDate(e.date)} · ${e.title}` })));
         c.notices.forEach(n => out.push({ kind: n.type === 'claim' ? 'Претензия' : 'Уведомление', title: `${NOTICE_TITLES[n.type] || NOTICE_TITLES.other} → ${n.addressee}`, meta: `${NOTICE_STATUS[n.status] || n.status}${n.sentAt ? ', отправлено ' + formatDate(n.sentAt) : ''}` }));
         c.amendments.forEach(a => { out.push({ kind: 'Доп. соглашение', title: `№ ${a.number || '—'} от ${formatDate(a.date)}: ${a.subject}`, meta: AMENDMENT_STATUS[a.status] }); (a.files || []).forEach(f => out.push({ kind: 'Доп. соглашение', title: f.name, file: f })); });
+        c.protocols.forEach(p => out.push({ kind: 'Протокол разногласий', title: `к договору ${c.number || ''} от ${formatDate(p.date)}: пунктов ${p.items.length}`, meta: p.status === 'signed' ? 'подписан' : p.status === 'sent' ? 'направлен' : 'проект' }));
+        c.disputes.forEach(d => (d.files || []).forEach(f => out.push({ kind: 'Спор', title: f.name, file: f, meta: d.subject })));
         const l = linked(c);
         l.ks2.forEach(a => out.push({ kind: 'КС-2', title: `№ ${a.number} от ${formatDate(a.date)} — ${a.object.name}`, meta: a.status === 'signed' ? `подписан ${formatDate(a.signedAt)}` : 'не подписан' }));
         l.ks3.forEach(k => out.push({ kind: 'КС-3', title: `№ ${k.number} от ${formatDate(k.date)} — ${k.object.name}`, meta: k.status === 'signed' ? `подписана ${formatDate(k.signedAt)}` : 'не подписана' }));
