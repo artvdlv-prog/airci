@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
         objects: 'airchitect-objects-v1',
         tenders: 'airchitect-tenders-v1',
         cashflow: 'airchitect-cashflow-v1',
-        estimates: 'airchitect-estimates-v1'
+        estimates: 'airchitect-estimates-v1',
+        counterparties: 'airchitect-counterparties-v1'
     };
 
     const PRODUCTS = {
@@ -32,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         documents: '<rect x="8" y="3" width="12" height="15" rx="1"/><path d="M5 6v15h12"/><path d="M11 8h6M11 11h6M11 14h4"/>',
         registries: '<path d="M4 5h16M4 10h16M4 15h16M4 20h10"/>',
         objects: '<path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/><path d="M3 21h18"/>',
+        counterparties: '<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
         estimates: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M12 11h2M8 15h2M12 15h2M16 11v4"/>',
         cashflow: '<path d="M3 17l5-5 4 4 8-8"/><path d="M15 8h5v5"/><path d="M3 21h18"/>',
         tenders: '<path d="M4 4h16v4H4z"/><path d="M6 8v12h12V8"/><path d="M10 12h4"/>',
@@ -45,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'tenders', title: 'Тендеры', products: ['office', 'complex'], frame: 'tenders.html' },
         { id: 'objects', title: 'Объекты', products: ['office', 'complex'], frame: 'objects.html' },
         { id: 'estimates', title: 'Сметы', products: ['office', 'complex'], frame: 'estimates.html' },
+        { id: 'counterparties', title: 'Контрагенты', products: ['office', 'complex'], frame: 'counterparties.html' },
         { id: 'cashflow', title: 'ДДС', products: ['office', 'complex'], frame: 'cashflow.html' },
         { id: 'documents', title: 'Документы', products: ['docs', 'complex'] },
         { id: 'registries', title: 'Реестры', products: ['office', 'docs', 'complex'] },
@@ -321,6 +324,8 @@ document.addEventListener('DOMContentLoaded', () => {
             count = contracts().reduce((n, c) => n + c.obligations.filter(o => ['overdue', 'soon'].includes(obligationStatus(o))).length, 0);
         } else if (section === 'objects') {
             count = objects().reduce((n, o) => n + o.id.filter(idOverdue).length + o.remarks.filter(r => r.status === 'open').length, 0);
+        } else if (section === 'counterparties') {
+            count = read(KEYS.counterparties, { items: [] }).items.filter(c => c.monitoring && c.monitoring.next && c.monitoring.next <= new Date().toISOString().slice(0, 10)).length;
         } else if (section === 'cashflow') {
             count = CF ? cashOps().filter(op => CF.statusOf(op) === 'overdue').length : 0;
         } else if (section === 'tenders') {
@@ -711,6 +716,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     { draft: 'Подготовлен', sent: 'Передан заказчику', remarks: 'Замечания', resent: 'Передан повторно', signed: 'Подписан' }[a.status], formatDate(a.resentAt || a.sentAt), formatDate(a.signedAt)],
                 open: () => go('objects', ob.key)
             })))
+        },
+        {
+            id: 'counterparties', title: 'Контрагенты', products: ['office', 'complex'],
+            columns: ['Контрагент', 'ИНН', 'Роль', 'Решение', 'Итоговый риск', 'Проверено', 'Следующая проверка'],
+            rows: () => {
+                const CP = window.AirchitectCounterparties;
+                if (!CP) return [];
+                const st = CP.read();
+                return st.items.map(c => {
+                    const a = CP.assess(c, st);
+                    const ch = CP.lastCheck(c);
+                    return {
+                        cells: [c.name || (ch && ch.data.egrul && ch.data.egrul.shortName) || '', c.inn, c.roles.map(x => CP.ROLES[x]).join(', '), CP.DECISIONS[a.decision], a.overall === null ? 'нет данных' : CP.LEVELS[a.overall], ch ? formatStamp(ch.at) : '—', formatDate(c.monitoring && c.monitoring.next)],
+                        open: () => go('counterparties', c.id)
+                    };
+                });
+            }
         },
         {
             id: 'estimates', title: 'Сметы', products: ['office', 'complex'],

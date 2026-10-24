@@ -124,7 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
         el.panel.appendChild(h('div', { class: 'home-ct__actions' },
             h('button', { type: 'button', class: 'home-btn home-btn--primary', onclick: () => askTender(t) }, h('span', {}, 'Анализ в чате')),
             ...[['Финансист', 'financier'], ['Юрист', 'construction-lawyer'], ['Безопасность', 'security-specialist']].map(([label, slug]) =>
-                h('button', { type: 'button', class: 'home-btn home-btn--secondary home-cab__small', onclick: () => askExpert(slug, t) }, label))));
+                h('button', { type: 'button', class: 'home-btn home-btn--secondary home-cab__small', onclick: () => askExpert(slug, t) }, label)),
+            h('button', { type: 'button', class: 'home-btn home-btn--secondary home-cab__small', onclick: () => openCounterparty('заказчика') }, 'Проверить заказчика')));
         ({ info: renderInfo, files: renderFiles, calc: renderCalc, application: renderApplication, reports: renderReports, history: renderHistory })[tab](t);
     }
 
@@ -297,6 +298,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     render();
                 } }, 'Применить'))), info,
             h('p', { class: 'home-tn__group-note home-cf__chart-note' }, 'Процент себестоимости считается к цене без НДС; расчёт обеспечений и денежного потока ниже использует его как долю цены контракта.')));
+    }
+
+    // Counterparty card (counterparties.html) by ИНН: the shared card of the organization
+    function openCounterparty(label) {
+        const inn = (prompt(`ИНН ${label} (10 цифр — организация, 12 — ИП)`) || '').trim();
+        if (!inn) return;
+        if (!/^\d{10}$|^\d{12}$/.test(inn)) return notify('ИНН должен содержать 10 или 12 цифр.');
+        if (document.documentElement.classList.contains('is-cabinet') && window.parent !== window) window.parent.location.hash = `counterparties/inn:${inn}`;
+        else location.href = `counterparties.html?inn=${inn}`;
     }
 
     // ---- Application, deadlines and result --------------------------------------------------

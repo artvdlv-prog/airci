@@ -14,9 +14,13 @@
 // Request:  POST /extract   { file: { name, type, data /* base64 PDF or text */ } }
 // Response: JSON { contract: {...}, obligations: [{ party, text, clause, due, condition }] }
 //           Obligations of a construction contract for the "Исполнение договора" tab (contracts.html).
+//
+// Request:  POST /registry  { inn }      -> JSON: public registries (ЕГРЮЛ, «Прозрачный бизнес», ГИР БО, НОСТРОЙ)
+// Request:  POST /egrul-pdf { token }    -> application/pdf: official ЕГРЮЛ/ЕГРИП extract (registries.js)
 
 import Anthropic from '@anthropic-ai/sdk';
 import { SPECIALISTS, buildSystemPrompt } from './specialists.js';
+import { validInn, checkCounterparty, egrulPdf } from './registries.js';
 
 const MODEL = 'claude-opus-5-5';
 const MAX_TOKENS = 16000;
@@ -45,7 +49,7 @@ export default {
         }
 
         const url = new URL(request.url);
-        if (request.method !== 'POST' || (url.pathname !== '/chat' && url.pathname !== '/extract')) {
+        if (request.method !== 'POST' || !['/chat', '/extract', '/registry', '/egrul-pdf'].includes(url.pathname)) {
             return json({ error: 'not_found' }, 404, cors);
         }
         if (!cors['Access-Control-Allow-Origin']) {
@@ -70,6 +74,19 @@ export default {
 
         if (url.pathname === '/extract') {
             return extractObligations(body, env, cors);
+        }
+        if (url.pathname === '/registry') {
+            const inn = String((body && body.inn) || '').trim();
+            if (!validInn(inn)) return json({ error: 'Некорректный ИНН: проверьте количество цифр и контрольное число.' }, 400, cors);
+            return json(await checkCounterparty(inn), 200, cors);
+        }
+        if (url.pathname === '/egrul-pdf') {
+            try {
+                const pdf = await egrulPdf(body && body.token);
+                return new Response(pdf.body, { headers: { ...cors, 'Content-Type': 'application/pdf' } });
+            } catch (err) {
+                return json({ error: err.message || 'Не удалось получить выписку' }, 502, cors);
+            }
         }
 
         if (!body || !SPECIALISTS[body.specialist]) {
@@ -96,6 +113,16 @@ export default {
                     if (tender) {
                         const last = messages[messages.length - 1];
                         last.content.push({ type: 'text', text: tenderInstruction(tender) });
+                    }
+                    // Counterparty check: public registries are queried here, the model gets only received facts
+                    const cp = counterpartyRequest(body);
+                    if (cp) {
+                        send({ type: 'status', text: 'Запрашиваю сведения ФНС и НОСТРОЙ…' });
+                        const results = [];
+                        for (const inn of cp) results.push(await checkCounterparty(inn));
+                        send({ type: 'data', data: { counterparties: results } });
+                        const last = messages[messages.length - 1];
+                        last.content.push({ type: 'text', text: counterpartyInstruction(results) });
                     }
                     let conversation = messages;
                     let final;
@@ -145,6 +172,35 @@ export default {
         });
     }
 };
+
+// ---- Counterparty check (security specialist) ------------------------------------------
+
+function counterpartyRequest(body) {
+    const a = body && body.analysis;
+    if (!a || a.type !== 'counterparty' || body.specialist !== 'security-specialist' || !Array.isArray(a.inns)) return null;
+    const inns = [...new Set(a.inns.map(x => String(x).trim()).filter(validInn))].slice(0, 5);
+    return inns.length ? inns : null;
+}
+
+function counterpartyInstruction(results) {
+    const compact = results.map(r => ({
+        inn: r.inn, fetchedAt: r.fetchedAt,
+        sources: r.sources.map(s => `${s.title}: ${s.status}${s.message ? ' (' + s.message + ')' : ''}`),
+        egrul: r.egrul ? { name: r.egrul.name, ogrn: r.egrul.ogrn, registered: r.egrul.registered, head: r.egrul.head, liquidated: r.egrul.liquidated || '' } : null,
+        status: r.pb ? { status: r.pb.status, unreliable: r.pb.unreliable, liquidation: r.pb.liquidation, okved: `${r.pb.okved} ${r.pb.okvedName}` } : null,
+        financeThousandRub: r.finance.slice(-3).map(y => ({ year: y.year, revenue2110: y.lines['2110'], profit2400: y.lines['2400'], equity1300: y.lines['1300'], assets1600: y.lines['1600'], current1200: y.lines['1200'], shortDebt1500: y.lines['1500'], longDebt1400: y.lines['1400'] })),
+        sro: r.sro.map(x => ({ sro: x.sro, number: x.sroNumber, status: x.status, right: x.right, levelOdo: `${x.levelOdo} ${x.levelOdoCost}`.trim(), levelVv: `${x.levelVv} ${x.levelVvCost}`.trim() }))
+    }));
+    return [
+        'Сведения открытых реестров (ФНС: ЕГРЮЛ, «Прозрачный бизнес», ГИР БО; НОСТРОЙ), полученные сервером AIRCHITECT. Используй только их и сведения пользователя; не придумывай факты.',
+        'Судебные дела (kad.arbitr.ru), исполнительные производства (ФССП), банкротство (ЕФРСБ), реестры недобросовестных поставщиков в этой проверке не запрашивались — прямо укажи, что их нужно проверить по официальным источникам.',
+        'Если сведения источника не получены (status error/captcha/empty), укажи это как недостаточность данных, а не как низкий риск.',
+        'Структура ответа: регистрационные сведения; финансовое состояние (динамика, ликвидность, капитал — с годами); СРО; оценка по категориям (низкий/умеренный/высокий/критический/нет данных) с обоснованием; одно из решений: «Рекомендуется сотрудничество», «Рекомендуется при выполнении условий», «Требуется дополнительная проверка», «Не рекомендуется сотрудничество»; меры защиты в договоре; источники с датой.',
+        results.length > 1 ? 'Компаний несколько: добавь сравнительную таблицу.' : '',
+        'Не делай обвинительных выводов: косвенные признаки и заявленные требования не являются доказанными нарушениями.',
+        JSON.stringify(compact)
+    ].filter(Boolean).join('\n');
+}
 
 // ---- Tender analysis (tender specialist) ------------------------------------------
 

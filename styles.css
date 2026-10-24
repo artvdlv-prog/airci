@@ -5984,3 +5984,107 @@ a.home-registry__num::after {
     font-size: 13px;
     max-width: 100%;
 }
+
+/* ==========================================================================
+   Counterparties (counterparties.html)
+   ========================================================================== */
+
+[data-cp-tabs] {
+    flex-wrap: wrap;
+    row-gap: 0;
+}
+
+.home-cp__decision {
+    margin-bottom: 14px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--home-line);
+    background: var(--home-bg);
+}
+
+.home-cp__decision--done { border-color: #b7dfc4; background: #f2faf4; }
+.home-cp__decision--soon { border-color: #f1d29a; background: #fff8ec; }
+.home-cp__decision--review { border-color: var(--home-line-strong); background: var(--home-bg-alt); }
+.home-cp__decision--overdue { border-color: #f0b4ae; background: #fdf1f0; }
+
+.home-cp__decision-title {
+    color: var(--home-ink);
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.home-cp__decision-text {
+    margin-top: 4px;
+    color: var(--home-text);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.home-cp__factor {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.home-cp__graph {
+    padding: 8px 18px 14px;
+}
+
+.home-cp__graph svg {
+    display: block;
+    max-width: 100%;
+}
+
+.home-cp__edge {
+    stroke: var(--home-ink);
+    stroke-width: 1.5;
+}
+
+.home-cp__edge.is-indirect {
+    stroke: var(--home-soft);
+    stroke-dasharray: 5 4;
+}
+
+.home-cp__edge.is-conflict {
+    stroke: #b42318;
+}
+
+.home-cp__node {
+    fill: var(--home-bg);
+    stroke: var(--home-ink);
+    stroke-width: 2;
+}
+
+.home-cp__node.is-main {
+    fill: var(--primary-orange);
+    stroke: var(--primary-orange);
+}
+
+.home-cp__label {
+    fill: var(--home-text);
+    font-size: 12px;
+}
+
+.home-cp__label.is-main {
+    fill: var(--home-ink);
+    font-weight: 600;
+}
+
+.home-cp__legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--home-muted);
+    font-size: 12px;
+}
+
+.home-cp__line {
+    display: inline-block;
+    width: 18px;
+    border-top: 2px solid var(--home-ink);
+}
+
+.home-cp__line--dash {
+    border-top: 2px dashed var(--home-soft);
+}

@@ -492,6 +492,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             answerText += event.text;
                             answer.classList.remove('is-typing');
                             setMessageText(answer, answerText);
+                        } else if (event.type === 'data') {
+                            // structured data for the extension (e.g. registry checks of counterparties)
+                            if (extension && extension.onData) extension.onData(event.data);
                         } else if (event.type === 'status' && !answerText) {
                             // server tools at work (e.g. opening a tender page)
                             answer.querySelector('.home-chat__body').textContent = event.text;

@@ -541,6 +541,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fileInput));
         el.info.appendChild(h('div', { class: 'home-ct__wide home-ct__info-actions' },
             h('button', { type: 'submit', class: 'home-btn home-btn--primary' }, 'Сохранить'),
+            h('button', { type: 'button', class: 'home-btn home-btn--secondary', onclick: () => openCounterparty('стороны договора') }, 'Проверить контрагента'),
             h('button', {
                 type: 'button', class: 'home-btn home-btn--secondary', onclick: () => {
                     if (!confirm('Удалить договор со всеми обязательствами и уведомлениями из этого браузера?')) return;
@@ -689,6 +690,15 @@ document.addEventListener('DOMContentLoaded', () => {
             '',
             'Должность ________ / ФИО ________ / подпись'
         ].filter((line, i, all) => line !== '' || all[i - 1] !== '').join('\n');
+    }
+
+    // Counterparty card (counterparties.html) by ИНН: the shared card of the organization
+    function openCounterparty(label) {
+        const inn = (prompt(`ИНН ${label} (10 цифр — организация, 12 — ИП)`) || '').trim();
+        if (!inn) return;
+        if (!/^\d{10}$|^\d{12}$/.test(inn)) return notify('ИНН должен содержать 10 или 12 цифр.');
+        if (document.documentElement.classList.contains('is-cabinet') && window.parent !== window) window.parent.location.hash = `counterparties/inn:${inn}`;
+        else location.href = `counterparties.html?inn=${inn}`;
     }
 
     function prepareNotice(contract, o) {
