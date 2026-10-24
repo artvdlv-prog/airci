@@ -5234,3 +5234,38 @@ body {
 .home-cab__side[hidden] + .home-cab__main .home-cab__panel {
     max-width: none;
 }
+
+/* Registry: document numbers link to official sources */
+a.home-norm__num,
+a.home-registry__num {
+    color: var(--home-ink);
+    text-decoration: underline;
+    text-decoration-color: var(--home-line-strong);
+    text-underline-offset: 3px;
+    transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+a.home-norm__num:hover,
+a.home-registry__num:hover {
+    color: var(--primary-orange);
+    text-decoration-color: var(--primary-orange);
+}
+
+a.home-norm__num::after,
+a.home-registry__num::after {
+    content: ' ↗';
+    font-size: 0.85em;
+    color: var(--home-soft);
+}
+
+.home-registry__src {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 0 7px;
+    border: 1px solid var(--home-line);
+    border-radius: 9px;
+    font-size: 11px;
+    color: var(--home-soft);
+    white-space: nowrap;
+    vertical-align: 1px;
+}
