@@ -6088,3 +6088,49 @@ a.home-registry__num::after {
 .home-cp__line--dash {
     border-top: 2px dashed var(--home-soft);
 }
+
+/* Structured construction forms (КС-8 … КС-18) */
+.home-ks__form-rows {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.home-ks__form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+    padding: 10px;
+    background: var(--home-bg-alt);
+    border: 1px solid var(--home-line);
+    border-radius: 10px;
+}
+
+.home-ks__form-cell {
+    display: grid;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--home-muted);
+}
+
+.home-ks__form-cell input {
+    width: 100%;
+    min-width: 0;
+    padding: 6px 8px;
+    border: 1px solid var(--home-line-strong);
+    border-radius: 8px;
+    background: var(--home-bg);
+    color: var(--home-ink);
+    font: inherit;
+    font-size: 14px;
+}
+
+.home-ks__form-cell.is-calc input {
+    background: var(--home-bg-alt);
+    color: var(--home-muted);
+}
+
+.home-ks__form-row > .home-ks__link {
+    align-self: end;
+    justify-self: start;
+}

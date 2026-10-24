@@ -10,6 +10,7 @@
 
 window.AirchitectObjectsKs = function (ctx) {
     const { h, block, row, rows, small, save, render, log, openDialog, notify, formatDate, today, uid, daysUntil, contracts, storeFiles, fileLinks, normLink } = ctx;
+    const KF = window.AirchitectKsForms;
     const CASHFLOW_KEY = 'airchitect-cashflow-v1';
     const CONTRACTS_KEY = 'airchitect-contracts-v1';
 
@@ -23,8 +24,8 @@ window.AirchitectObjectsKs = function (ctx) {
         { code: 'КС-8', title: 'Акт о сдаче в эксплуатацию временного (нетитульного) сооружения', okud: '0322007', basis: 'постановление Госкомстата России от 11.11.1999 № 100' },
         { code: 'КС-9', title: 'Акт о разборке временных (нетитульных) сооружений', okud: '0322008', basis: 'постановление Госкомстата России от 11.11.1999 № 100' },
         { code: 'КС-10', title: 'Акт об оценке подлежащих сносу (переносу) объектов и насаждений', okud: '0322009', basis: 'постановление Госкомстата России от 11.11.1999 № 100' },
-        { code: 'КС-11', title: 'Акт приёмки законченного строительством объекта', okud: '', basis: 'постановление Госкомстата России от 30.10.1997 № 71а', note: 'Оформляется между заказчиком и подрядчиком. Не заменяет разрешение на ввод объекта в эксплуатацию (ст. 55 ГрК РФ).' },
-        { code: 'КС-14', title: 'Акт приёмки законченного строительством объекта приёмочной комиссией', okud: '', basis: 'постановление Госкомстата России от 30.10.1997 № 71а', note: 'Применяется, если приёмка комиссией предусмотрена договором или решением застройщика.' },
+        { code: 'КС-11', title: 'Акт приёмки законченного строительством объекта', okud: '0336003', basis: 'постановление Госкомстата России от 30.10.1997 № 71а', note: 'Оформляется между заказчиком и подрядчиком. Не заменяет разрешение на ввод объекта в эксплуатацию (ст. 55 ГрК РФ).' },
+        { code: 'КС-14', title: 'Акт приёмки законченного строительством объекта приёмочной комиссией', okud: '0336004', basis: 'постановление Госкомстата России от 30.10.1997 № 71а', note: 'Применяется, если приёмка комиссией предусмотрена договором или решением застройщика.' },
         { code: 'КС-17', title: 'Акт о приостановлении строительства', okud: '0322010', basis: 'постановление Госкомстата России от 11.11.1999 № 100' },
         { code: 'КС-18', title: 'Акт о приостановлении проектно-изыскательских работ по неосуществлённому строительству', okud: '0322011', basis: 'постановление Госкомстата России от 11.11.1999 № 100' }
     ];
@@ -622,22 +623,127 @@ window.AirchitectObjectsKs = function (ctx) {
         }))));
         const docs = [...o.ksDocs].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
         panel.appendChild(block('Акты по другим формам', null, rows(docs, 'Документов нет. Выберите форму в реестре и нажмите «Сформировать».', d => {
-            const f = FORMS.find(x => x.code === d.form) || {};
-            const actions = [...routeActions(o, d, d.form), ['Word', () => exportDocx(o, 'form', d)]];
-            return row(STATUS[d.status], TONE[d.status], `${d.form} № ${d.number} от ${formatDate(d.date)} · ${f.title}`,
-                [d.subject, d.signedAt ? `Подписан ${formatDate(d.signedAt)} · ${d.signRef}` : '', ((d.remarks || []).filter(r => r.status === 'open')).map(r => `Замечание: ${r.text}`).join('; ')], actions, fileLinks(d.files));
+            const f = KF.FORMS[d.form];
+            const issues = formChecks(o, d);
+            const actions = [...routeActions(o, d, d.form)];
+            if (['draft', 'remarks'].includes(d.status)) actions.push(['Изменить', () => editFormDoc(o, d)]);
+            actions.push(['Word', () => exportFormDocx(o, d)], ['Excel', () => exportFormXlsx(o, d)], ['PDF', () => printFormDoc(o, d)]);
+            if (d.status === 'draft') actions.push(['Удалить', () => { o.ksDocs = o.ksDocs.filter(x => x !== d); log(o, `Удалён проект ${d.form} № ${d.number}`); save(); render(); }]);
+            const sum = f ? f.summary(d).map(([l, v]) => `${l}: ${Number(v).toLocaleString('ru-RU', { minimumFractionDigits: 2 })}`).join(' · ') : '';
+            return row(STATUS[d.status], TONE[d.status], `${d.form} № ${d.number} от ${formatDate(d.date)} · ${f ? f.title : ''}`,
+                [sum, issues.length ? `Проверка — нарушений: ${issues.filter(x => x.level === 'error').length}, предупреждений: ${issues.filter(x => x.level !== 'error').length}. ${issues.slice(0, 3).map(x => x.text).join(' ')}` : 'Проверка: нарушений нет',
+                    d.signedAt ? `Подписан ${formatDate(d.signedAt)} · ${d.signRef}` : '', ((d.remarks || []).filter(x => x.status === 'open')).map(x => `Замечание: ${x.text}`).join('; ')], actions, fileLinks(d.files));
         })));
     }
 
+    // ---- Other unified forms: autofill from the object, contract, estimate, КС-2/КС-3 and ИД ------------------
+
+    function autoValue(o, key) {
+        const c = contractOf(o);
+        const p = roles => o.participants.find(x => roles.includes(x.role)) || {};
+        const org = x => x.org || '';
+        const person = x => [x.person, x.org].filter(Boolean).join(', ');
+        const s = summary(o);
+        const signedId = o.id.filter(d => d.status === 'signed');
+        switch (key) {
+            case 'contractor': return org(p(['Генеральный подрядчик', 'Подрядчик']));
+            case 'customer': return org(p(['Технический заказчик', 'Застройщик']));
+            case 'investor': return org(p(['Застройщик']));
+            case 'designer': return org(p(['Проектировщик']));
+            case 'customerPerson': return person(p(['Технический заказчик', 'Застройщик']));
+            case 'contractorPerson': return person(p(['Генеральный подрядчик', 'Подрядчик']));
+            case 'contract': return c ? `${contractName(c)}${c.subject ? ', ' + c.subject : ''}` : '';
+            case 'address': return o.address || '';
+            case 'object': return [o.name, o.stage, o.address].filter(Boolean).join(', ');
+            case 'permit': return o.permit || '';
+            case 'subcontractors': return o.participants.filter(x => x.role === 'Субподрядчик').map(x => x.org).join('\n');
+            case 'designers': return o.participants.filter(x => x.role === 'Проектировщик').map(x => x.org).join('\n');
+            case 'start': return o.start || '';
+            case 'end': return o.end || '';
+            case 'tests': return signedId.filter(d => d.type === 'tests').map(d => `${d.title}${d.number ? ' № ' + d.number : ''}${d.date ? ' от ' + formatDate(d.date) : ''}`).join('\n');
+            case 'contractPrice': return s.price || '';
+            case 'accepted': return s.acceptedVat || '';
+            case 'documentation': return [`Исполнительная документация: подписано ${signedId.length} из ${o.id.length} документов`, ...o.handovers.filter(x => x.status === 'accepted').map(x => `${x.title} — принят ${formatDate(x.acceptedAt)}`)].join('\n');
+            case 'members': return o.participants.filter(x => x.person).map(x => `${x.role}: ${x.person}`).join('\n');
+            default: return '';
+        }
+    }
+
+    function autoTables(o, code) {
+        const s = summary(o);
+        if (code === 'КС-17') return { items: [{ name: o.name, code: o.code || '', start: o.start ? formatDate(o.start) : '', full: s.price || 0, fullSmr: 0, done: s.acceptedVat || 0, doneSmr: 0, actual: 0, settle: 0, losses: 0, conservation: 0 }] };
+        if (code === 'КС-11' || code === 'КС-14') return { indicators: [], housing: [], remaining: o.estimate.map(i => ({ i, v: volumes(o, i) })).filter(x => x.v.remaining > 0).map(x => ({ name: x.i.name, unit: x.i.unit, qty: round2(x.v.remaining), due: '' })) };
+        if (code === 'КС-9') {
+            const ks8 = o.ksDocs.filter(d => d.form === 'КС-8').sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0];
+            return { materials: ks8 ? (ks8.tables.materials || []).map(m => ({ name: m.name, nomenclature: '', unit: m.unit, expQty: m.qty, expFit: m.fit, qty: m.qty, fit: m.fit, price: m.price, note: '' })) : [] };
+        }
+        return {};
+    }
+
     function newFormDoc(o, f) {
-        openDialog(`${f.code} — ${f.title}`, [
-            { name: 'number', label: 'Номер', value: nextNumber(o.ksDocs.filter(d => d.form === f.code)), required: true },
-            { name: 'date', label: 'Дата составления', type: 'date', value: today(), required: true },
-            { name: 'subject', label: 'Предмет акта', type: 'textarea', rows: 3, required: true, hint: 'Сооружение, этап, причина приостановки и т. п. Остальные графы формы заполняются в документе.' }
-        ], 'Сформировать', v => {
-            o.ksDocs.push({ id: uid(), form: f.code, number: v.number, date: v.date, subject: v.subject, contractId: o.ksSettings.contractId, status: 'draft', remarks: [], history: [{ at: Date.now(), text: 'Сформирован' }], files: [] });
-            log(o, `${f.code} № ${v.number}: сформирован`);
-        });
+        const meta = KF.FORMS[f.code];
+        if (!meta) return notify('Форма ведётся в своём разделе.');
+        const fields = {};
+        meta.fields.forEach(x => { if (x.auto) fields[x.key] = autoValue(o, x.auto); });
+        const d = { id: uid(), form: f.code, number: nextNumber(o.ksDocs.filter(x => x.form === f.code)), date: today(), contractId: o.ksSettings.contractId, fields, tables: autoTables(o, f.code), status: 'draft', remarks: [], history: [{ at: Date.now(), text: 'Сформирован с автозаполнением' }], files: [] };
+        editFormDoc(o, d, true);
+    }
+
+    // Editor: requisites as fields, tabular parts as editable rows (calculated graphs are recomputed on save)
+    function editFormDoc(o, d, isNew) {
+        const meta = KF.FORMS[d.form];
+        const boxes = {};
+        const extra = h('div', { class: 'home-es__extra' }, ...meta.tables.map(t => {
+            const box = h('div', { class: 'home-ks__form-rows' });
+            boxes[t.key] = box;
+            const addRow = (r = {}) => {
+                const rowEl = h('div', { class: 'home-ks__form-row' }, ...t.columns.map(c => h('label', { class: 'home-ks__form-cell' + (c.calc ? ' is-calc' : '') }, h('span', {}, c.label),
+                    h('input', { 'data-c': c.key, type: c.type === 'number' ? 'number' : 'text', step: c.type === 'number' ? 'any' : null, value: r[c.key] ?? '', readonly: !!c.calc, placeholder: c.calc ? 'считается' : '' }))),
+                h('button', { type: 'button', class: 'home-ks__link', onclick: ev => ev.target.closest('.home-ks__form-row').remove() }, 'Удалить строку'));
+                box.appendChild(rowEl);
+            };
+            ((d.tables || {})[t.key] || []).forEach(addRow);
+            return h('div', {}, h('p', { class: 'home-dialog__label' }, t.title), box, h('button', { type: 'button', class: 'home-ks__link', onclick: () => addRow() }, '+ строка'));
+        }), h('p', { class: 'home-dialog__hint' }, `${meta.use} Графы — по бланку (${meta.basis}). Сведения, подставленные автоматически, проверьте перед подписанием.`));
+        openDialog(`${d.form} — ${meta.title}`, [
+            { name: 'number', label: 'Номер документа', value: d.number, required: true },
+            { name: 'date', label: 'Дата составления', type: 'date', value: d.date, required: true },
+            ...meta.fields.map(x => ({ name: 'f_' + x.key, label: x.label, type: x.type === 'textarea' ? 'textarea' : x.type || 'text', rows: 3, value: (d.fields || {})[x.key] ?? '', required: false, hint: x.hint }))
+        ], 'Сохранить', v => {
+            d.number = v.number;
+            d.date = v.date;
+            d.fields = {};
+            meta.fields.forEach(x => { d.fields[x.key] = v['f_' + x.key]; });
+            d.tables = {};
+            meta.tables.forEach(t => {
+                d.tables[t.key] = [...boxes[t.key].querySelectorAll('.home-ks__form-row')].map(rowEl => {
+                    const r = {};
+                    t.columns.forEach(c => { const inp = rowEl.querySelector(`[data-c="${c.key}"]`); r[c.key] = c.type === 'number' ? (inp.value === '' ? 0 : Number(inp.value)) : inp.value.trim(); });
+                    return KF.rowValues(t, r);
+                }).filter(r => t.columns.some(c => !c.calc && r[c.key] !== '' && r[c.key] !== 0));
+            });
+            if (isNew) o.ksDocs.push(d);
+            history(d, isNew ? 'Сформирован' : 'Изменён');
+            log(o, `${d.form} № ${d.number}: ${isNew ? 'сформирован' : 'изменён'}`);
+            return null;
+        }, extra);
+    }
+
+    // Form checks plus object prerequisites for acceptance (КС-11, КС-14)
+    function formChecks(o, d) {
+        const list = KF.check(d);
+        if (d.form === 'КС-11' || d.form === 'КС-14') {
+            const unsigned = o.id.filter(x => x.status !== 'signed');
+            if (unsigned.length) list.push({ level: 'error', text: `Не подписана исполнительная документация: ${unsigned.length} док. (${unsigned.slice(0, 3).map(x => x.title).join('; ')}).` });
+            const openRem = o.remarks.filter(x => x.status === 'open');
+            if (openRem.length) list.push({ level: 'error', text: `Открытые замечания по РД и ИД: ${openRem.length}.` });
+            const notSigned = o.ks2.filter(a => a.status !== 'signed');
+            if (notSigned.length) list.push({ level: 'warning', text: `Не подписаны КС-2: ${notSigned.map(a => '№ ' + a.number).join(', ')}.` });
+            const rem = ((d.tables || {}).remaining || []).length;
+            if (rem) list.push({ level: 'warning', text: `В акте указаны работы, подлежащие выполнению: ${rem}. Согласуйте сроки с заказчиком.` });
+            if (!o.handovers.some(x => x.status === 'accepted')) list.push({ level: 'warning', text: 'Нет принятых заказчиком комплектов ИД.' });
+        }
+        return list;
     }
 
     // ---- Checks and the PTO engineer's recommendations ------------------------------------------
@@ -689,6 +795,7 @@ window.AirchitectObjectsKs = function (ctx) {
                 if (paid < num(pay.amount) && daysUntil(pay.date) < 0) add('error', name, `Оплата просрочена на ${-daysUntil(pay.date)} дн.: ${money(num(pay.amount) - paid)}.`, 'l402');
             }
         });
+        o.ksDocs.forEach(d => formChecks(o, d).forEach(x => add(x.level, `${d.form} № ${d.number}`, x.text, d.form === 'КС-11' || d.form === 'КС-14' ? 'p344' : 'l402')));
         const s = summary(o);
         if (s.price && s.acceptedVat > s.price + 0.01) add('error', 'Договор', `Принято по КС-3 (${money(s.acceptedVat)}) больше цены договора (${money(s.price)}).`, 'l402');
         if ((o.volumes.length || o.ks2.length) && !o.journals.some(j => j.kind === 'general')) add('warning', 'Журналы', 'Не открыт общий журнал работ.', 'p1026');
@@ -893,6 +1000,97 @@ window.AirchitectObjectsKs = function (ctx) {
         setTimeout(() => win.print(), 300);
     }
 
+    // ---- Export of the other forms by their structure ---------------------------------------------
+
+    const fmtN = v => (typeof v === 'number' ? v.toLocaleString('ru-RU', { maximumFractionDigits: 2 }) : String(v ?? ''));
+
+    async function exportFormDocx(o, d) {
+        try {
+            await loadScript(DOCX_URL);
+            const D = window.docx;
+            const meta = KF.FORMS[d.form];
+            const p = (text, opts = {}) => new D.Paragraph({ alignment: opts.center ? D.AlignmentType.CENTER : opts.right ? D.AlignmentType.RIGHT : undefined, spacing: { after: 80 }, children: [new D.TextRun({ text, bold: opts.bold, size: opts.size || 20, font: 'Times New Roman' })] });
+            const cell = (text, bold) => new D.TableCell({ children: [new D.Paragraph({ children: [new D.TextRun({ text: String(text ?? ''), bold, size: 16, font: 'Times New Roman' })] })] });
+            const tbl = (cols, data) => new D.Table({ width: { size: 100, type: D.WidthType.PERCENTAGE }, rows: [new D.TableRow({ tableHeader: true, children: cols.map(c => cell(c, true)) }), ...data.map(r => new D.TableRow({ children: r.map(c => cell(c)) }))] });
+            const children = [p(`Унифицированная форма № ${d.form}`, { right: true, size: 16 }), p(`Утверждена ${meta.basis}`, { right: true, size: 16 }), p(`Форма по ОКУД ${meta.okud}`, { right: true, size: 16 }),
+                p(`${meta.title.toUpperCase()}`, { bold: true, center: true, size: 24 }), p(`Номер документа ${d.number} · Дата составления ${formatDate(d.date)}`, { center: true }),
+                tbl(['Реквизит', 'Значение'], meta.fields.map(x => [x.label, x.type === 'date' ? formatDate((d.fields || {})[x.key]) : fmtN((d.fields || {})[x.key]) || '________']))];
+            meta.tables.forEach(t => {
+                const data = ((d.tables || {})[t.key] || []).map(r => KF.rowValues(t, r));
+                children.push(p(t.title, { bold: true }), tbl(['№', ...t.columns.map(c => c.label)], [['1', ...t.columns.map((c, i) => String(i + 2))], ...data.map((r, i) => [String(i + 1), ...t.columns.map(c => fmtN(r[c.key]))])]));
+                const totals = Array.isArray(t.total) ? t.total : t.total ? [t.total] : [];
+                if (totals.length) children.push(p(`Итого: ${totals.map(k => `${t.columns.find(c => c.key === k).label} — ${fmtN(KF.tableTotal(d, t.key, k))}`).join('; ')}`, { right: true }));
+            });
+            meta.summary(d).forEach(([l, v, words]) => children.push(p(`${l}: ${fmtN(v)}${words ? ' (' + KF.rubles(v) + ')' : ''}`, { bold: true })));
+            children.push(p(''), ...meta.signs.map(x => p(`${x}: ____________ / ____________ (должность, подпись, расшифровка подписи)`)), p(TEMPLATE_NOTE, { size: 14 }));
+            const file = new D.Document({ sections: [{ properties: { page: { size: { orientation: D.PageOrientation.LANDSCAPE }, margin: { top: 851, bottom: 851, left: 1134, right: 851 } } }, children }] });
+            download(await D.Packer.toBlob(file), `${d.form} № ${d.number} — ${o.name}.docx`);
+        } catch (e) {
+            notify(e.message || 'Не удалось сформировать документ.');
+        }
+    }
+
+    // Excel: requisites and tables; calculated graphs and totals as formulas
+    async function exportFormXlsx(o, d) {
+        try {
+            await loadScript(XLSX_URL);
+            const X = window.XLSX;
+            const meta = KF.FORMS[d.form];
+            const aoa = [[`Унифицированная форма № ${d.form} (ОКУД ${meta.okud}), ${meta.basis}`], [meta.title.toUpperCase()], [`№ ${d.number}`, `от ${formatDate(d.date)}`], []];
+            meta.fields.forEach(x => aoa.push([x.label, x.type === 'number' ? Number((d.fields || {})[x.key]) || '' : x.type === 'date' ? formatDate((d.fields || {})[x.key]) : (d.fields || {})[x.key] || '']));
+            const formulas = [];
+            meta.tables.forEach(t => {
+                aoa.push([], [t.title], ['№', ...t.columns.map(c => c.label)], ['1', ...t.columns.map((c, i) => String(i + 2))]);
+                const first = aoa.length + 1;
+                ((d.tables || {})[t.key] || []).forEach((r0, i) => {
+                    const r = KF.rowValues(t, r0);
+                    const rowNum = aoa.length + 1;
+                    aoa.push([i + 1, ...t.columns.map(c => (c.type === 'number' ? r[c.key] : r[c.key] || ''))]);
+                    t.columns.forEach((c, ci) => {
+                        if (c.key === 'sum' && t.columns.some(x => x.key === 'qty') && t.columns.some(x => x.key === 'price')) {
+                            const col = k => X.utils.encode_col(t.columns.findIndex(x => x.key === k) + 1);
+                            formulas.push([rowNum - 1, ci + 1, `ROUND(${col('qty')}${rowNum}*${col('price')}${rowNum},2)`]);
+                        }
+                    });
+                });
+                const last = aoa.length;
+                const totals = Array.isArray(t.total) ? t.total : t.total ? [t.total] : [];
+                if (totals.length) {
+                    const tr = aoa.length;
+                    aoa.push(['Итого', ...t.columns.map(() => '')]);
+                    totals.forEach(k => { const ci = t.columns.findIndex(x => x.key === k) + 1; const col = X.utils.encode_col(ci); formulas.push([tr, ci, last >= first ? `SUM(${col}${first}:${col}${last})` : '0']); });
+                }
+            });
+            const sheet = X.utils.aoa_to_sheet(aoa);
+            formulas.forEach(([rr, cc, f]) => { sheet[X.utils.encode_cell({ r: rr, c: cc })] = { t: 'n', f }; });
+            sheet['!cols'] = [{ wch: 48 }, ...Array(12).fill({ wch: 18 })];
+            const book = X.utils.book_new();
+            X.utils.book_append_sheet(book, sheet, d.form);
+            X.writeFile(book, `${d.form} № ${d.number} — ${o.name}.xlsx`);
+        } catch (e) {
+            notify(e.message);
+        }
+    }
+
+    function printFormDoc(o, d) {
+        const meta = KF.FORMS[d.form];
+        const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+        const tables = meta.tables.map(t => {
+            const data = ((d.tables || {})[t.key] || []).map(r => KF.rowValues(t, r));
+            return `<h3>${esc(t.title)}</h3><table><tr><th>№</th>${t.columns.map(c => `<th>${esc(c.label)}</th>`).join('')}</tr><tr>${['1', ...t.columns.map((c, i) => i + 2)].map(x => `<td class="c">${x}</td>`).join('')}</tr>${data.map((r, i) => `<tr><td>${i + 1}</td>${t.columns.map(c => `<td>${esc(fmtN(r[c.key]))}</td>`).join('')}</tr>`).join('')}</table>`;
+        }).join('');
+        const win = window.open('', '_blank');
+        if (!win) return notify('Разрешите всплывающие окна, чтобы сохранить PDF.');
+        win.document.write(`<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>${esc(d.form)} № ${esc(d.number)}</title><style>@page{size:landscape}body{font-family:'Times New Roman',serif;font-size:10pt;margin:10mm}h1{font-size:13pt;text-align:center}h3{font-size:11pt;margin:10px 0 4px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #000;padding:3px 5px;vertical-align:top}.c{text-align:center;font-size:8pt}.r{text-align:right;font-size:8pt}</style></head><body>
+            <p class="r">Унифицированная форма № ${esc(d.form)} · ОКУД ${esc(meta.okud)} · ${esc(meta.basis)}</p><h1>${esc(meta.title)}</h1><p style="text-align:center">№ ${esc(d.number)} от ${esc(formatDate(d.date))}</p>
+            <table>${meta.fields.map(x => `<tr><td>${esc(x.label)}</td><td>${esc(x.type === 'date' ? formatDate((d.fields || {})[x.key]) : fmtN((d.fields || {})[x.key]))}</td></tr>`).join('')}</table>${tables}
+            ${meta.summary(d).map(([l, v, w]) => `<p><b>${esc(l)}: ${esc(fmtN(v))}${w ? ' (' + esc(KF.rubles(v)) + ')' : ''}</b></p>`).join('')}
+            ${meta.signs.map(x => `<p>${esc(x)}: ____________ / ____________</p>`).join('')}<p class="r">${esc(TEMPLATE_NOTE)}</p></body></html>`);
+        win.document.close();
+        win.focus();
+        setTimeout(() => win.print(), 300);
+    }
+
     // ---- Demo ----------------------------------------------------------------------------------
 
     function demo(o, { works, signedIds }) {
@@ -915,6 +1113,9 @@ window.AirchitectObjectsKs = function (ctx) {
         o.ks2.push({ id: uid(), number: '1', date: day(-95), from: day(-150), to: day(-96), contractId, lines: [line(i1, 120), line(i2, 20), line(i3, 300)], status: 'signed', sentAt: day(-94), sendRef: 'письмо исх. № 41, нарочно', signedAt: day(-88), signRef: 'подписанный экземпляр, вх. № 118 (демо)', remarks: [], history: [], files: [] });
         o.ks2.push({ id: uid(), number: '2', date: day(-15), from: day(-95), to: day(-16), contractId, lines: [line(i2, 12), line(i4, 900)], status: 'remarks', sentAt: day(-14), sendRef: 'ЭДО', remarks: [{ id: uid(), text: 'Не приложен АОСР на гидроизоляцию фундаментов', at: day(-6), status: 'open' }], history: [], files: [] });
         o.ks3.push({ id: uid(), number: '1', date: day(-95), contractId, ks2Ids: [o.ks2[0].id], from: day(-150), to: day(-96), vatPct: '22', status: 'signed', sentAt: day(-94), signedAt: day(-88), signRef: 'подписанный экземпляр, вх. № 118 (демо)', remarks: [], history: [], files: [], cashflowOpId: '' });
+        o.ksDocs.push({ id: uid(), form: 'КС-8', number: '1', date: day(-140), contractId, status: 'signed', signedAt: day(-139), signRef: 'подписан комиссией (демо)', remarks: [], history: [], files: [],
+            fields: { organization: 'ООО «ГлавСтрой»', unit: 'Участок № 2', structure: 'Бытовой городок на 40 человек', contract: '', area: 180, volume: 540, cost: 1850000, dismantling: 120000, lifetime: 18, responsible: 'Сидоров С.С., начальник участка', keeper: 'Сидоров С.С.' },
+            tables: { materials: [{ name: 'Брус 150×150', unit: 'м3', qty: 6.5, fit: 70, price: 9800, sum: 63700 }, { name: 'Плиты ОСП 12 мм', unit: 'шт', qty: 120, fit: 60, price: 650, sum: 78000 }] } });
         const general = o.id.find(d => d.type === 'journal' && d.title === 'Общий журнал работ');
         const concrete = o.id.find(d => d.type === 'journal' && d.title === 'Журнал бетонных работ');
         o.journals.push(
