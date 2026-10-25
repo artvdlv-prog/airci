@@ -328,32 +328,49 @@
                     <svg class="home-collab__lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
                         <path d="M25 18L50 50M75 18L50 50M25 82L50 50M75 82L50 50"/>
                     </svg>
-                    <div class="home-doc">
+                    <a href="contracts.html" class="home-doc" aria-label="Договор подряда — исполнение договоров">
                         <span class="home-doc__label" data-translate="home.collab.doc">Договор подряда</span>
                         <span class="home-doc__line"></span>
                         <span class="home-doc__line"></span>
                         <span class="home-doc__line home-doc__line--short"></span>
                         <span class="home-doc__line"></span>
                         <span class="home-doc__line home-doc__line--short"></span>
-                    </div>
+                    </a>
                     <ul class="home-collab__roles">
                         <li class="home-role">
-                            <h3 class="home-role__title" data-translate="home.collab.contracts.title">Договорной специалист</h3>
-                            <p class="home-role__text" data-translate="home.collab.contracts.text">Выделяет существенные условия и обязательства.</p>
+                            <a href="staff.html?id=contract-specialist" class="home-role__link">
+                                <h3 class="home-role__title" data-translate="home.collab.contracts.title">Договорной специалист</h3>
+                                <p class="home-role__text" data-translate="home.collab.contracts.text">Выделяет существенные условия и обязательства.</p>
+                            </a>
                         </li>
                         <li class="home-role">
-                            <h3 class="home-role__title" data-translate="home.collab.lawyer.title">Строительный юрист</h3>
-                            <p class="home-role__text" data-translate="home.collab.lawyer.text">Оценивает правовые риски.</p>
+                            <a href="staff.html?id=construction-lawyer" class="home-role__link">
+                                <h3 class="home-role__title" data-translate="home.collab.lawyer.title">Юрист</h3>
+                                <p class="home-role__text" data-translate="home.collab.lawyer.text">Оценивает правовые риски.</p>
+                            </a>
                         </li>
                         <li class="home-role">
-                            <h3 class="home-role__title" data-translate="home.collab.finance.title">Финансист</h3>
-                            <p class="home-role__text" data-translate="home.collab.finance.text">Анализирует порядок оплаты, авансы и удержания.</p>
+                            <a href="staff.html?id=financier" class="home-role__link">
+                                <h3 class="home-role__title" data-translate="home.collab.finance.title">Финансист</h3>
+                                <p class="home-role__text" data-translate="home.collab.finance.text">Анализирует порядок оплаты, авансы и удержания.</p>
+                            </a>
                         </li>
                         <li class="home-role">
-                            <h3 class="home-role__title" data-translate="home.collab.pm.title">Руководитель проекта</h3>
-                            <p class="home-role__text" data-translate="home.collab.pm.text">Помогает определить действия и контрольные сроки.</p>
+                            <a href="staff.html?id=project-manager" class="home-role__link">
+                                <h3 class="home-role__title" data-translate="home.collab.pm.title">Руководитель проекта</h3>
+                                <p class="home-role__text" data-translate="home.collab.pm.text">Помогает определить действия и контрольные сроки.</p>
+                            </a>
                         </li>
                     </ul>
+                </div>
+            </div>
+            <div class="container">
+                <div id="contract-support" class="home-collab-exec home-reveal">
+                    <div class="home-collab-exec__text">
+                        <h3 class="home-collab-exec__title" data-translate="home.collab.exec.title">Исполнение обязательств по договорам</h3>
+                        <p data-translate="home.collab.exec.text">Паспорт договора, контроль сроков и обязательств, сопровождение изменений — от проверки договора до исполнения.</p>
+                    </div>
+                    <a href="#" class="home-link" data-route="contractSupport"><span data-translate="home.collab.exec.cta">Подробнее</span><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
                 </div>
             </div>
         </section>
@@ -399,45 +416,8 @@
             </div>
         </section>
 
-        <!-- Contract support -->
-        <section id="contract-support" class="home-section">
-            <div class="container">
-                <div class="home-head home-head--wide home-reveal">
-                    <p class="home-eyebrow" data-translate="home.support.eyebrow">От проверки договора до исполнения обязательств</p>
-                    <h2 class="home-title" data-translate="home.support.title">Исполнение обязательств по договорам.</h2>
-                    <p class="home-text" data-translate="home.support.lead1">После заключения договора необходимо учитывать условия оплаты, контролировать сроки, исполнять обязательства, оформлять изменения и своевременно реагировать на возникающие риски.</p>
-                    <p class="home-text" data-translate="home.support.lead2">AIRCHITECT помогает организовать последовательную работу с договором — от первоначального анализа до сопровождения исполнения.</p>
-                </div>
-                <ol class="home-steps home-reveal">
-                    <li class="home-step">
-                        <h3 class="home-step__title" data-translate="home.support.s1.title">Договор</h3>
-                        <p class="home-step__text" data-translate="home.support.s1.text">Загрузка договора и приложений.</p>
-                    </li>
-                    <li class="home-step">
-                        <h3 class="home-step__title" data-translate="home.support.s2.title">Анализ</h3>
-                        <p class="home-step__text" data-translate="home.support.s2.text">Выделение существенных условий и рисков.</p>
-                    </li>
-                    <li class="home-step">
-                        <h3 class="home-step__title" data-translate="home.support.s3.title">Паспорт договора</h3>
-                        <p class="home-step__text" data-translate="home.support.s3.text">Структурирование условий, сроков и обязательств.</p>
-                    </li>
-                    <li class="home-step">
-                        <h3 class="home-step__title" data-translate="home.support.s4.title">Контроль обязательств</h3>
-                        <p class="home-step__text" data-translate="home.support.s4.text">Работа с контрольными событиями, документами и сроками.</p>
-                    </li>
-                    <li class="home-step">
-                        <h3 class="home-step__title" data-translate="home.support.s5.title">Исполнение</h3>
-                        <p class="home-step__text" data-translate="home.support.s5.text">Сопровождение изменений и фиксация результатов.</p>
-                    </li>
-                </ol>
-                <div class="home-actions home-reveal">
-                    <a href="#" class="home-btn home-btn--secondary" data-route="contractSupport" data-translate="home.support.cta">Подробнее о сопровождении договоров</a>
-                </div>
-            </div>
-        </section>
-
         <!-- Regulatory base -->
-        <section id="regulatory" class="home-section home-section--alt">
+        <section id="regulatory" class="home-section">
             <div class="container home-split">
                 <div class="home-split__text home-reveal">
                     <p class="home-eyebrow" data-translate="home.regulatory.eyebrow">Профессиональные решения требуют оснований</p>

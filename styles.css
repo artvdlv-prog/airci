@@ -6808,3 +6808,68 @@ a.home-guide__norm-num:hover {
         padding-bottom: 20px;
     }
 }
+
+/* "Детали каждого документа": roles and the document lead to the workspace, contract execution note below */
+.home-role__link,
+a.home-doc {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.home-role__title,
+.home-doc__label {
+    transition: color 0.3s ease;
+}
+
+.home-role__link:hover .home-role__title,
+.home-role__link:focus-visible .home-role__title,
+a.home-doc:hover .home-doc__label,
+a.home-doc:focus-visible .home-doc__label {
+    color: var(--primary-orange);
+}
+
+a.home-doc {
+    transition: border-color 0.3s ease;
+}
+
+a.home-doc:hover {
+    border-color: var(--home-ink);
+}
+
+.home-collab-exec {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 40px;
+    margin-top: 56px;
+    padding-top: 28px;
+    border-top: 1px solid var(--home-line);
+    scroll-margin-top: 96px;
+}
+
+.home-collab-exec__title {
+    margin-bottom: 6px;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--home-ink);
+}
+
+.home-collab-exec__text p {
+    max-width: 640px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--home-muted);
+}
+
+.home-collab-exec .home-link {
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .home-collab-exec {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: 40px;
+    }
+}
