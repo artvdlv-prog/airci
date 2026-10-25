@@ -7044,3 +7044,14 @@ a.home-doc:hover {
         height: calc(100dvh - 64px - 58px);
     }
 }
+
+/* Home page: section headings use the same size as the main banner title */
+.home--landing .home-title {
+    font-size: clamp(30px, 3vw, 42px);
+}
+
+@media (max-width: 600px) {
+    .home--landing .home-title {
+        font-size: clamp(28px, 8vw, 34px);
+    }
+}
