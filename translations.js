@@ -158,9 +158,10 @@ const translations = {
                 cta: "How it works",
                 doc: "Construction contract",
                 contracts: { title: "Contract specialist", text: "Highlights essential terms and obligations." },
-                lawyer: { title: "Construction lawyer", text: "Assesses legal risks." },
+                lawyer: { title: "Lawyer", text: "Assesses legal risks." },
                 finance: { title: "Financier", text: "Analyzes payment terms, advances and retentions." },
-                pm: { title: "Project manager", text: "Helps define actions and control dates." }
+                pm: { title: "Project manager", text: "Helps define actions and control dates." },
+                exec: { title: "Performance of contract obligations", text: "Contract passport, control of deadlines and obligations, support of changes — from contract review to performance.", cta: "Learn more" }
             },
             products: {
                 eyebrow: "Choose where to start",
@@ -390,7 +391,8 @@ const translations = {
                 contracts: { title: "Договорной специалист", text: "Выделяет существенные условия и обязательства." },
                 lawyer: { title: "Юрист", text: "Оценивает правовые риски." },
                 finance: { title: "Финансист", text: "Анализирует порядок оплаты, авансы и удержания." },
-                pm: { title: "Руководитель проекта", text: "Помогает определить действия и контрольные сроки." }
+                pm: { title: "Руководитель проекта", text: "Помогает определить действия и контрольные сроки." },
+                exec: { title: "Исполнение обязательств по договорам", text: "Паспорт договора, контроль сроков и обязательств, сопровождение изменений — от проверки договора до исполнения.", cta: "Подробнее" }
             },
             products: {
                 eyebrow: "Выберите, с чего начать",
