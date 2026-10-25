@@ -1,15 +1,24 @@
 {
-  "name": "airchitect-chat",
+  "name": "airchitect-api",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "migrate:local": "wrangler d1 migrations apply airchitect --local",
+    "migrate": "wrangler d1 migrations apply airchitect --remote",
+    "mock": "node test/mock-anthropic.mjs",
+    "test": "node test/e2e.mjs"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.136.0"
+    "@anthropic-ai/sdk": "^1.3.0",
+    "fflate": "^0.8.3",
+    "unpdf": "^1.9.1"
   },
   "devDependencies": {
-    "wrangler": "^4.0.0"
+    "wrangler": "^4.152.0"
+  },
+  "allowScripts": {
+    "workerd@1.20261019.1": true
   }
 }

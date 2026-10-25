@@ -343,6 +343,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const MAX_FILE_BYTES = 10 * 1024 * 1024;
 
             const store = staffStore();
+            // With the AIRCHITECT server, dialogs, documents and results are kept on the server (staff-server.js)
+            const serverMode = !!(window.AirchitectApi && window.AirchitectApi.enabled && window.AirchitectServerChat);
             let history = [];   // conversation sent to the proxy (with file data of this session)
             let dialog = null;  // saved copy of the current dialog: texts and file names only
             let pendingFiles = [];
@@ -366,12 +368,14 @@ document.addEventListener('DOMContentLoaded', function() {
             document.addEventListener('languagechange', fill);
 
             initTabs();
-            greet();
-            renderHistory();
-            renderRegistry();
+            if (!serverMode) {
+                greet();
+                renderHistory();
+                renderRegistry();
+            }
 
             // Workspaces of specialists save their results (documents, answers) to this register
-            window.AirchitectStaffRegistry = {
+            if (!serverMode) window.AirchitectStaffRegistry = {
                 add(entry) {
                     store.registry(slug).unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date: Date.now(), ...entry });
                     store.save();
@@ -422,10 +426,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 0);
             }
 
-            if (!endpoint) {
-                chatRoot.querySelector('[data-chat-offline]').hidden = false;
-            }
-
             input.addEventListener('keydown', e => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -433,6 +433,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             input.addEventListener('input', autoGrow);
+
+            if (serverMode) {
+                window.AirchitectServerChat.init({ chatRoot, item, slug, form, input, fileInput, sendButton, extension, addMessage, appendNotice, setMessageText, selectTab, autoGrow, local, notify: showNotification });
+                return;
+            }
+
+            if (!endpoint) {
+                chatRoot.querySelector('[data-chat-offline]').hidden = false;
+            }
 
             fileInput.addEventListener('change', () => {
                 const added = [...fileInput.files];
@@ -785,6 +794,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.documentElement.classList.add('home-window-open');
             win.querySelector('.home-window__close').focus();
         }
+
+        // Answers of the specialists in other places (results in «Штат»): the same safe Markdown rendering
+        window.AirchitectRenderMarkdown = renderMarkdown;
 
         // Other scripts (contracts.js) open a specialist with context: AirchitectOpenSpecialist('construction-lawyer', 'text')
         window.AirchitectOpenSpecialist = (slug, question) => {

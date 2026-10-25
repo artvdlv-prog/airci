@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return false;
         }
         try {
-            const res = await fetch(`${API}/registry`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ inn: c.inn }) });
+            const res = await (window.AirchitectApi ? window.AirchitectApi.fetch : fetch)(`${API}/registry`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ inn: c.inn }) });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || `Ошибка ${res.status}`);
             const prev = C.lastCheck(c);
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const token = ch && ch.data.egrul && ch.data.egrul.token;
         if (API === null || !token) return notify('Сначала выполните проверку по реестрам.');
         try {
-            const res = await fetch(`${API}/egrul-pdf`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) });
+            const res = await (window.AirchitectApi ? window.AirchitectApi.fetch : fetch)(`${API}/egrul-pdf`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token }) });
             if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || `Ошибка ${res.status}`);
             const blob = await res.blob();
             const meta = await storeBlob(blob, `Выписка ЕГРЮЛ ${c.inn} от ${C.today()}.pdf`, 'application/pdf');

@@ -15,6 +15,12 @@
     // the live register is used so that the list is redrawn
     function addResult(entry) {
         if (window.AirchitectStaffRegistry) return window.AirchitectStaffRegistry.add(entry);
+        // With the AIRCHITECT server the documents go to the results of the current project
+        const API = window.AirchitectApi;
+        if (API && API.enabled && API.signedIn() && API.project()) {
+            API.request('POST', '/api/results', { project_id: API.project(), specialist: SLUG, kind: entry.kind === 'doc' ? 'doc' : 'answer', title: entry.name, content: entry.blocks ? JSON.stringify(entry.blocks) : String(entry.text || '') }).catch(err => { if (window.AirchitectWorkspaceKit) window.AirchitectWorkspaceKit.notify(err.message); });
+            return;
+        }
         const KEY = 'airchitect-staff-v1';
         let all = {};
         try { all = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { all = {}; }

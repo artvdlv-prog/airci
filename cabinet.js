@@ -96,6 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const CF = window.AirchitectCashflow || null;
     const CC = window.AirchitectContracts; // supply zone of obligations (procurement and supply specialist)
     const PR = window.AirchitectProcurement || null; // purchases of materials (section «Закупки»)
+    // With the AIRCHITECT server: sign-in by e-mail and password, accounts of the company (cabinet-account.js)
+    const API = window.AirchitectApi;
+    const SERVER = !!(API && API.enabled && window.AirchitectAccount);
     const cashOps = () => (CF ? CF.read().ops : []);
     const TENDER_STATUS = { analysis: 'Анализ', preparing: 'Подготовка заявки', submitted: 'Заявка подана', won: 'Победа', lost: 'Не выиграна', declined: 'Отказ от участия' };
     const tenderOpen = t => ['analysis', 'preparing'].includes(t.status) && t.deadlines && t.deadlines.submission;
@@ -296,6 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     topbar.querySelector('[data-cab-logout]').addEventListener('click', () => {
+        if (SERVER) API.logout();
         settings.signedIn = false;
         saveSettings();
         location.hash = '';
@@ -344,7 +348,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderSection() {
         renderTop();
-        if (!settings.product || !settings.signedIn) return renderOnboarding();
+        if (!settings.product || !settings.signedIn || (SERVER && !API.signedIn())) return renderOnboarding();
+        if (SERVER && API.user() && API.user().must_change_password) return renderPasswordChange();
         side.hidden = false;
         renderSide();
         const id = currentSection();
@@ -370,6 +375,22 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('hashchange', renderSection);
 
     // ---- Sign-in: company, user and product --------------------------------------------
+
+    // First sign-in with a temporary password: the employee sets his own before working
+    function renderPasswordChange() {
+        side.hidden = true;
+        frameWrap.hidden = true;
+        panel.hidden = false;
+        panel.textContent = '';
+        panel.appendChild(h('div', { class: 'home-cab__login-wrap' }, window.AirchitectAccount.passwordForm({ title: 'Новый пароль', temporary: true, onDone: () => { go('overview'); renderSection(); } })));
+    }
+
+    // The server ended the session (expired, password changed, access disabled): back to the sign-in
+    document.addEventListener('airchitectsession', () => {
+        settings.signedIn = false;
+        saveSettings();
+        renderSection();
+    });
 
     function renderOnboarding() {
         side.hidden = true;
@@ -397,6 +418,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }, p.code.replace('AIRCHITECT ', ''))));
         const hint = h('p', { class: 'home-dialog__hint' }, PRODUCTS[choice].text);
+
+        if (SERVER) {
+            panel.appendChild(h('div', { class: 'home-cab__login-wrap' }, window.AirchitectAccount.loginForm({
+                productPicker: h('div', {}, pills, hint),
+                onSignedIn: account => {
+                    settings = { ...settings, product: choice, company: account.company.name, user: account.name, signedIn: true };
+                    saveSettings();
+                    go('overview');
+                    renderSection();
+                }
+            })));
+            return;
+        }
 
         const form = h('form', {
             class: 'home-cab__login', onsubmit: e => {
@@ -936,20 +970,22 @@ document.addEventListener('DOMContentLoaded', () => {
             h('form', {
                 class: 'home-ct__form', onsubmit: e => {
                     e.preventDefault();
-                    settings = { ...settings, company: company.value.trim(), user: user.value.trim(), product: product.value };
+                    settings = { ...settings, ...(SERVER ? {} : { company: company.value.trim(), user: user.value.trim() }), product: product.value };
                     saveSettings();
                     notify('Настройки сохранены.');
                     renderSection();
                 }
             },
-            h('label', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, 'Компания'), company),
-            h('label', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, 'Пользователь'), user, h('span', { class: 'home-dialog__hint' }, 'Подставляется ответственным и в историю действий')),
+            SERVER ? null : h('label', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, 'Компания'), company),
+            SERVER ? null : h('label', { class: 'home-dialog__field' }, h('span', { class: 'home-dialog__label' }, 'Пользователь'), user, h('span', { class: 'home-dialog__hint' }, 'Подставляется ответственным и в историю действий')),
             h('label', { class: 'home-dialog__field home-ct__wide' }, h('span', { class: 'home-dialog__label' }, 'Решение'), product,
                 h('span', { class: 'home-dialog__hint' }, 'OFFICE работает самостоятельно. В COMPLEX проекты уведомлений из «Договоров» можно передавать на согласование в «Документы».')),
             h('div', { class: 'home-ct__wide home-ct__info-actions' }, h('button', { type: 'submit', class: 'home-btn home-btn--primary' }, 'Сохранить'))),
             block('Данные',
                 h('div', { class: 'home-cab__data' },
-                    h('p', { class: 'home-chat__text' }, 'Кабинет работает в открытом доступе: договоры, документы, диалоги и реестры хранятся только в этом браузере. Сохраняйте резервную копию, чтобы перенести данные на другое устройство.'),
+                    h('p', { class: 'home-chat__text' }, SERVER
+                        ? 'Диалоги со специалистами, документы проектов и результаты хранятся на сервере компании. Договоры, тендеры, закупки, объекты, сметы и финансы пока хранятся в этом браузере — сохраняйте резервную копию, чтобы перенести их на другое устройство.'
+                        : 'Кабинет работает в открытом доступе: договоры, документы, диалоги и реестры хранятся только в этом браузере. Сохраняйте резервную копию, чтобы перенести данные на другое устройство.'),
                     h('div', { class: 'home-ct__actions' },
                         h('button', {
                             type: 'button', class: 'home-btn home-btn--secondary', onclick: () => {
@@ -974,6 +1010,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         }, 'Удалить все данные'),
                         importInput),
                     h('p', { class: 'home-dialog__hint' }, 'Резервная копия содержит записи кабинета. Файлы, приложенные к договорам и документам, в неё не входят.'))));
+
+        // With the server: account, and for the administrator employees, projects and use of the specialists
+        if (SERVER) {
+            const data = panel.lastElementChild;
+            window.AirchitectAccount.settingsBlocks({ block, notify, rerender: renderSection })
+                .then(blocks => { if (data.isConnected) blocks.forEach(b => panel.insertBefore(b, data)); })
+                .catch(err => notify(err.message));
+        }
     }
 
     renderSection();

@@ -182,7 +182,7 @@
         const payload = isPdf
             ? { name: fileMeta.name, type: 'application/pdf', data: await toBase64(blob) }
             : { name: fileMeta.name, type: 'text/plain', data: await toBase64(new Blob([await readText(blob, fileMeta.name)], { type: 'text/plain' })) };
-        const response = await fetch(api, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ file: payload }) });
+        const response = await (window.AirchitectApi ? window.AirchitectApi.fetch : fetch)(api, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ file: payload }) });
         const result = await response.json();
         if (!response.ok) throw new Error(result.error || 'Сервер не смог обработать договор.');
         return result;
