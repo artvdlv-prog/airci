@@ -127,10 +127,7 @@ const translations = {
                 title: "Do what you do best",
                 titleMuted: "We'll help with the rest",
                 lead: "Contracts, procurement, documents, finance and construction questions — professional digital support for your company.",
-                capabilities: "Our capabilities",
-                dir1: "Specialists",
-                dir2: "Document workflow and approvals",
-                dir3: "Contract support"
+                capabilities: "Our capabilities"
             },
             tasks: {
                 eyebrow: "Construction takes more than the ability to build",
@@ -358,10 +355,7 @@ const translations = {
                 title: "Делайте то, что умеете лучше всего",
                 titleMuted: "В остальном мы поможем",
                 lead: "Договоры, закупки, документы, финансы и строительные вопросы — профессиональная цифровая поддержка вашей компании.",
-                capabilities: "Наши возможности",
-                dir1: "Специалисты",
-                dir2: "Документооборот и согласования",
-                dir3: "Сопровождение договоров"
+                capabilities: "Наши возможности"
             },
             tasks: {
                 eyebrow: "Строительство требует больше, чем умения строить",

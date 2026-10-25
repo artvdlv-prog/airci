@@ -7134,3 +7134,22 @@ a.home-doc:hover {
     border-left: 2px solid var(--primary-orange);
     background: var(--home-bg-alt);
 }
+
+/* Home page banner: compact height */
+.home--landing .home-hero {
+    padding: 100px 0 28px;
+}
+
+.home--landing .home-hero .home-eyebrow {
+    margin-bottom: 14px;
+}
+
+.home--landing .home-hero .home-actions {
+    margin-top: 22px;
+}
+
+@media (max-width: 600px) {
+    .home--landing .home-hero {
+        padding: 84px 0 22px;
+    }
+}
