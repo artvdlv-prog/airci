@@ -6873,3 +6873,41 @@ a.home-doc:hover {
         margin-top: 40px;
     }
 }
+
+/* Final banner «Сосредоточьтесь на строительстве»: compact — half the width, small title */
+.home-section.home-final {
+    padding: clamp(20px, 2.4vw, 32px) 0;
+}
+
+.home-final__inner {
+    max-width: 420px;
+}
+
+.home-final .home-final__title {
+    margin-bottom: 8px;
+    font-size: clamp(20px, 1.7vw, 24px);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+}
+
+.home-final .home-text {
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.home-final .home-actions {
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.home-final .home-btn {
+    min-height: 42px;
+    padding: 0 20px;
+    font-size: 14px;
+}
+
+@media (max-width: 600px) {
+    .home-final .home-final__title {
+        font-size: 20px;
+    }
+}
