@@ -442,7 +442,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const steps = [];
             if (office) {
                 steps.push(['contracts', 'Добавьте договор', 'Контрольные точки найдутся в файле автоматически.', () => go('contracts')]);
-                steps.push(['staff', 'Задайте вопрос специалисту', 'Юрист, финансист, сметчик и другие.', () => go('staff')]);
+                steps.push(['staff', 'Задайте вопрос специалисту', 'Юрист, финансист, инженер-сметчик и другие.', () => go('staff')]);
             }
             if (docsOn) steps.push(['documents', 'Добавьте документ', 'И направьте его на согласование.', () => go('documents')]);
             panel.appendChild(h('div', { class: 'home-cab__start' }, steps.map(([ic, title, text, fn]) =>

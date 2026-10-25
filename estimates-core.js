@@ -463,7 +463,7 @@
                     if (!e) return;
                     e.reports = e.reports || [];
                     e.reports.unshift({ id: uid(), at: Date.now(), text: answerText.replace(/```airchitect-data[\s\S]*?(```|$)/g, '').trim() });
-                    (e.log = e.log || []).unshift({ at: Date.now(), text: 'Сохранён ответ сметчика из чата' });
+                    (e.log = e.log || []).unshift({ at: Date.now(), text: 'Сохранён ответ инженера-сметчика из чата' });
                     const p = document.createElement('p');
                     p.className = 'home-chat__note';
                     p.textContent = write(d) ? `Сохранено в смету «${e.title}» (вкладка «История»).` : 'Не удалось сохранить.';
