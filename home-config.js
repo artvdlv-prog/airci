@@ -201,7 +201,7 @@ const HOME_SPECIALISTS = [
     {
         id: 'procurement',
         slug: 'procurement-specialist',
-        title: { ru: 'Специалист по закупкам и снабжению', en: 'Procurement and supply specialist' },
+        title: { ru: 'Специалист по снабжению', en: 'Supply specialist' },
         description: { ru: 'Закупки материалов и поставки', en: 'Materials purchasing and supply' },
         registry: { ru: 'Документы и результаты закупок', en: 'Procurement documents and results' },
         icon: 'procurement',

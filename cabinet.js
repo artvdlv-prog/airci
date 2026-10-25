@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         estimates: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M12 11h2M8 15h2M12 15h2M16 11v4"/>',
         cashflow: '<path d="M3 17l5-5 4 4 8-8"/><path d="M15 8h5v5"/><path d="M3 21h18"/>',
         tenders: '<path d="M4 4h16v4H4z"/><path d="M6 8v12h12V8"/><path d="M10 12h4"/>',
+        procurement: '<path d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5l9 4.5 9-4.5M12 12v9"/><path d="M7.5 5.2l9 4.6"/>',
         settings: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>'
     };
 
@@ -45,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'staff', title: 'Штат', products: ['office', 'complex'], frame: 'staff.html' },
         { id: 'contracts', title: 'Договоры', products: ['office', 'complex'], frame: 'contracts.html' },
         { id: 'tenders', title: 'Тендеры', products: ['office', 'complex'], frame: 'tenders.html' },
+        { id: 'procurement', title: 'Закупки', products: ['office', 'complex'], frame: 'procurement.html' },
         { id: 'objects', title: 'Объекты', products: ['office', 'complex'], frame: 'objects.html' },
         { id: 'estimates', title: 'Сметы', products: ['office', 'complex'], frame: 'estimates.html' },
         { id: 'counterparties', title: 'Контрагенты', products: ['office', 'complex'], frame: 'counterparties.html' },
@@ -93,6 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Cash flow (cashflow-core.js): operations, statuses and the balance forecast
     const CF = window.AirchitectCashflow || null;
     const CC = window.AirchitectContracts; // supply zone of obligations (procurement and supply specialist)
+    const PR = window.AirchitectProcurement || null; // purchases of materials (section «Закупки»)
     const cashOps = () => (CF ? CF.read().ops : []);
     const TENDER_STATUS = { analysis: 'Анализ', preparing: 'Подготовка заявки', submitted: 'Заявка подана', won: 'Победа', lost: 'Не выиграна', declined: 'Отказ от участия' };
     const tenderOpen = t => ['analysis', 'preparing'].includes(t.status) && t.deadlines && t.deadlines.submission;
@@ -330,6 +333,9 @@ document.addEventListener('DOMContentLoaded', () => {
             count = CF ? cashOps().filter(op => CF.statusOf(op) === 'overdue').length : 0;
         } else if (section === 'tenders') {
             count = tenders().filter(t => tenderOpen(t) && daysUntil(t.deadlines.submission) >= 0 && daysUntil(t.deadlines.submission) <= SOON_DAYS).length;
+        } else if (section === 'procurement') {
+            // Supply control points of Договоры: deadline close or passed
+            count = CC ? contracts().reduce((n, c) => n + c.obligations.filter(o => CC.zone(o) === 'supply' && ['overdue', 'pastdue', 'soon'].includes(obligationStatus(o))).length, 0) : 0;
         } else if (section === 'documents') {
             count = docsStore.docs.filter(d => d.status === 'approval').length;
         }
@@ -470,7 +476,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const gaps = CF && cashOps().length ? CF.forecast(CF.read()).gaps.length : 0;
             panel.appendChild(block('Разделы', h('div', { class: 'home-cab__stats home-cab__sections' },
                 stat('Договоры в работе', list.filter(c => !c.closed).length, '', () => go('contracts')),
-                stat('Закупки в работе', tenders().filter(t => ['analysis', 'preparing', 'submitted'].includes(t.status)).length, '', () => go('tenders')),
+                stat('Тендеры в работе', tenders().filter(t => ['analysis', 'preparing', 'submitted'].includes(t.status)).length, '', () => go('tenders')),
+                stat('Закупки материалов', PR ? PR.read().purchases.filter(p => !p.demo && !['decision', 'closed'].includes(p.status)).length : 0, '', () => go('procurement')),
                 stat('Объекты', objects().length, '', () => go('objects')),
                 stat('Сметы', ES ? ES.read().estimates.length : 0, '', () => go('estimates')),
                 stat('Контрагенты: пора проверить', CP ? CP.read().items.filter(c => !c.demo && CP.due(c)).length : 0, 'soon', () => go('counterparties')),
@@ -523,7 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (pastdue.length) attention.push([`Срок прошёл, нет сведений об исполнении: ${pastdue.length}`, 'Подтвердите исполнение или отметьте неисполнение', () => go('contracts', pastdue[0].contract.id)]);
             // Supply control points of the procurement and supply specialist
             const supply = CC ? obligations.filter(o => CC.zone(o) === 'supply' && ['soon', 'pastdue', 'overdue'].includes(o.s)) : [];
-            if (supply.length) attention.push([`Снабжение: контрольные точки поставки — ${supply.length}`, supply.slice(0, 2).map(o => `${o.text.slice(0, 60)}${o.due ? ' (' + formatDate(o.due) + ')' : ''}`).join('; '), () => go('staff', 'procurement-specialist')]);
+            if (supply.length) attention.push([`Снабжение: контрольные точки поставки — ${supply.length}`, supply.slice(0, 2).map(o => `${o.text.slice(0, 60)}${o.due ? ' (' + formatDate(o.due) + ')' : ''}`).join('; '), () => go('procurement')]);
             objects().forEach(ob => {
                 const open = ob.remarks.filter(r => r.status === 'open').length;
                 if (open) attention.push([`Замечания по РД и ИД: ${open}`, ob.name, () => go('objects', ob.key)]);

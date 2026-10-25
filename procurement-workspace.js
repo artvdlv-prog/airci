@@ -1,14 +1,27 @@
-// Workspace of the procurement and supply specialist in Штат (staff.html?id=procurement-specialist):
-// the dialog on top, below — purchases (needs of the objects), comparison of supplier offers, procurement
-// documents and supply control points of Договоры (obligations of the zone «Закупки и снабжение»).
+// Procurement and supply (cabinet section «Закупки», procurement.html): purchases (needs of the objects),
+// comparison of supplier offers, procurement documents and supply control points of Договоры
+// (obligations of the zone «Закупки и снабжение»). In Штат the supply specialist keeps only the dialog:
+// the chosen purchase goes to him as context.
 // The choice of the supplier, approval of analogs and sending of documents are marked only by the employee.
-// Prepared documents and saved answers go to the specialist's register («Документы и результаты закупок»).
+// Prepared documents go to the specialist's register in Штат («Документы и результаты закупок»).
 
 (function () {
     const SLUG = 'procurement-specialist';
     const SELECTED = 'airchitect-procurement-selected-v1';
     const selectedId = () => { try { return (JSON.parse(localStorage.getItem(SELECTED)) || {}).id || ''; } catch (e) { return ''; } };
     const select = id => { try { localStorage.setItem(SELECTED, JSON.stringify({ id })); } catch (e) { /* ignore */ } };
+
+    // Results go to the register of the specialist in Штат (the store of script.js); on the Штат page itself
+    // the live register is used so that the list is redrawn
+    function addResult(entry) {
+        if (window.AirchitectStaffRegistry) return window.AirchitectStaffRegistry.add(entry);
+        const KEY = 'airchitect-staff-v1';
+        let all = {};
+        try { all = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { all = {}; }
+        all[SLUG] = all[SLUG] || { dialogs: [], registry: [] };
+        all[SLUG].registry.unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date: Date.now(), ...entry });
+        try { localStorage.setItem(KEY, JSON.stringify(all)); } catch (e) { /* storage is full */ }
+    }
 
     // Supply control points: obligations of Договоры in the zone «Закупки и снабжение»
     function supplyPoints() {
@@ -23,17 +36,35 @@
         let bar = null;
         const P = window.AirchitectProcurement;
         const current = () => P && P.read().purchases.find(p => p.id === selectedId());
+        let pick = null;
         const draw = () => {
             if (!bar) return;
             const p = current();
-            bar.textContent = p ? `Контекст: ${P.title(p)}${p.demo ? ' (демо-пример)' : ''}. Специалист получит позиции, предложения и расчёт сравнения.` : 'Без закупки. Чтобы специалист учёл позиции и предложения, выберите закупку в рабочем пространстве ниже.';
+            bar.textContent = p ? `Специалист получит позиции, предложения и расчёт сравнения${p.demo ? ' (демо-пример)' : ''}. Рабочее пространство — в разделе «Закупки».` : 'Выберите закупку, чтобы специалист учёл позиции и предложения. Рабочее пространство — в разделе «Закупки».';
+        };
+        const fill = () => {
+            if (!pick) return;
+            pick.textContent = '';
+            const none = document.createElement('option');
+            none.value = '';
+            none.textContent = '— без закупки —';
+            pick.appendChild(none);
+            (P ? P.read().purchases : []).forEach(p => { const o = document.createElement('option'); o.value = p.id; o.textContent = `${P.title(p)}${p.demo ? ' (демо)' : ''}`; o.selected = p.id === selectedId(); pick.appendChild(o); });
         };
         return {
             attach({ form }) {
+                const box = document.createElement('div');
+                box.className = 'home-ws__context-box';
+                pick = document.createElement('select');
+                pick.setAttribute('aria-label', 'Закупка для диалога');
+                pick.addEventListener('change', () => { select(pick.value); draw(); });
                 bar = document.createElement('p');
                 bar.className = 'home-ws__context';
-                form.prepend(bar);
+                box.append(pick, bar);
+                form.prepend(box);
+                fill();
                 draw();
+                window.addEventListener('storage', fill);
                 document.addEventListener('procurementselect', draw);
                 window.addEventListener('storage', draw);
             },
@@ -54,11 +85,10 @@
                     const msgs = [...document.querySelectorAll('.home-chat__message--user')];
                     const question = msgs.length ? msgs[msgs.length - 1].innerText.trim().replace(/\s+/g, ' ').slice(0, 90) : 'Ответ специалиста';
                     const p = current();
-                    const reg = window.AirchitectStaffRegistry;
-                    if (reg) reg.add({ kind: 'result', name: question, text: answerText.trim(), meta: p ? P.title(p) : '' });
+                    addResult({ kind: 'result', name: question, text: answerText.trim(), meta: p ? P.title(p) : '' });
                     const note = document.createElement('p');
                     note.className = 'home-chat__note';
-                    note.textContent = reg ? 'Сохранено в реестр «Документы и результаты закупок».' : 'Не удалось сохранить.';
+                    note.textContent = 'Сохранено в реестр «Документы и результаты закупок».';
                     message.appendChild(note);
                     btn.disabled = true;
                 });
@@ -71,15 +101,17 @@
     window.AirchitectChatExtensions.procurement = chatExtension;
 
     document.addEventListener('DOMContentLoaded', () => {
-        const page = document.querySelector('[data-chat-page]');
+        const host = document.querySelector('[data-procurement-root]');
         const P = window.AirchitectProcurement;
         const K = window.AirchitectWorkspaceKit;
         const CC = window.AirchitectContracts;
-        if (!page || !P || !K || new URLSearchParams(location.search).get('id') !== SLUG) return;
-        const chatPanel = page.querySelector('[data-tab-panel="chat"]');
-        if (!chatPanel) return;
+        if (!host || !P || !K) return;
         const { h, notify, badge, rowEl, openCard } = K;
-        const askChat = text => K.askChat(page, text);
+        // The dialog of the supply specialist opens in a window over the page; the chosen purchase is its context
+        const askChat = text => {
+            if (typeof window.AirchitectOpenSpecialist === 'function') window.AirchitectOpenSpecialist(SLUG, text);
+            else notify('Диалог со специалистом — в разделе «Штат».');
+        };
         const { formatDate, money } = P;
         let data = P.read();
         let tab = 'purchases';
@@ -90,8 +122,8 @@
         const choose = id => { select(id); document.dispatchEvent(new Event('procurementselect')); };
         const need = () => { const p = current(); if (!p) notify('Выберите закупку во вкладке «Закупки».'); return p; };
 
-        const root = h('section', { class: 'home-ws', 'aria-label': 'Рабочее пространство специалиста по закупкам и снабжению' });
-        chatPanel.after(root);
+        const root = h('section', { class: 'home-ws home-ws--section', 'aria-label': 'Закупки и снабжение' });
+        host.appendChild(root);
 
         const TABS = [['purchases', 'Закупки'], ['compare', 'Сравнение предложений'], ['documents', 'Документы'], ['supply', 'Поставки по договорам']];
         const TONE = { review: 'review', active: 'review', soon: 'soon', pastdue: 'soon', overdue: 'overdue', done: 'done' };
@@ -104,15 +136,16 @@
             root.textContent = '';
             const pick = h('select', { 'aria-label': 'Закупка', onchange: ev => { choose(ev.target.value); render(); } },
                 h('option', { value: '' }, '— без закупки —'), data.purchases.map(x => h('option', { value: x.id, selected: p && x.id === p.id }, `${P.title(x)}${x.demo ? ' (демо)' : ''}`)));
-            root.append(
-                h('div', { class: 'home-ws__head' }, h('div', {}, h('p', { class: 'home-eyebrow' }, 'Рабочее пространство'), h('h3', { class: 'home-ws__title' }, 'Закупки и снабжение')),
+            // append() would print «null» for a missing block, so empty blocks are filtered out
+            root.append(...[
+                h('div', { class: 'home-ws__head' }, h('div', { class: 'home-ws__actions' }, h('button', { type: 'button', class: 'home-chat__action', onclick: () => askChat('') }, 'Специалист по снабжению')),
                     h('div', { class: 'home-ws__pick' }, pick)),
                 alerts.length ? h('div', { class: 'home-ws__alerts' }, h('p', { class: 'home-dialog__label' }, `Уведомления по поставкам: ${alerts.length}`), h('ul', { class: 'home-ct__list' }, alerts.slice(0, 5).map(x => rowEl([badge(CC.STATUS_LABEL[x.s], TONE[x.s]), x.o.text], [`${CC.name(x.c)} · п. ${x.o.clause || '—'}${x.o.due ? ' · срок ' + CC.formatDate(x.o.due) : ''}`], [['Карточка договора', () => openCard(x.c)]])))) : null,
-                h('div', { class: 'home-tabs', role: 'tablist', 'aria-label': 'Рабочие вкладки' }, TABS.map(([k, l]) => h('button', { type: 'button', role: 'tab', class: 'home-tab', 'aria-selected': String(k === tab), onclick: () => { tab = k; render(); } }, l))));
+                h('div', { class: 'home-tabs', role: 'tablist', 'aria-label': 'Рабочие вкладки' }, TABS.map(([k, l]) => h('button', { type: 'button', role: 'tab', class: 'home-tab', 'aria-selected': String(k === tab), onclick: () => { tab = k; render(); } }, l)))].filter(Boolean));
             const panel = h('div', { class: 'home-ws__panel' });
             root.appendChild(panel);
             ({ purchases: renderPurchases, compare: renderCompare, documents: renderDocuments, supply: renderSupply })[tab](panel, p);
-            root.appendChild(h('p', { class: 'home-note' }, 'Специалист работает с данными, которые вы внесли и приложили: актуальные рыночные цены и надёжность поставщиков он не проверяет. Выбор поставщика, согласование аналогов и отправку документов подтверждает сотрудник. Документы и сохранённые ответы — во вкладке реестра выше.'));
+            root.appendChild(h('p', { class: 'home-note' }, 'Специалист работает с данными, которые вы внесли и приложили: актуальные рыночные цены и надёжность поставщиков он не проверяет. Выбор поставщика, согласование аналогов и отправку документов подтверждает сотрудник. Подготовленные документы сохраняются в реестре специалиста по снабжению в «Штате».'));
         }
 
         // ---- Purchases ---------------------------------------------------------------------------
@@ -151,7 +184,7 @@
         function renderPurchases(panel, p) {
             panel.appendChild(h('div', { class: 'home-ct__actions' },
                 h('button', { type: 'button', class: 'home-btn home-btn--primary home-cab__small', onclick: () => editPurchase() }, 'Новая закупка'),
-                !data.purchases.some(x => x.demo) ? h('button', { type: 'button', class: 'home-cab__reset-link', onclick: () => { const d = P.demo(); data.purchases.unshift(d); save(); choose(d.id); tab = 'compare'; render(); } }, 'Демо-пример') : null));
+                !data.purchases.some(x => x.demo) ? h('button', { type: 'button', class: 'home-cab__reset-link home-ws__demo', onclick: () => { const d = P.demo(); data.purchases.unshift(d); save(); choose(d.id); tab = 'compare'; render(); } }, 'Демо-пример') : null));
             panel.appendChild(h('ul', { class: 'home-ct__list' }, data.purchases.length ? data.purchases.map(x => rowEl(
                 [x.demo ? badge('Демо', 'review') : null, badge(P.STATUS[x.status] || x.status, x.status === 'decision' || x.status === 'closed' ? 'done' : 'soon'), x.id === (p && p.id) ? badge('Выбрана', 'done') : null, P.title(x)],
                 [[x.object, x.requiredDate ? 'нужно к ' + formatDate(x.requiredDate) : 'требуемый срок не указан', `позиций: ${x.items.length}`, `предложений: ${x.offers.length}`].filter(Boolean).join(' · '), x.decision ? `Выбран поставщик: ${x.decision.supplier} (${x.decision.by}, ${formatDate(x.decision.date)})` : ''],
@@ -247,7 +280,7 @@
             const doc = P.documents[kind](p, ...args);
             const ok = await K.docx(doc.name, doc.blocks);
             if (!ok) return;
-            if (window.AirchitectStaffRegistry) window.AirchitectStaffRegistry.add({ kind: 'doc', name: doc.name, blocks: doc.blocks, meta: p.demo ? 'демо-пример' : P.title(p) });
+            addResult({ kind: 'doc', name: doc.name, blocks: doc.blocks, meta: p.demo ? 'демо-пример' : P.title(p) });
             log(p, `Подготовлен документ: ${doc.name}`);
             if (kind === 'rfq' && p.status === 'draft') p.status = 'rfq';
             save();
@@ -268,7 +301,7 @@
             panel.appendChild(h('div', { class: 'home-ws__actions' },
                 [['delay', 'Задержка поставки'], ['short', 'Недопоставка'], ['mismatch', 'Несоответствие товара']].map(([k, l]) => h('button', { type: 'button', class: 'home-chat__action', onclick: () => make(p, 'letter', k, chosen) }, l))));
             if (!chosen) panel.appendChild(h('p', { class: 'home-ct__row-meta' }, 'Поставщик не выбран — в письме останется поле для наименования.'));
-            panel.appendChild(h('p', { class: 'home-note' }, 'Чтобы документы были подготовлены по шаблонам компании, приложите шаблон в диалоге и выберите задачу «Собрать комплект закупочных документов».'));
+            panel.appendChild(h('p', { class: 'home-note' }, 'Чтобы документы были подготовлены по шаблонам компании, откройте диалог со специалистом по снабжению, приложите шаблон и выберите задачу «Собрать комплект закупочных документов».'));
         }
 
         // ---- Supply control points of Договоры --------------------------------------------------
