@@ -249,6 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Line icons of specialists (24x24, stroke), chosen by `icon` or `id` in HOME_SPECIALISTS
         const SPECIALIST_ICONS = {
+            procurement: '<path d="M3 7.5L12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5l9 4.5 9-4.5M12 12v9"/><path d="M7.5 5.2l9 4.6"/>',
             tender: '<path d="M17 11V6l-3-3H5v18h7"/><path d="M14 3v3h3"/><path d="M8 8h5M8 11h4"/><circle cx="16.5" cy="16.5" r="3.5"/><path d="M19 19l2.5 2.5"/>',
             lawyer: '<path d="M12 3v18M7 21h10M5 7h14"/><path d="M5 7l-3 6a3 3 0 006 0zM19 7l-3 6a3 3 0 006 0z"/>',
             contracts: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 11h7M9 14h7M9 17h4"/>',
@@ -364,6 +365,16 @@ document.addEventListener('DOMContentLoaded', function() {
             greet();
             renderHistory();
             renderRegistry();
+
+            // Workspaces of specialists save their results (documents, answers) to this register
+            window.AirchitectStaffRegistry = {
+                add(entry) {
+                    store.registry(slug).unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), date: Date.now(), ...entry });
+                    store.save();
+                    renderRegistry();
+                },
+                list: () => store.registry(slug)
+            };
 
             // Quick professional actions of the specialist (HOME_SPECIALISTS[].actions)
             if ((item.actions || []).length) {
@@ -660,8 +671,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 chatRoot.querySelector('[data-registry-empty]').hidden = entries.length > 0;
                 entries.forEach(entry => {
                     const saved = store.dialogs(slug).find(d => d.id === entry.dialogId);
-                    const meta = `${fileKind(entry)} · ${formatSize(entry.size)} · ${formatDate(entry.date)}`;
+                    // Results of the workspace: a prepared document (blocks) or a saved answer (text)
+                    const result = entry.kind === 'doc' || entry.kind === 'result';
+                    const meta = result
+                        ? [entry.kind === 'doc' ? 'Документ' : 'Результат', entry.meta, formatDate(entry.date)].filter(Boolean).join(' · ')
+                        : `${fileKind(entry)} · ${formatSize(entry.size)} · ${formatDate(entry.date)}`;
                     const actions = [];
+                    const kit = window.AirchitectWorkspaceKit;
+                    if (result && kit) actions.push(['Word', () => kit.docx(entry.name, entry.blocks || [{ text: entry.name, bold: true, center: true, size: 24 }, ...String(entry.text || '').split('\n').filter(Boolean).map(t => ({ text: t.replace(/^#+\s*/, '').replace(/\*\*/g, '') }))])]);
                     if (saved) actions.push(['Диалог', () => openDialog(saved)]);
                     actions.push(['Удалить', () => {
                         const all = store.registry(slug);

@@ -456,6 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         o.clause ? `п. ${o.clause}` : 'пункт не указан',
                         dueText(o),
                         o.responsible ? `Ответственный: ${o.responsible}` : '',
+                        CC.zone(o) === 'supply' ? 'Закупки и снабжение' : '',
                         o.source === 'ai' ? 'извлечено специалистом' : o.source === 'auto' ? 'найдено автоматически' : ''
                     ].filter(Boolean).join(' · ')),
                     o.condition && o.due ? h('p', { class: 'home-ct__row-meta' }, `Условие: ${o.condition}`) : null,
@@ -612,7 +613,8 @@ document.addEventListener('DOMContentLoaded', () => {
             { name: 'clause', label: 'Пункт договора', value: o.clause, hint: 'Например: 4.2 или 5.1.3', required: true },
             { name: 'due', label: 'Контрольная дата', type: 'date', value: o.due },
             { name: 'condition', label: 'Условие или порядок исполнения', type: 'textarea', rows: 2, value: o.condition, hint: 'Например: в течение 5 рабочих дней после подписания акта' },
-            { name: 'responsible', label: 'Ответственный', value: o.responsible }
+            { name: 'responsible', label: 'Ответственный', value: o.responsible },
+            { name: 'zone', label: 'Зона ответственности', type: 'select', value: o.text ? CC.zone(o) : 'contract', options: Object.entries(CC.ZONES), hint: 'Обязательства по поставке получает специалист по закупкам и снабжению в «Штате»' }
         ];
     }
 

@@ -6184,6 +6184,9 @@ a.home-registry__num::after {
 .home-ws__pick select {
     min-width: 0;
     max-width: 100%;
+    /* WebKit lets the text of a long option widen the page; clip it inside the field */
+    overflow: hidden;
+    text-overflow: ellipsis;
     padding: 9px 12px;
     background: var(--home-bg);
     border: 1px solid var(--home-line-strong);
@@ -6322,6 +6325,7 @@ a.home-registry__num::after {
 /* Cabinet on phones: fields declared above keep 16px so iOS does not zoom on focus */
 @media (max-width: 600px) {
     .home-ws__context-box select,
+    .home-ws__pick select,
     .home-cf__scope {
         font-size: 16px;
     }
@@ -7119,4 +7123,12 @@ a.home-doc:hover {
     .home-specialist__title {
         font-size: 15px;
     }
+}
+
+/* Procurement and supply specialist: notifications on supply control points above the tabs */
+.home-ws__alerts {
+    margin: 4px 0 16px;
+    padding: 14px 16px 6px;
+    border-left: 2px solid var(--primary-orange);
+    background: var(--home-bg-alt);
 }

@@ -125,6 +125,11 @@ export default {
                         const last = messages[messages.length - 1];
                         last.content.push({ type: 'text', text: `Карточка договора из раздела «Договоры» (данные пользователя, не проверенный источник):\n${body.analysis.context.slice(0, 12000)}\n\nОпирайся на неё и на приложенные документы; если сведений нет — так и скажи. Срок без сведений об исполнении — «требует подтверждения», а не нарушение.` });
                     }
+                    // Procurement and supply specialist: the selected purchase and supply control points (user data) as context
+                    if (body.specialist === 'procurement-specialist' && body.analysis && body.analysis.type === 'procurement' && typeof body.analysis.context === 'string' && body.analysis.context) {
+                        const last = messages[messages.length - 1];
+                        last.content.push({ type: 'text', text: `Данные закупки и контрольные точки поставки из кабинета AIRCHITECT (данные пользователя, не проверенный источник):\n${body.analysis.context.slice(0, 12000)}\n\nОпирайся на них и на приложенные документы. Неизвестные расходы и неподтверждённые сроки показывай отдельно; итоговый выбор поставщика за сотрудником.` });
+                    }
                     // Counterparty check: public registries are queried here, the model gets only received facts
                     const cp = counterpartyRequest(body);
                     if (cp) {
