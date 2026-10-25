@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tenders = () => read(KEYS.tenders, { tenders: [] }).tenders;
     // Cash flow (cashflow-core.js): operations, statuses and the balance forecast
     const CF = window.AirchitectCashflow || null;
+    const CC = window.AirchitectContracts; // supply zone of obligations (procurement and supply specialist)
     const cashOps = () => (CF ? CF.read().ops : []);
     const TENDER_STATUS = { analysis: 'Анализ', preparing: 'Подготовка заявки', submitted: 'Заявка подана', won: 'Победа', lost: 'Не выиграна', declined: 'Отказ от участия' };
     const tenderOpen = t => ['analysis', 'preparing'].includes(t.status) && t.deadlines && t.deadlines.submission;
@@ -481,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const deadlines = [
             ...(office ? obligations.filter(o => o.s !== 'done' && o.due && daysUntil(o.due) <= 14).map(o => ({
-                date: o.due, title: o.text, meta: `${contractName(o.contract)} · п. ${o.clause || '—'}`,
+                date: o.due, title: o.text, meta: `${contractName(o.contract)} · п. ${o.clause || '—'}${CC && CC.zone(o) === 'supply' ? ' · снабжение' : ''}`,
                 tone: o.s, open: () => go('contracts', o.contract.id)
             })) : []),
             ...(office ? tenders().filter(t => tenderOpen(t) && daysUntil(t.deadlines.submission) >= 0 && daysUntil(t.deadlines.submission) <= 14).map(t => ({
@@ -520,6 +521,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (review.length) attention.push([`Подтвердите обязательства: ${review.length}`, 'Найдены в договорах автоматически', () => go('contracts', review[0].contract.id)]);
             const pastdue = obligations.filter(o => o.s === 'pastdue');
             if (pastdue.length) attention.push([`Срок прошёл, нет сведений об исполнении: ${pastdue.length}`, 'Подтвердите исполнение или отметьте неисполнение', () => go('contracts', pastdue[0].contract.id)]);
+            // Supply control points of the procurement and supply specialist
+            const supply = CC ? obligations.filter(o => CC.zone(o) === 'supply' && ['soon', 'pastdue', 'overdue'].includes(o.s)) : [];
+            if (supply.length) attention.push([`Снабжение: контрольные точки поставки — ${supply.length}`, supply.slice(0, 2).map(o => `${o.text.slice(0, 60)}${o.due ? ' (' + formatDate(o.due) + ')' : ''}`).join('; '), () => go('staff', 'procurement-specialist')]);
             objects().forEach(ob => {
                 const open = ob.remarks.filter(r => r.status === 'open').length;
                 if (open) attention.push([`Замечания по РД и ИД: ${open}`, ob.name, () => go('objects', ob.key)]);

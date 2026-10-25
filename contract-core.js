@@ -58,6 +58,12 @@
     const isPayment = o => /оплат|аванс|платеж|платёж|перечисл|возврат\w* (гарантийн|удержан)/i.test(o.text || '');
     const isDocument = o => /документ|исполнительн|акт\b|акты|справк|отч[её]т|передат|предостав|направ/i.test(o.text || '');
 
+    // Zone of responsibility: obligations on supply go to the procurement and supply specialist.
+    // The zone set by the user wins; otherwise it is suggested from the text of the obligation.
+    const ZONES = { contract: 'Договорной специалист', supply: 'Закупки и снабжение' };
+    const isSupply = o => /поставк|поставить|поставщик|давальческ|отгрузк|комплектаци|снабжени|оборудовани[ея] (передать|предостав|постав)/i.test(o.text || '');
+    const zone = o => (o.zone ? o.zone : isSupply(o) ? 'supply' : 'contract');
+
     function ensure(c) {
         c.obligations = c.obligations || [];
         c.notices = c.notices || [];
@@ -293,5 +299,5 @@
     window.AirchitectChatExtensions = window.AirchitectChatExtensions || {};
     window.AirchitectChatExtensions.contract = chatExtension;
 
-    window.AirchitectContracts = { STORE_KEY, SOON_DAYS, STATUS_LABEL, STATUS_TONE, PARTIES, AMENDMENT_STATUS, read, write, uid, today, daysUntil, formatDate, parsePrice, name, obligationStatus, isPayment, isDocument, ensure, linked, warnings, closeReadiness, context, selected, select, applyExtraction, documents, NOTICE_TITLES };
+    window.AirchitectContracts = { STORE_KEY, SOON_DAYS, STATUS_LABEL, STATUS_TONE, PARTIES, AMENDMENT_STATUS, read, write, uid, today, daysUntil, formatDate, parsePrice, name, obligationStatus, isPayment, isDocument, ZONES, isSupply, zone, ensure, linked, warnings, closeReadiness, context, selected, select, applyExtraction, documents, NOTICE_TITLES };
 })();

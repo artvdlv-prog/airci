@@ -274,18 +274,7 @@
             ask(question, [{ name: 'ref', label: refLabel, required: true }, { name: 'ok', label: 'Подтверждаю: действие выполнено, сведения достоверны', type: 'checkbox', required: true }], v => { apply(v.ref); return null; }, 'Подтвердить');
         }
 
-        async function docx(name, blocks) {
-            try {
-                if (!window.docx) await new Promise((res, rej) => { const s = h('script', { src: 'https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js' }); s.onload = res; s.onerror = () => rej(new Error('Не удалось загрузить модуль Word.')); document.head.appendChild(s); });
-                const D = window.docx;
-                const p = (text, o = {}) => new D.Paragraph({ alignment: o.center ? D.AlignmentType.CENTER : o.right ? D.AlignmentType.RIGHT : undefined, spacing: { after: 100 }, children: [new D.TextRun({ text, bold: o.bold, size: o.size || 22, font: 'Times New Roman' })] });
-                const cell = (t, b) => new D.TableCell({ children: [new D.Paragraph({ children: [new D.TextRun({ text: String(t ?? ''), bold: b, size: 20, font: 'Times New Roman' })] })] });
-                const children = blocks.map(b => (b.table ? new D.Table({ width: { size: 100, type: D.WidthType.PERCENTAGE }, rows: [new D.TableRow({ tableHeader: true, children: b.table[0].map(x => cell(x, true)) }), ...b.table.slice(1).map(r => new D.TableRow({ children: r.map(x => cell(x)) }))] }) : p(b.text, b)));
-                download(await D.Packer.toBlob(new D.Document({ sections: [{ properties: {}, children }] })), `${name.replace(/[\\/:*?"<>|]/g, ' ')}.docx`);
-            } catch (e) {
-                notify(e.message);
-            }
-        }
+        const docx = K.docx;
 
         const exportProtocol = (c, p) => docx(`Протокол разногласий — ${CC.name(c)}`, [
             { text: 'ПРОТОКОЛ РАЗНОГЛАСИЙ', bold: true, center: true, size: 24 }, { text: `к ${CC.name(c)}${c.subject ? ' (' + c.subject + ')' : ''}`, center: true }, { text: `${formatDate(p.date)}`, right: true },
