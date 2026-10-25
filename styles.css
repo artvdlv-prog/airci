@@ -6956,3 +6956,91 @@ a.home-doc:hover {
         row-gap: 10px;
     }
 }
+
+/* Tablets and phones: text links and link-style buttons get a 44px touch area.
+   The area is an invisible ::before, so the look and the layout do not change.
+   Card-wide links (.home-product .home-link, .home-specialist__title) already cover the card. */
+@media (max-width: 1024px) {
+    .nav-menu .nav-link,
+    .home-crumbs a,
+    .home-guide__toc a,
+    .home-guide__norm-num,
+    .home-norm__num,
+    .home-registry__num,
+    .home-registry__jump,
+    .home-link:not(.home-product .home-link),
+    .home-cab__reset-link,
+    .home-cab__back,
+    .home-chat__reset,
+    .home-ks__link,
+    .home-record__actions button {
+        position: relative;
+    }
+
+    .nav-menu .nav-link::before,
+    .home-crumbs a::before,
+    .home-guide__toc a::before,
+    .home-guide__norm-num::before,
+    .home-norm__num::before,
+    .home-registry__num::before,
+    .home-registry__jump::before,
+    .home-link:not(.home-product .home-link)::before,
+    .home-cab__reset-link::before,
+    .home-cab__back::before,
+    .home-chat__reset::before,
+    .home-ks__link::before,
+    .home-record__actions button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: -6px;
+        right: -6px;
+        height: 44px;
+        min-height: 100%;
+        transform: translateY(-50%);
+    }
+
+    .home-record__actions {
+        gap: 18px;
+    }
+}
+
+@media (max-width: 600px) {
+    .home-registry__search input {
+        font-size: 16px;
+    }
+}
+
+/* Touch screens (phones and tablets): iOS zooms the page when a field under 16px gets focus */
+@media (pointer: coarse) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+}
+
+/* Cabinet height follows the visible part of the screen on tablets as well (browser toolbars) */
+@supports (height: 100dvh) {
+    .home-cab__side {
+        height: calc(100dvh - 64px);
+    }
+
+    .home-cab__frame-wrap {
+        height: calc(100dvh - 64px);
+    }
+
+    .home-cab__layout {
+        min-height: calc(100dvh - 64px);
+    }
+}
+
+@media (max-width: 768px) {
+    .home-cab__side {
+        height: auto;
+    }
+
+    .home-cab__frame-wrap {
+        height: calc(100dvh - 64px - 58px);
+    }
+}
