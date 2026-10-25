@@ -294,6 +294,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const tasks = pageRoot.querySelector('[data-sp-tasks]');
             if (tasks) {
                 tasks.textContent = '';
+                // Full rows only: 6 tasks — 3 × 2, 8 — 4 × 2, up to 5 — one row
+                const count = (item.tasks || []).length;
+                const cols = count <= 5 ? count : count % 3 === 0 ? 3 : count % 4 === 0 ? 4 : 3;
+                tasks.className = `home-tasks__grid home-tasks__grid--${Math.min(Math.max(cols, 3), 5)}`;
                 (item.tasks || []).forEach(task => {
                     const li = document.createElement('li');
                     li.className = 'home-task';

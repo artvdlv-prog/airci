@@ -7153,3 +7153,26 @@ a.home-doc:hover {
         padding: 84px 0 22px;
     }
 }
+
+/* Demo link next to the main action, not on its own line */
+.home-ws__demo {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    margin: 0 0 0 6px;
+}
+
+/* Section «Закупки» (procurement.html): the workspace is the page itself, no divider above */
+.home-ws--section {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+
+.home-ws--section .home-ws__head {
+    align-items: center;
+}
+
+.home-ws--section .home-ws__head .home-ws__actions {
+    margin: 0;
+}

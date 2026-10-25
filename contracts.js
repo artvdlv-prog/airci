@@ -614,7 +614,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { name: 'due', label: 'Контрольная дата', type: 'date', value: o.due },
             { name: 'condition', label: 'Условие или порядок исполнения', type: 'textarea', rows: 2, value: o.condition, hint: 'Например: в течение 5 рабочих дней после подписания акта' },
             { name: 'responsible', label: 'Ответственный', value: o.responsible },
-            { name: 'zone', label: 'Зона ответственности', type: 'select', value: o.text ? CC.zone(o) : 'contract', options: Object.entries(CC.ZONES), hint: 'Обязательства по поставке получает специалист по закупкам и снабжению в «Штате»' }
+            { name: 'zone', label: 'Зона ответственности', type: 'select', value: o.text ? CC.zone(o) : 'contract', options: Object.entries(CC.ZONES), hint: 'Обязательства по поставке получает специалист по снабжению в «Штате»' }
         ];
     }
 
