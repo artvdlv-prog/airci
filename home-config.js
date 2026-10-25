@@ -176,7 +176,7 @@ const HOME_SPECIALISTS = [
     {
         id: 'estimator',
         slug: 'estimator',
-        title: { ru: 'Сметчик', en: 'Cost estimator' },
+        title: { ru: 'Инженер-сметчик', en: 'Cost estimator' },
         description: { ru: 'Сметные расчёты', en: 'Cost estimates' },
         registry: { ru: 'Реестр смет', en: 'Estimates register' },
         tasks: [
@@ -233,7 +233,7 @@ const HOME_SPECIALISTS = [
         registry: { ru: 'Реестр технических решений', en: 'Technical decisions register' },
         tasks: [
             { title: 'Контроль инженера ПТО', text: 'Проверка РД, исполнительной документации и форм КС.' },
-            { title: 'Контроль сметчика', text: 'Проверка смет, объёмов и технических решений по экономии.' },
+            { title: 'Контроль инженера-сметчика', text: 'Проверка смет, объёмов и технических решений по экономии.' },
             { title: 'Технические решения', text: 'Оценка решений и соответствия нормативам.' },
             { title: 'Технические риски', text: 'Выявление технических рисков по объекту.' }
         ],

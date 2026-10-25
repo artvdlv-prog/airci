@@ -535,7 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const errors = list.filter(c => c.level === 'error');
         el.panel.appendChild(h('div', { class: 'home-ct__alert' + (errors.length ? ' home-ct__alert--overdue' : '') },
             list.length ? `Нарушений: ${errors.length}, предупреждений: ${list.length - errors.length}.` : 'Ошибок не найдено.'));
-        const actions = [small('Заключение — Word', () => exportConclusion(e, list)), small('Реестр замечаний — Excel', () => exportRemarks(e, list)), small('Сметчик', () => askEstimator(e, list))];
+        const actions = [small('Заключение — Word', () => exportConclusion(e, list)), small('Реестр замечаний — Excel', () => exportRemarks(e, list)), small('Инженер-сметчик', () => askEstimator(e, list))];
         if (!errors.length && e.status === 'draft') actions.unshift(small('Отметить «Проверен»', () => { e.status = 'checked'; log(e, 'Смета проверена: ошибок нет'); save(); render(); }, true));
         el.panel.appendChild(block('Реестр ошибок и замечаний', actions, h('ul', { class: 'home-ct__list' }, list.length ? list.map(c => h('li', { class: 'home-ct__row' },
             h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-title' }, h('span', { class: `home-ct__badge home-ct__badge--${c.level === 'error' ? 'overdue' : 'soon'}` }, c.level === 'error' ? 'Ошибка' : 'Замечание'), c.text),
@@ -582,7 +582,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderHistory(e) {
-        if ((e.reports || []).length) el.panel.appendChild(block('Ответы сметчика из чата', null, h('ul', { class: 'home-ct__list' }, e.reports.map(rep => h('li', { class: 'home-ct__row' },
+        if ((e.reports || []).length) el.panel.appendChild(block('Ответы инженера-сметчика из чата', null, h('ul', { class: 'home-ct__list' }, e.reports.map(rep => h('li', { class: 'home-ct__row' },
             h('div', { class: 'home-ct__row-main' }, h('p', { class: 'home-ct__row-meta' }, formatStamp(rep.at)), h('p', { class: 'home-es__report' }, rep.text)))))));
         el.panel.appendChild(block('История', null, h('ul', { class: 'home-ct__history' }, (e.log || []).map(l => h('li', {}, h('span', { class: 'home-ct__history-date' }, formatStamp(l.at)), h('span', {}, l.text))))));
     }
@@ -744,10 +744,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (c.lines.work) protect.push(item('Часть позиций не разложена на ресурсы — себестоимость по ним не детализирована', c.lines.work, 'смета', 'разложить позиции или подтвердить цены субподряда'));
         if (!num((e.cost || {}).riskPct)) protect.push(item('В себестоимости нет резерва на риски', 0, 'параметры себестоимости', 'определить резерв по рискам удорожания материалов и сроков'));
         el.panel.append(
-            block('Корректность расчётов', [small('Сметчик', () => askEstimator(e, list))], h('ul', { class: 'home-ct__list' }, correct.length ? correct : h('li', { class: 'home-ct__none' }, 'Ошибок расчёта не найдено.'))),
+            block('Корректность расчётов', [small('Инженер-сметчик', () => askEstimator(e, list))], h('ul', { class: 'home-ct__list' }, correct.length ? correct : h('li', { class: 'home-ct__none' }, 'Ошибок расчёта не найдено.'))),
             block('Оптимизация стоимости', null, h('ul', { class: 'home-ct__list' }, optimize.length ? optimize : h('li', { class: 'home-ct__none' }, 'Резервов по ценам справочника и КП не найдено. Загрузите КП поставщиков.'))),
             block('Защита прибыли подрядчика', [small('Финансист', () => askFinancier(e, c))], h('ul', { class: 'home-ct__list' }, protect.length ? protect : h('li', { class: 'home-ct__none' }, 'Существенных рисков для прибыли не выявлено.'))));
-        el.panel.appendChild(note('Рекомендации рассчитаны программно по данным сметы, справочника, КП и калькуляции. Они не заменяют решение сметчика и согласование с заказчиком.'));
+        el.panel.appendChild(note('Рекомендации рассчитаны программно по данным сметы, справочника, КП и калькуляции. Они не заменяют решение инженера-сметчика и согласование с заказчиком.'));
     }
 
     function askFinancier(e, c) {
