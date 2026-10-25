@@ -189,7 +189,7 @@
             panel.appendChild(h('ul', { class: 'home-ct__list' }, docs.length ? docs.map(d => rowEl([badge(d.kind), d.file ? h('button', { type: 'button', class: 'home-ct__file', onclick: () => openFile(d.file) }, d.title) : d.title], [[d.meta, c ? '' : CC.name(d.x)].filter(Boolean).join(' · ')])) : h('li', { class: 'home-ct__none' }, 'Юридических документов нет.')));
         }
 
-        // Regulatory base: the AirCodex registry (aircodex.html), documents tagged for the construction lawyer
+        // Regulatory base: the AirCodex registry (aircodex/), documents tagged for the construction lawyer
         async function renderNorms(panel) {
             panel.appendChild(h('p', { class: 'home-ct__row-meta' }, 'Документы реестра AirCodex с отметкой «Юрист» — ссылки на официальные источники. Действующую редакцию юрист сверяет при ответе.'));
             const search = h('input', { type: 'search', placeholder: 'Поиск по номеру или названию', class: 'home-ws__search', oninput: () => draw() });
@@ -204,7 +204,7 @@
             if (!normsCache) {
                 list.appendChild(h('li', { class: 'home-ct__none' }, 'Загружаю реестр…'));
                 try {
-                    const html = await (await fetch('aircodex.html')).text();
+                    const html = await (await fetch('aircodex/')).text();
                     const doc = new DOMParser().parseFromString(html, 'text/html');
                     normsCache = [...doc.querySelectorAll('.home-registry__row')].filter(r => r.textContent.includes('Юрист')).map(r => {
                         const a = r.querySelector('.home-registry__num');

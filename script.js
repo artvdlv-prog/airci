@@ -7,6 +7,11 @@ if (new URLSearchParams(location.search).get('cabinet') === '1') {
     document.documentElement.classList.add('is-cabinet');
 }
 
+// Site root: the folder of script.js. Routes from home-config.js are relative to it,
+// so they also work on pages in subfolders (e.g. /aircontrol/).
+const SITE_ROOT = document.currentScript ? new URL('.', document.currentScript.src).href : '';
+const siteUrl = url => (SITE_ROOT && url && !/^([a-z]+:|#|\/)/i.test(url) ? new URL(url, SITE_ROOT).href : url);
+
 // Language functionality
 let currentLanguage = 'ru';
 
@@ -201,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const cabinet = typeof HOME_ROUTES !== 'undefined' ? HOME_ROUTES.cabinet : null;
             if (cabinet) {
-                window.location.href = cabinet;
+                window.location.href = siteUrl(cabinet);
             } else {
                 showDemoForm();
             }
@@ -229,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Routes that are not implemented yet show a notice instead of leading to a fake page
         function bindRoute(link, url) {
             if (url) {
-                link.setAttribute('href', url);
+                link.setAttribute('href', siteUrl(url));
                 return;
             }
             link.addEventListener('click', function(e) {
@@ -767,7 +772,7 @@ document.addEventListener('DOMContentLoaded', function() {
             openSpecialistWindow(item, routes.specialist.replace('{slug}', encodeURIComponent(slug)), question);
         };
 
-        // Regulatory registry (aircodex.html): filter rows by number, title or specialist
+        // Regulatory registry (aircodex/): filter rows by number, title or specialist
         function initRegistrySearch() {
             const input = document.querySelector('[data-registry-search]');
             if (!input) return;
@@ -788,6 +793,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 nothing.hidden = shown > 0;
             });
+        }
+
+        // Direction articles: highlight the table of contents entry of the section being read
+        function initGuideToc() {
+            const links = [...document.querySelectorAll('.home-guide__toc a[href^="#"]')];
+            if (!links.length || !('IntersectionObserver' in window)) return;
+            const byId = new Map(links.map(a => [a.getAttribute('href').slice(1), a]));
+            const visible = new Set();
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(e => (e.isIntersecting ? visible.add(e.target.id) : visible.delete(e.target.id)));
+                const current = [...byId.keys()].find(id => visible.has(id));
+                if (current) links.forEach(a => a.classList.toggle('is-current', a === byId.get(current)));
+            }, { rootMargin: '-80px 0px -60% 0px' });
+            byId.forEach((a, id) => { const section = document.getElementById(id); if (section) observer.observe(section); });
         }
 
         // Dialogs and registers of the staff section, per specialist, in localStorage
@@ -1117,6 +1136,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderSpecialistPage();
         initChat();
         initRegistrySearch();
+        initGuideToc();
         renderMedia(document);
         renderSpecialists();
         document.addEventListener('languagechange', () => {
