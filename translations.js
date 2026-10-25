@@ -124,8 +124,8 @@ const translations = {
             actions: { start: "Get started" },
             hero: {
                 eyebrow: "Technology for the construction business",
-                title: "Do what you do best.",
-                titleMuted: "We'll help with the rest.",
+                title: "Do what you do best",
+                titleMuted: "We'll help with the rest",
                 lead: "Contracts, procurement, documents, finance and construction questions — professional digital support for your company.",
                 capabilities: "Our capabilities",
                 dir1: "Specialists",
@@ -134,7 +134,7 @@ const translations = {
             },
             tasks: {
                 eyebrow: "Construction takes more than the ability to build",
-                title: "Behind every project are hundreds of administrative tasks.",
+                title: "Behind every project are hundreds of administrative tasks",
                 lead: "AIRCHITECT helps organize this work in one digital environment.",
                 contracts: { title: "Contracts", text: "Review terms and keep track of obligations." },
                 procurement: { title: "Procurement", text: "Analyze documentation and participation terms." },
@@ -145,14 +145,14 @@ const translations = {
             },
             specialists: {
                 eyebrow: "Not just software. Professional help with your work.",
-                title: "Your team of specialists.",
+                title: "Your team of specialists",
                 lead: "Professional help with contractual, legal, financial, technical and organizational matters of the construction business.",
                 cta: "Meet the specialists",
                 open: "Open"
             },
             collab: {
                 eyebrow: "One contract. Several professional perspectives.",
-                title: "The details of every document.",
+                title: "The details of every document",
                 lead1: "A single contract may call for different professional competencies.",
                 lead2: "Specialists help review a document from legal, contractual, financial and organizational points of view.",
                 cta: "How it works",
@@ -165,7 +165,7 @@ const translations = {
             },
             products: {
                 eyebrow: "Choose where to start",
-                title: "Solutions for construction companies.",
+                title: "Solutions for construction companies",
                 lead: "Use individual products or combine them in a single system.",
                 more: "Learn more",
                 office: { title: "Digital project office", text: "Professional specialists for legal, financial, technical and organizational questions." },
@@ -187,7 +187,7 @@ const translations = {
             },
             regulatory: {
                 eyebrow: "Professional decisions need a basis",
-                title: "We know what to rely on.",
+                title: "We know what to rely on",
                 lead1: "The construction industry operates within complex legislation, technical regulation and contractual requirements.",
                 lead2: "AIRCHITECT provides for the use of verifiable regulatory sources: Russian legislation, building codes, state standards and official industry documents.",
                 cta: "Regulatory and legal base",
@@ -218,14 +218,14 @@ const translations = {
             },
             about: {
                 eyebrow: "About the company",
-                title: "We build technology for the practical tasks of construction.",
+                title: "We build technology for the practical tasks of construction",
                 lead1: "AIRCHITECT creates software that reflects the real processes of construction organizations: contract work, procurement, document management, financial and technical matters.",
                 lead2: "We aim to make professional tools available in a single workspace that is clear to both managers and staff of construction companies.",
                 cta: "More about the company"
             },
             final: {
-                title1: "Focus on construction.",
-                title2: "Leave the rest to AIRCHITECT.",
+                title1: "Focus on construction",
+                title2: "Leave the rest to AIRCHITECT",
                 lead: "Start with specialists, add electronic document management or use the complete solution.",
                 choose: "Choose a solution"
             }
@@ -355,8 +355,8 @@ const translations = {
             actions: { start: "Начать работу" },
             hero: {
                 eyebrow: "Технологии для строительного бизнеса",
-                title: "Делайте то, что умеете лучше всего.",
-                titleMuted: "В остальном мы поможем.",
+                title: "Делайте то, что умеете лучше всего",
+                titleMuted: "В остальном мы поможем",
                 lead: "Договоры, закупки, документы, финансы и строительные вопросы — профессиональная цифровая поддержка вашей компании.",
                 capabilities: "Наши возможности",
                 dir1: "Специалисты",
@@ -365,7 +365,7 @@ const translations = {
             },
             tasks: {
                 eyebrow: "Строительство требует больше, чем умения строить",
-                title: "За каждым объектом стоят сотни административных задач.",
+                title: "За каждым объектом стоят сотни административных задач",
                 lead: "AIRCHITECT помогает организовать эту работу в одной цифровой среде.",
                 contracts: { title: "Договоры", text: "Проверять условия и контролировать обязательства." },
                 procurement: { title: "Закупки", text: "Анализировать документацию и условия участия." },
@@ -376,14 +376,14 @@ const translations = {
             },
             specialists: {
                 eyebrow: "Не просто программа. Профессиональная помощь в работе.",
-                title: "Ваша команда специалистов.",
+                title: "Ваша команда специалистов",
                 lead: "Профессиональная помощь по договорным, юридическим, финансовым, техническим и организационным вопросам строительного бизнеса.",
                 cta: "Познакомиться со специалистами",
                 open: "Открыть"
             },
             collab: {
                 eyebrow: "Один договор. Несколько профессиональных решений.",
-                title: "Детали каждого документа.",
+                title: "Детали каждого документа",
                 lead1: "При работе с одним договором могут потребоваться разные профессиональные компетенции.",
                 lead2: "Специалисты помогают рассмотреть документ с юридической, договорной, финансовой и организационной точек зрения.",
                 cta: "Как это работает",
@@ -396,7 +396,7 @@ const translations = {
             },
             products: {
                 eyebrow: "Выберите, с чего начать",
-                title: "Решения для строительных компаний.",
+                title: "Решения для строительных компаний",
                 lead: "Используйте отдельные продукты или объедините их в единой системе.",
                 more: "Подробнее",
                 office: { title: "Цифровой проектный офис", text: "Профессиональные специалисты для решения юридических, финансовых, технических и организационных вопросов." },
@@ -418,7 +418,7 @@ const translations = {
             },
             regulatory: {
                 eyebrow: "Профессиональные решения требуют оснований",
-                title: "Знаем, на что опираться.",
+                title: "Знаем, на что опираться",
                 lead1: "Строительная отрасль работает в условиях сложного законодательства, технического регулирования и договорных требований.",
                 lead2: "AIRCHITECT предусматривает использование проверяемых нормативных источников: законодательства РФ, строительных правил, государственных стандартов и официальных отраслевых документов.",
                 cta: "Нормативно-правовая база",
@@ -449,14 +449,14 @@ const translations = {
             },
             about: {
                 eyebrow: "О компании",
-                title: "Разрабатываем технологии для практических задач строительства.",
+                title: "Разрабатываем технологии для практических задач строительства",
                 lead1: "AIRCHITECT создаёт программные решения, учитывающие реальные процессы строительных организаций: договорную работу, закупки, документооборот, финансовые и технические вопросы.",
                 lead2: "Мы стремимся сделать профессиональные инструменты доступными в единой рабочей среде, понятной руководителям и сотрудникам строительных компаний.",
                 cta: "Подробнее о компании"
             },
             final: {
-                title1: "Сосредоточьтесь на строительстве.",
-                title2: "Остальное доверьте AIRCHITECT.",
+                title1: "Сосредоточьтесь на строительстве",
+                title2: "Остальное доверьте AIRCHITECT",
                 lead: "Начните с специалистов, подключите электронный документооборот или используйте комплексное решение.",
                 choose: "Выбрать решение"
             }
