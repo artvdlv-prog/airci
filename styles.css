@@ -6884,15 +6884,24 @@ a.home-doc:hover {
 }
 
 .home-final .home-final__title {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-size: clamp(20px, 1.7vw, 24px);
-    line-height: 1.25;
-    letter-spacing: -0.01em;
+    font-weight: 200;
+    line-height: 1.3;
+    letter-spacing: 0;
+}
+
+/* Lines of equal length instead of a short last line */
+.home-final .home-final__title span,
+.home-final .home-text {
+    text-wrap: balance;
 }
 
 .home-final .home-text {
     font-size: 15px;
-    line-height: 1.5;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--home-muted);
 }
 
 .home-final .home-actions {
