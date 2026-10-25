@@ -13,7 +13,7 @@ const HOME_ROUTES = {
     complex: 'complex.html',
     howItWorks: 'office.html#how',
     contractSupport: 'complex.html#contract-support',
-    regulatory: 'aircodex.html',
+    regulatory: 'aircodex/',
     company: 'company.html'
 };
 
