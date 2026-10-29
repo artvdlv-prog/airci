@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         overview: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
         staff: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0"/><path d="M16 4.5a3.5 3.5 0 010 7M18.5 20a6.5 6.5 0 00-3-5.5"/>',
         contracts: '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/><path d="M9 11h7M9 14h7M9 17h4"/>',
+        assistants: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
         documents: '<rect x="8" y="3" width="12" height="15" rx="1"/><path d="M5 6v15h12"/><path d="M11 8h6M11 11h6M11 14h4"/>',
         registries: '<path d="M4 5h16M4 10h16M4 15h16M4 20h10"/>',
         objects: '<path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/><path d="M3 21h18"/>',
@@ -44,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const SECTIONS = [
         { id: 'overview', title: 'Обзор', products: ['office', 'docs', 'complex'] },
         { id: 'staff', title: 'Штат', products: ['office', 'complex'], frame: 'staff.html' },
+        { id: 'assistants', title: 'Помощники', products: ['office', 'docs', 'complex'], frame: 'assistants.html' },
         { id: 'contracts', title: 'Договоры', products: ['office', 'complex'], frame: 'contracts.html' },
         { id: 'tenders', title: 'Тендеры', products: ['office', 'complex'], frame: 'tenders.html' },
         { id: 'procurement', title: 'Закупки', products: ['office', 'complex'], frame: 'procurement.html' },

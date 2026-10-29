@@ -83,7 +83,8 @@
     ASSISTANTS.forEach(a => {
         const li = document.createElement('li');
         const link = document.createElement('a');
-        link.href = `assistants.html?id=${a.slug}`;
+        // Inside the personal cabinet (?cabinet=1) the switch keeps the cabinet mode
+        link.href = `assistants.html?id=${a.slug}${document.documentElement.classList.contains('is-cabinet') ? '&cabinet=1' : ''}`;
         link.className = 'home-staff__item' + (a === item ? ' is-active' : '');
         if (a === item) link.setAttribute('aria-current', 'page');
         const name = document.createElement('span');
