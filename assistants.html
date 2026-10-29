@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.8em' font-size='45' font-family='Arial,sans-serif' font-weight='bold' fill='%23FF6A00'>AI</text></svg>">
+    <meta name="description" content="Цифровые помощники AIRCHITECT: договорной специалист, юрист, инженер-сметчик и специалист по безопасности. Анализ договоров, контрольные точки, сметы.">
+    <title>Цифровые помощники | AIRCHITECT</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="Logo Airchitect.jpg" alt="Airchitect" class="nav-logo">
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html#specialists" class="nav-link" data-translate="nav.specialists">Специалисты</a>
+                <a href="index.html#products" class="nav-link" data-translate="nav.solutions">Решения</a>
+                <a href="index.html#modules" class="nav-link" data-translate="nav.technologies">Технологии</a>
+                <a href="company.html" class="nav-link" data-translate="nav.about">О компании</a>
+                <button class="demo-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0114 0"/></svg><span>Личный кабинет</span></button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="home" data-assistants>
+        <section id="intro" class="home-chat">
+            <div class="container">
+                <div class="home-staff__head">
+                    <p class="home-eyebrow">Цифровые помощники</p>
+                    <h1 class="home-chat__title">Договоры, право и сметы</h1>
+                    <p class="home-chat__text">Загрузите договор в Word или PDF — помощник выделит контрольные точки, сроки и риски. Задайте юридический или сметный вопрос.</p>
+                </div>
+                <div class="home-staff">
+                    <nav class="home-staff__list" aria-label="Помощники">
+                        <ul data-staff-list></ul>
+                    </nav>
+                    <div class="home-staff__work">
+                        <div class="home-staff__top">
+                            <div>
+                                <h2 class="home-staff__name" data-sp-title>Помощник</h2>
+                                <p class="home-chat__text" data-sp-description></p>
+                            </div>
+                        </div>
+
+                        <div class="home-chat__window">
+                            <div class="home-chat__log" data-chat-log aria-live="polite"></div>
+                            <form class="home-chat__form" data-chat-form>
+                                <ul class="home-chat__files" data-chat-files></ul>
+                                <div class="home-chat__row">
+                                    <label class="home-chat__attach" title="Приложить документ">
+                                        <input type="file" multiple accept=".pdf,.docx,.txt" data-chat-file>
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5l-8.5 8.5a5 5 0 01-7-7L14 4.5a3.5 3.5 0 015 5l-8.5 8.5a2 2 0 01-3-3L15 7.5"/></svg>
+                                        <span class="home-chat__sr">Приложить документ</span>
+                                    </label>
+                                    <textarea rows="1" data-chat-input placeholder="Опишите задачу или приложите договор" aria-label="Сообщение"></textarea>
+                                    <button type="submit" class="home-btn home-btn--primary home-chat__send" data-chat-send><span>Отправить</span><svg class="home-btn__arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></button>
+                                </div>
+                            </form>
+                            <div class="home-chat__footer">
+                                <p class="home-note">Сообщения и документы обрабатывают ИИ-агенты платформы AgentArea с внешними языковыми моделями. Не загружайте сведения, которые компания не разрешает передавать третьим лицам.</p>
+                                <button type="button" class="home-chat__reset" data-chat-reset>Новый диалог</button>
+                            </div>
+                        </div>
+
+                        <p class="home-note">Рекомендации помощников носят вспомогательный характер и не заменяют решений, которые принимают сотрудники компании. Диалог хранится только в открытой вкладке.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="translations.js"></script>
+    <script src="home-config.js"></script>
+    <script src="script.js"></script>
+    <script src="contract-extract.js"></script>
+    <script src="agentarea-chat.js"></script>
+</body>
+</html>
